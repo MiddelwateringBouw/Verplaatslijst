@@ -1116,6 +1116,7 @@ const NAAR = { type: null, naam: '', werknr: '' };
 let geselecteerdeItems     = new Set();
 let geselecteerdeAantallen = {};
 let expandedTypes          = new Set();
+let expandedOvzTypes       = new Set();
 let algemeneFotos          = [];
 let alleMaterialen     = [];
 let materieelLaden     = false;
@@ -1388,6 +1389,16 @@ function toggleTypeExpand(typeId) {
   const open  = expandedTypes.has(typeId);
   const panel = document.getElementById('expand-' + typeId);
   const chev  = document.getElementById('chev-' + typeId);
+  if (panel) panel.style.display = open ? '' : 'none';
+  if (chev)  chev.textContent    = open ? '▲' : '▼';
+}
+
+function toggleOvzType(typeKey) {
+  if (expandedOvzTypes.has(typeKey)) expandedOvzTypes.delete(typeKey);
+  else expandedOvzTypes.add(typeKey);
+  const open  = expandedOvzTypes.has(typeKey);
+  const panel = document.getElementById('ovz-exp-' + typeKey);
+  const chev  = document.getElementById('ovz-chev-' + typeKey);
   if (panel) panel.style.display = open ? '' : 'none';
   if (chev)  chev.textContent    = open ? '▲' : '▼';
 }
@@ -2122,25 +2133,41 @@ function openDetailInz(inz) {
 
   let itemsHtml = '';
   if (itemRegels.length) {
-    itemsHtml = `<div class="detail-sectie">
-      <div class="detail-sectie-titel">Verplaatst materieel</div>
-      ${itemRegels.map(it => {
-        const naamEsc = it.naam.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-        const numArr  = it.nummers ? it.nummers.split(', ').filter(Boolean) : [];
-        const numParam = numArr.length === 1 ? `'${numArr[0]}'` : 'null';
-        return `<div class="detail-item-rij ovz-item-klikbaar" onclick="toonItemGeschiedenis('${naamEsc}', ${numParam}, 'detail')">
-          <div>
-            <div class="detail-item-naam">${it.naam}</div>
-            ${it.nummers ? `<div class="detail-item-nrs">Nr. ${it.nummers}</div>` : ''}
-            ${it.opm     ? `<div class="detail-item-nrs">${it.opm}</div>` : ''}
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="detail-item-aantal">×${it.aantal}</div>
-            <i data-lucide="chevron-right" style="width:14px;height:14px;color:var(--zacht);flex-shrink:0;"></i>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`;
+    // Groepeer verplaatst materieel per sectie
+    const getSectie = naam => {
+      const gevonden = alleMaterialen.find(m => m.naam === naam);
+      return gevonden?.sectie || 'Overig';
+    };
+    const perSectie = {};
+    for (const it of itemRegels) {
+      const s = getSectie(it.naam);
+      if (!perSectie[s]) perSectie[s] = [];
+      perSectie[s].push(it);
+    }
+    const sectieVolgorde = Object.keys(perSectie).sort((a,b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b,'nl'));
+
+    const itemRow = it => {
+      const naamEsc  = it.naam.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      const numArr   = it.nummers ? it.nummers.split(', ').filter(Boolean) : [];
+      const numParam = numArr.length === 1 ? `'${numArr[0]}'` : 'null';
+      return `<div class="detail-item-rij ovz-item-klikbaar" onclick="toonItemGeschiedenis('${naamEsc}', ${numParam}, 'detail')">
+        <div>
+          <div class="detail-item-naam">${it.naam}</div>
+          ${it.nummers ? `<div class="detail-item-nrs">Nr. ${it.nummers}</div>` : ''}
+          ${it.opm     ? `<div class="detail-item-nrs">${it.opm}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="detail-item-aantal">×${it.aantal}</div>
+          <i data-lucide="chevron-right" style="width:14px;height:14px;color:var(--zacht);flex-shrink:0;"></i>
+        </div>
+      </div>`;
+    };
+
+    itemsHtml = sectieVolgorde.map(sectie => `
+      <div class="detail-sectie">
+        <div class="detail-sectie-titel">${sectie}</div>
+        ${perSectie[sectie].map(itemRow).join('')}
+      </div>`).join('');
   }
 
   const opmHtml = opmerking ? `<div class="detail-sectie">
@@ -2489,23 +2516,49 @@ function naarOvzLocatie(locKey) {
     const secties = Object.keys(perSectie).sort((a, b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b));
     for (const sectie of secties) {
       const sItems = perSectie[sectie];
+
+      // Groepeer per naam (type) binnen de sectie
+      const perType = {};
+      for (const m of sItems) {
+        if (!perType[m.naam]) perType[m.naam] = [];
+        perType[m.naam].push(m);
+      }
+
       itemsHtml += `<div class="mat-kies-sectie-titel" style="margin:16px 16px 6px;">${sectie}</div>
         <div class="card" style="margin:0 16px 10px;">`;
-      for (const m of sItems) {
-        const numEsc = (m.nummer || '').replace(/'/g, "\\'");
-        const naamEsc = m.naam.replace(/'/g, "\\'");
-        if (m.aantal != null) {
+
+      for (const [naam, typeItems] of Object.entries(perType).sort(([a],[b]) => a.localeCompare(b,'nl'))) {
+        const naamEsc   = naam.replace(/'/g, "\\'");
+        const typeKey   = naam.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+        const isOpen    = expandedOvzTypes.has(typeKey);
+        const isBulk    = typeItems[0].aantal != null;
+
+        if (isBulk) {
+          const totaalBulk = typeItems.reduce((s,m) => s + (m.aantal||0), 0);
           itemsHtml += `<div class="ovz-item-regel ovz-item-klikbaar" onclick="toonItemGeschiedenis('${naamEsc}', null)">
-            <div class="ovz-item-naam">${m.naam}</div>
+            <div class="ovz-item-naam">${naam}</div>
             <div style="display:flex;align-items:center;gap:8px;">
-              <div class="ovz-item-badge">${m.aantal} stuks</div>
+              <div class="ovz-item-badge">${totaalBulk} stuks</div>
               <span style="color:var(--zacht);font-size:16px;">›</span>
             </div>
           </div>`;
         } else {
-          itemsHtml += `<div class="ovz-item-regel ovz-item-klikbaar" onclick="toonItemGeschiedenis('${naamEsc}', '${numEsc}')">
-            <div class="ovz-item-naam">${m.naam}${m.nummer ? ' <span style="color:var(--zacht);font-weight:600;">Nr. ' + m.nummer + '</span>' : ''}</div>
-            <span style="color:var(--zacht);font-size:16px;">›</span>
+          const gesorteerd = typeItems.slice().sort((a,b) => (Number(a.nummer)||0) - (Number(b.nummer)||0));
+          itemsHtml += `<div class="mat-kies-row" onclick="toggleOvzType('${typeKey}')">
+            <div style="flex:1">
+              <div class="mat-kies-naam">${naam}</div>
+              <div class="mat-kies-nr">${typeItems.length} item${typeItems.length !== 1 ? 's' : ''}</div>
+            </div>
+            <div class="mat-kies-chevron" id="ovz-chev-${typeKey}">${isOpen ? '▲' : '▼'}</div>
+          </div>
+          <div class="mat-kies-sub" id="ovz-exp-${typeKey}" style="${isOpen ? '' : 'display:none'}">
+            ${gesorteerd.map(m => {
+              const numEsc = (m.nummer || '').replace(/'/g, "\\'");
+              return `<div class="ovz-item-regel ovz-item-klikbaar" onclick="event.stopPropagation();toonItemGeschiedenis('${naamEsc}','${numEsc}')">
+                <div class="ovz-item-naam">Nr. ${m.nummer || '—'}</div>
+                <span style="color:var(--zacht);font-size:16px;">›</span>
+              </div>`;
+            }).join('')}
           </div>`;
         }
       }
