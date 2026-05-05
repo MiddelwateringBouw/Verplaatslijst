@@ -369,16 +369,24 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
         <span class="card-icon"><i data-lucide="plus"></i></span>
         <div>
           <div class="card-title">Materieel toevoegen</div>
-          <div class="card-sub">Type, nummer en locatie</div>
+          <div class="card-sub">Categorie, naam en locatie</div>
         </div>
       </div>
     </div>
     <div style="padding:0 16px 14px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-        <select class="add-klus-input" id="add-mat-type" style="grid-column:1/-1;" onchange="updateAddMatVeld()"></select>
-        <input class="add-klus-input" type="text"   id="add-mat-nummer" placeholder="Nummer (bijv. 1)">
-        <input class="add-klus-input" type="number" id="add-mat-aantal" placeholder="Aantal (bijv. 20)" min="1" style="display:none">
-        <select class="add-klus-input" id="add-mat-locatie"><option value="zaak">De Zaak</option></select>
+      <div style="display:grid;gap:8px;margin-bottom:8px;">
+        <input class="add-klus-input" id="add-mat-sectie" list="dl-secties" placeholder="Categorie (bijv. Aansluitingen)" autocomplete="off">
+        <datalist id="dl-secties"></datalist>
+        <input class="add-klus-input" id="add-mat-naam" list="dl-namen" placeholder="Naam materieel (bijv. Bouwmeterkast)" autocomplete="off">
+        <datalist id="dl-namen"></datalist>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <input class="add-klus-input" type="text" id="add-mat-nummer" placeholder="Nummer (bijv. 3)">
+          <select class="add-klus-input" id="add-mat-locatie"><option value="zaak">De Zaak</option></select>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--zacht);cursor:pointer;user-select:none;padding:2px 0;">
+          <input type="checkbox" id="add-mat-bulk" onchange="toggleBulkVeld()"> Bulk item (aantal stuks i.p.v. nummer)
+        </label>
+        <input class="add-klus-input" type="number" id="add-mat-aantal" placeholder="Aantal stuks" min="1" style="display:none">
       </div>
       <button class="add-klus-btn" style="width:100%;" onclick="voegMaterieelToe()">+ Toevoegen</button>
     </div>
@@ -386,7 +394,21 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
 
   <div id="mat-init-wrap" style="display:none;margin-bottom:12px;">
     <button onclick="initialiseerMaterieel()" style="width:100%;padding:14px;background:var(--surface);border:1.5px dashed var(--border-2);border-radius:var(--radius);font-family:inherit;font-size:13px;font-weight:700;color:var(--zacht);cursor:pointer;-webkit-appearance:none;">
-      <i data-lucide="package" style="width:15px;height:15px;vertical-align:middle;margin-right:6px;"></i>Initialiseer standaard materieel (nummers 1–5 per type, hekken 20 stuks)
+      <i data-lucide="package" style="width:15px;height:15px;vertical-align:middle;margin-right:6px;"></i>Leeg systeem initialiseren
+    </button>
+  </div>
+  <div style="margin-bottom:12px;">
+    <button onclick="syncMasterlijst()" style="width:100%;padding:12px;background:var(--surface);border:1.5px dashed var(--border-2);border-radius:var(--radius);font-family:inherit;font-size:13px;font-weight:700;color:var(--zacht);cursor:pointer;-webkit-appearance:none;">
+      <i data-lucide="refresh-cw" style="width:15px;height:15px;vertical-align:middle;margin-right:6px;"></i>Sync met masterlijst — voeg ontbrekende items toe
+    </button>
+  </div>
+
+  <div class="export-bar">
+    <button class="export-btn export-btn-excel" onclick="exporteerMatriceCSV()">
+      <i data-lucide="table" style="width:14px;height:14px;"></i> Excel (CSV)
+    </button>
+    <button class="export-btn export-btn-pdf" onclick="exporteerMatricePrint()">
+      <i data-lucide="printer" style="width:14px;height:14px;"></i> Afdrukken / PDF
     </button>
   </div>
 
@@ -717,7 +739,7 @@ function tabSwitch(naam, btn) {
 /* ── INIT ─────────────────────────────────────────── */
 function init() {
   laadInzendingen();
-  laadKlussen().then(() => { vulLocatieDropdown(); vulTypeDropdown(); laadMaterieel(); });
+  laadKlussen().then(() => { vulLocatieDropdown(); laadMaterieel(); });
 }
 
 /* ── INZENDINGEN ──────────────────────────────────── */
@@ -991,28 +1013,207 @@ async function slaKlussenOp(silent = false) {
 
 /* ── MATERIEEL OVERZICHT ──────────────────────────── */
 const SECTIES = {
-  'Aansluitingen': [
-    { id:'bouwmeterkast', naam:'Bouwmeterkast' },
-    { id:'waterput',      naam:'Waterput' },
-    { id:'waterkraan',    naam:'Waterkraan / standvink' },
+  'Containers': [
+    { id:'magazijncontainer',   naam:'Magazijncontainer' },
+    { id:'container',           naam:'Materiaalcontainer' },
   ],
   'Keten': [
-    { id:'schaftkeet',      naam:'Schaftkeet' },
-    { id:'uitvoerderskeet', naam:'Uitvoerderskeet' },
-    { id:'pipokeet',        naam:'Pipokeet' },
-    { id:'keettrap',        naam:'Keettrap (set)' },
+    { id:'schaftkeet_klein',    naam:'Schaftkeet klein' },
+    { id:'schaftkeet_groot',    naam:'Schaftkeet groot' },
+    { id:'schaftkeet',          naam:'Schaftkeet' },
+    { id:'uitvoerderskeet',     naam:'Uitvoerderskeet' },
+    { id:'pipokeet',            naam:'Pipokeet' },
+    { id:'keettrap',            naam:'Keettrap (set)' },
   ],
-  'Containers': [{ id:'container', naam:'Materiaalcontainer' }],
-  'Lichtmasten': [{ id:'lichtmast', naam:'Lichtmast' }],
+  'Aansluitingen': [
+    { id:'meterkast_35a',       naam:'Meterkast 35A' },
+    { id:'meterkast_63a',       naam:'Meterkast 63A' },
+    { id:'meterkast_80a',       naam:'Meterkast 80A' },
+    { id:'meterkast_125a',      naam:'Meterkast 125A' },
+    { id:'bouwpaddestoel_32a',  naam:'Bouwpaddestoel 32A' },
+    { id:'bouwpaddestoel_63a',  naam:'Bouwpaddestoel 63A' },
+    { id:'bouwmeterkast',       naam:'Bouwmeterkast' },
+    { id:'waterput',            naam:'Waterput' },
+    { id:'waterkraan',          naam:'Waterkraan / standvink' },
+  ],
+  'Mobiele voorzieningen': [
+    { id:'aggregaat',           naam:'Aggregaat' },
+    { id:'watervat',            naam:'Watervat 1-kubs' },
+  ],
+  'Lichtmasten': [
+    { id:'lichtmast_12m',       naam:'Lichtmast 12M' },
+    { id:'lichtmast_6m',        naam:'Lichtmast 6M' },
+    { id:'lichtmast',           naam:'Lichtmast' },
+  ],
   'Bouwhekken': [
-    { id:'bouwhekken',          naam:'Bouwhekken' },
-    { id:'bouwhek_voeten',      naam:'Bouwhek voeten' },
+    { id:'bouwhek_1200',        naam:'Bouwhek 1200 hoog' },
+    { id:'bouwhek_2000',        naam:'Bouwhek 2000 hoog' },
+    { id:'bouwhek_bok',         naam:'Bouwhek bok' },
+    { id:'bouwhek_voet',        naam:'Bouwhek voet' },
+    { id:'bouwhekvoet_bok',     naam:'Bouwhekvoet bok' },
     { id:'hekklemmen',          naam:'Hekklemmen' },
     { id:'hekwielen',           naam:'Hekwielen' },
     { id:'hek_schoren',         naam:'Hek schoren' },
+    { id:'schuifpoort',         naam:'Electr. schuifpoort 230V' },
+    { id:'materieelbak_open',   naam:'Materieelbak open' },
+    { id:'materieelbak_klep',   naam:'Materieelbak met klep' },
     { id:'kunststof_rijplaten', naam:'Kunststof rijplaten' },
+    { id:'bouwhekken',          naam:'Bouwhekken' },
+    { id:'bouwhek_voeten',      naam:'Bouwhek voeten' },
+  ],
+  'Bouwmaterieel': [
+    { id:'bouwdroger',          naam:'BouwDroger (Dantherm)' },
+    { id:'bouwventilator',      naam:'BouwVentilator (Dryfast)' },
+    { id:'bouwzaag_220v',       naam:'Bouwzaag 220V' },
+    { id:'bouwzaag_380v',       naam:'Bouwzaag 380V' },
+    { id:'afzuigsysteem',       naam:'Afzuigsysteem bouwzaag' },
+    { id:'heater_400v',         naam:'Heater (Dryfast 400V)' },
+    { id:'heater_230v',         naam:'Heater (Dryfast 230V)' },
+    { id:'pompwagen',           naam:'Pompwagen' },
+    { id:'platte_kar',          naam:'Platte kar' },
+    { id:'platenkar',           naam:'Platenkar' },
+    { id:'betonmolen',          naam:'Betonmolen' },
+    { id:'bouwstofzuiger',      naam:'Bouwstofzuiger' },
+    { id:'bouwlamp',            naam:'Bouwlamp op statief' },
+    { id:'schroefstempel',      naam:'Schroefstempel BM300' },
+    { id:'randbeveiligingsklemmen', naam:'Randbeveiligingsklemmen' },
+    { id:'pannenlift',          naam:'Pannenlift (Set)' },
+    { id:'kanalenlift',         naam:'Kanalenlift' },
+    { id:'metselprofielen',     naam:'Metselprofielen (hout)' },
+    { id:'kim_profiel',         naam:'Kim-profiel verstelbaar' },
+    { id:'hmb_gevelklem',       naam:'HMB Gevelklem' },
+    { id:'stualone_315',        naam:'StutAlone gevelstempel 315cm' },
+    { id:'stualone_350',        naam:'StutAlone gevelstempel 350cm' },
+    { id:'stapelrek',           naam:'Stapelrek 120x75cm' },
+  ],
+  'Aluminiumsteiger': [
+    { id:'steiger_platform_z',  naam:'Steigerplatform (zonder luik)' },
+    { id:'steiger_platform_m',  naam:'Steigerplatform (met luik)' },
+    { id:'opbouwframe_heel',    naam:'Opbouwframe heel (juk)' },
+    { id:'opbouwframe_half',    naam:'Opbouwframe half (juk)' },
+    { id:'doorloopframe',       naam:'Doorloopframe' },
+    { id:'leuningframe_135',    naam:'Leuningframe 135cm' },
+    { id:'diagonaalschoor',     naam:'Diagonaalschoor' },
+    { id:'horizontaalschoor',   naam:'Horizontaalschoor' },
+    { id:'steigerwielen',       naam:'Steigerwielen' },
+    { id:'voorloopleuning',     naam:'Voorloopleuning' },
+    { id:'driehoekstab_alu',    naam:'Driehoekstabilisator' },
+    { id:'trappentoren',        naam:'Trappen tbv trappentoren' },
+    { id:'kantplank_los',       naam:'Kantplank (los)' },
+    { id:'kantplank_set',       naam:'Kantplank (set)' },
+  ],
+  'Kamersteiger': [
+    { id:'kamer_frame',         naam:'Frame' },
+    { id:'kamer_vloer',         naam:'Vloer' },
+    { id:'kamer_wielen',        naam:'Wielen' },
+    { id:'kamer_leuning',       naam:'Leuningframe 75cm' },
+    { id:'kamer_kantplankset',  naam:'Kantplankset' },
+    { id:'kamer_driehoek',      naam:'Driehoekstabilisator' },
+  ],
+  'Ladders': [
+    { id:'ladder_hout',         naam:'Houten ladder' },
+    { id:'ladder_alu',          naam:'Alu. Schuifladder' },
+    { id:'schaartrap',          naam:'Alu. Schaartrap hoog' },
+    { id:'aanlijnklemmen',      naam:'Aanlijnklemmen vloeren' },
+  ],
+  'Aanhangers': [
+    { id:'aanhanger_klein',     naam:'Aanhanger (klein)' },
+    { id:'aanhanger_groot',     naam:'Aanhanger (groot)' },
   ],
 };
+
+const MASTERLIJST = [
+  // Containers (nrs 1-11)
+  ...['1','2','3','4','5','6','7','8','9','10','11'].map(nr => ({s:'Containers', n:'Magazijncontainer', nr})),
+  // Keten
+  ...['3','6','8','9'].map(nr => ({s:'Keten', n:'Schaftkeet klein', nr})),
+  ...['4','11','14','16'].map(nr => ({s:'Keten', n:'Schaftkeet groot', nr})),
+  ...['1','2','5','7','10','12','13','15'].map(nr => ({s:'Keten', n:'Uitvoerderskeet', nr})),
+  ...['P1','P2','P3'].map(nr => ({s:'Keten', n:'Pipokeet', nr})),
+  ...['1','2','3','4'].map(nr => ({s:'Keten', n:'Keettrap (set)', nr})),
+  // Aansluitingen
+  ...['1','2','5','6','10','12'].map(nr => ({s:'Aansluitingen', n:'Meterkast 35A', nr})),
+  ...['3','4','7','8','11'].map(nr => ({s:'Aansluitingen', n:'Meterkast 63A', nr})),
+  ...['9','15'].map(nr => ({s:'Aansluitingen', n:'Meterkast 80A', nr})),
+  ...['13','14'].map(nr => ({s:'Aansluitingen', n:'Meterkast 125A', nr})),
+  {s:'Aansluitingen', n:'Bouwpaddestoel 32A', nr:'1'},
+  {s:'Aansluitingen', n:'Bouwpaddestoel 63A', nr:'1'},
+  ...['1','2','3','4','5','6','7','8','9'].map(nr => ({s:'Aansluitingen', n:'Waterput', nr})),
+  {s:'Aansluitingen', n:'Waterkraan / standvink', nr:'1'},
+  // Mobiele voorzieningen
+  {s:'Mobiele voorzieningen', n:'Aggregaat', nr:'1'},
+  {s:'Mobiele voorzieningen', n:'Watervat 1-kubs', nr:'K1'},
+  // Lichtmasten
+  ...['1','2','5','6','7','8','9','10','11','12','13','14','15','16','17'].map(nr => ({s:'Lichtmasten', n:'Lichtmast 12M', nr})),
+  ...['3','4'].map(nr => ({s:'Lichtmasten', n:'Lichtmast 6M', nr})),
+  // Bouwhekken (bulk)
+  {s:'Bouwhekken', n:'Bouwhek 1200 hoog',        bulk:498},
+  {s:'Bouwhekken', n:'Bouwhek 2000 hoog',        bulk:20},
+  {s:'Bouwhekken', n:'Bouwhek bok',              bulk:574},
+  {s:'Bouwhekken', n:'Bouwhek voet',             bulk:17},
+  {s:'Bouwhekken', n:'Bouwhekvoet bok',          bulk:783},
+  {s:'Bouwhekken', n:'Hekklemmen',               bulk:12},
+  {s:'Bouwhekken', n:'Hekwielen',                bulk:93},
+  {s:'Bouwhekken', n:'Hek schoren',              bulk:1},
+  {s:'Bouwhekken', n:'Electr. schuifpoort 230V', nr:'1'},
+  {s:'Bouwhekken', n:'Materieelbak open',        nr:'1'},
+  {s:'Bouwhekken', n:'Materieelbak met klep',    nr:'1'},
+  {s:'Bouwhekken', n:'Kunststof rijplaten',      bulk:39},
+  // Bouwmaterieel (individueel genummerd)
+  ...['1','2','3','4','5'].map(nr => ({s:'Bouwmaterieel', n:'BouwDroger (Dantherm)', nr})),
+  ...['1','2','3','4','5','6','7'].map(nr => ({s:'Bouwmaterieel', n:'BouwVentilator (Dryfast)', nr})),
+  ...['1','2','3'].map(nr => ({s:'Bouwmaterieel', n:'Bouwzaag 220V', nr})),
+  ...['1','2','3','4','5','6'].map(nr => ({s:'Bouwmaterieel', n:'Bouwzaag 380V', nr})),
+  ...['1','2'].map(nr => ({s:'Bouwmaterieel', n:'Afzuigsysteem bouwzaag', nr})),
+  ...['1','2','3','4','5','6','7','8','9'].map(nr => ({s:'Bouwmaterieel', n:'Heater (Dryfast 400V)', nr})),
+  ...['1','2'].map(nr => ({s:'Bouwmaterieel', n:'Heater (Dryfast 230V)', nr})),
+  ...['1','2'].map(nr => ({s:'Bouwmaterieel', n:'Pompwagen', nr})),
+  ...['1','2'].map(nr => ({s:'Bouwmaterieel', n:'Platte kar', nr})),
+  ...['1','2'].map(nr => ({s:'Bouwmaterieel', n:'Platenkar', nr})),
+  ...['1','2','3'].map(nr => ({s:'Bouwmaterieel', n:'Betonmolen', nr})),
+  ...['1','2'].map(nr => ({s:'Bouwmaterieel', n:'Bouwstofzuiger', nr})),
+  ...['1','2','3','4','5','6','7','8','9','10','11','12','13'].map(nr => ({s:'Bouwmaterieel', n:'Bouwlamp op statief', nr})),
+  {s:'Bouwmaterieel', n:'Schroefstempel BM300',         bulk:48},
+  {s:'Bouwmaterieel', n:'Randbeveiligingsklemmen',      bulk:23},
+  {s:'Bouwmaterieel', n:'Pannenlift (Set)',              nr:'1'},
+  {s:'Bouwmaterieel', n:'Kanalenlift',                  nr:'1'},
+  {s:'Bouwmaterieel', n:'Metselprofielen (hout)',       bulk:317},
+  {s:'Bouwmaterieel', n:'Kim-profiel verstelbaar',      bulk:84},
+  {s:'Bouwmaterieel', n:'HMB Gevelklem',                bulk:12},
+  {s:'Bouwmaterieel', n:'StutAlone gevelstempel 315cm', bulk:12},
+  {s:'Bouwmaterieel', n:'StutAlone gevelstempel 350cm', bulk:10},
+  {s:'Bouwmaterieel', n:'Stapelrek 120x75cm',           nr:'1'},
+  // Aluminiumsteiger (bulk)
+  {s:'Aluminiumsteiger', n:'Steigerplatform (zonder luik)', bulk:12},
+  {s:'Aluminiumsteiger', n:'Steigerplatform (met luik)',    bulk:16},
+  {s:'Aluminiumsteiger', n:'Opbouwframe heel (juk)',        bulk:54},
+  {s:'Aluminiumsteiger', n:'Opbouwframe half (juk)',        bulk:17},
+  {s:'Aluminiumsteiger', n:'Doorloopframe',                 bulk:6},
+  {s:'Aluminiumsteiger', n:'Leuningframe 135cm',            bulk:14},
+  {s:'Aluminiumsteiger', n:'Diagonaalschoor',               bulk:67},
+  {s:'Aluminiumsteiger', n:'Horizontaalschoor',             bulk:45},
+  {s:'Aluminiumsteiger', n:'Steigerwielen',                 bulk:50},
+  {s:'Aluminiumsteiger', n:'Voorloopleuning',               bulk:34},
+  {s:'Aluminiumsteiger', n:'Driehoekstabilisator',          bulk:9},
+  {s:'Aluminiumsteiger', n:'Trappen tbv trappentoren',      bulk:3},
+  {s:'Aluminiumsteiger', n:'Kantplank (los)',               bulk:8},
+  {s:'Aluminiumsteiger', n:'Kantplank (set)',               bulk:8},
+  // Kamersteiger (bulk)
+  {s:'Kamersteiger', n:'Frame',                 bulk:5},
+  {s:'Kamersteiger', n:'Vloer',                 bulk:3},
+  {s:'Kamersteiger', n:'Wielen',                bulk:4},
+  {s:'Kamersteiger', n:'Leuningframe 75cm',     bulk:4},
+  {s:'Kamersteiger', n:'Kantplankset',           bulk:1},
+  {s:'Kamersteiger', n:'Driehoekstabilisator',  bulk:2},
+  // Ladders
+  ...Array.from({length:14}, (_,i) => ({s:'Ladders', n:'Houten ladder', nr:String(i+1)})),
+  ...['1','2'].map(nr => ({s:'Ladders', n:'Alu. Schuifladder', nr})),
+  ...['1','2','3','4','5','6'].map(nr => ({s:'Ladders', n:'Alu. Schaartrap hoog', nr})),
+  ...['1','2'].map(nr => ({s:'Ladders', n:'Aanlijnklemmen vloeren', nr})),
+  // Aanhangers
+  ...['1','2','3','4'].map(nr => ({s:'Aanhangers', n:'Aanhanger (klein)', nr})),
+  {s:'Aanhangers', n:'Aanhanger (groot)', nr:'1'},
+];
 
 function bouwLocatieMap(inzendingen) {
   const gesorteerd = [...inzendingen].sort((a, b) => {
@@ -1256,28 +1457,83 @@ const KLUSSEN_DEFAULT = [
 /* ── MATERIEEL BEHEER ─────────────────────────────── */
 let alleMaterieelBeheer = [];
 
-function vulTypeDropdown() {
-  const sel = document.getElementById('add-mat-type');
-  if (!sel) return;
-  sel.innerHTML = '<option value="">Type materieel...</option>';
-  for (const [sectie, items] of Object.entries(SECTIES)) {
-    const optg = document.createElement('optgroup');
-    optg.label = sectie;
-    for (const item of items) {
-      const opt = document.createElement('option');
-      opt.value       = item.id + '|' + item.naam + '|' + sectie;
-      opt.textContent = item.naam;
-      optg.appendChild(opt);
-    }
-    sel.appendChild(optg);
-  }
+function toggleBulkVeld() {
+  const bulk = document.getElementById('add-mat-bulk').checked;
+  document.getElementById('add-mat-nummer').style.display = bulk ? 'none' : '';
+  document.getElementById('add-mat-aantal').style.display = bulk ? '' : 'none';
 }
 
-function updateAddMatVeld() {
-  const val      = document.getElementById('add-mat-type').value;
-  const isHekken = val ? val.split('|')[2] === 'Bouwhekken' : false;
-  document.getElementById('add-mat-nummer').style.display = isHekken ? 'none' : '';
-  document.getElementById('add-mat-aantal').style.display = isHekken ? '' : 'none';
+function vulDatalijsten() {
+  const secties = [...new Set(alleMaterieelBeheer.map(m => m.sectie).filter(Boolean))].sort();
+  const namen   = [...new Set(alleMaterieelBeheer.map(m => m.naam).filter(Boolean))].sort();
+  document.getElementById('dl-secties').innerHTML = secties.map(s => `<option value="${s.replace(/"/g,'&quot;')}">`).join('');
+  document.getElementById('dl-namen').innerHTML   = namen.map(n => `<option value="${n.replace(/"/g,'&quot;')}">`).join('');
+}
+
+const expandedSectiesB = new Set();
+const expandedTypesB   = new Set();
+
+function toggleSectieB(sectie) {
+  if (expandedSectiesB.has(sectie)) expandedSectiesB.delete(sectie);
+  else expandedSectiesB.add(sectie);
+  renderMaterieelBeheer();
+}
+
+function toggleTypeB(key) {
+  if (expandedTypesB.has(key)) expandedTypesB.delete(key);
+  else expandedTypesB.add(key);
+  renderMaterieelBeheer();
+}
+
+async function hernoemType(oudNaam, sectie) {
+  const nieuweNaam = prompt(`Nieuwe naam voor "${oudNaam}":`, oudNaam);
+  if (!nieuweNaam || nieuweNaam.trim() === oudNaam) return;
+  const trim = nieuweNaam.trim();
+  alleMaterieelBeheer = alleMaterieelBeheer.map(m =>
+    m.naam === oudNaam && m.sectie === sectie
+      ? { ...m, naam: trim, type_id: trim.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'') }
+      : m
+  );
+  vulDatalijsten();
+  slaaMaterieelOp(true);
+  renderMaterieelBeheer();
+  showToast('Type hernoemd', 'ok');
+}
+
+async function hernoemSectie(oudeSectie) {
+  const nieuweSectie = prompt(`Nieuwe naam voor categorie "${oudeSectie}":`, oudeSectie);
+  if (!nieuweSectie || nieuweSectie.trim() === oudeSectie) return;
+  if (expandedSectiesB.has(oudeSectie)) { expandedSectiesB.delete(oudeSectie); expandedSectiesB.add(nieuweSectie.trim()); }
+  alleMaterieelBeheer = alleMaterieelBeheer.map(m =>
+    m.sectie === oudeSectie ? { ...m, sectie: nieuweSectie.trim() } : m
+  );
+  vulDatalijsten();
+  slaaMaterieelOp(true);
+  renderMaterieelBeheer();
+  showToast('Categorie hernoemd', 'ok');
+}
+
+async function verwijderSectie(sectie) {
+  const items = alleMaterieelBeheer.filter(m => m.sectie === sectie);
+  const ok = await bevestig('Categorie verwijderen?', `"${sectie}" en alle ${items.length} item(s) daarin worden verwijderd.`, 'trash-2', 'var(--rood)');
+  if (!ok) return;
+  expandedSectiesB.delete(sectie);
+  alleMaterieelBeheer = alleMaterieelBeheer.filter(m => m.sectie !== sectie);
+  vulDatalijsten();
+  slaaMaterieelOp(true);
+  renderMaterieelBeheer();
+  showToast('Categorie verwijderd', 'ok');
+}
+
+async function verwijderType(naam) {
+  const items = alleMaterieelBeheer.filter(m => m.naam === naam);
+  const ok = await bevestig('Type verwijderen?', `Alle ${items.length} item(s) van "${naam}" worden verwijderd.`, 'trash-2', 'var(--rood)');
+  if (!ok) return;
+  alleMaterieelBeheer = alleMaterieelBeheer.filter(m => m.naam !== naam);
+  vulDatalijsten();
+  slaaMaterieelOp(true);
+  renderMaterieelBeheer();
+  showToast('Type verwijderd', 'ok');
 }
 
 function vulLocatieDropdown() {
@@ -1301,9 +1557,16 @@ async function laadMaterieel() {
     if (!res) return;
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
-    alleMaterieelBeheer = data.materialen;
+    alleMaterieelBeheer = data.materialen.map(m => {
+      if (m.sectie) return m;
+      for (const [sectie, items] of Object.entries(SECTIES)) {
+        if (items.some(i => i.id === m.type_id)) return { ...m, sectie };
+      }
+      return { ...m, sectie: 'Overig' };
+    });
     document.getElementById('mat-init-wrap').style.display = alleMaterieelBeheer.length === 0 ? 'block' : 'none';
     vulLocatieDropdown();
+    vulDatalijsten();
     renderMaterieelBeheer();
   } catch (e) {
     el.innerHTML = `<div class="leeg">${e.message}</div>`;
@@ -1311,11 +1574,12 @@ async function laadMaterieel() {
 }
 
 function renderMaterieelBeheer(zoek) {
-  const term  = (zoek || document.getElementById('zoek-mat-beheer')?.value || '').toLowerCase();
+  const term = (zoek || document.getElementById('zoek-mat-beheer')?.value || '').toLowerCase();
   const lijst = alleMaterieelBeheer.filter(m => {
     if (!term) return true;
     return m.naam.toLowerCase().includes(term)
       || (m.nummer && String(m.nummer).includes(term))
+      || (m.sectie || '').toLowerCase().includes(term)
       || m.locatie.toLowerCase().includes(term);
   });
   const el = document.getElementById('materieel-content');
@@ -1328,64 +1592,104 @@ function renderMaterieelBeheer(zoek) {
     return;
   }
 
-  const perLocatie = {};
+  // Groepeer: sectie → naam → items
+  const perSectie = {};
   for (const m of lijst) {
-    const loc = m.locatie || 'zaak';
-    if (!perLocatie[loc]) perLocatie[loc] = [];
-    perLocatie[loc].push(m);
+    const s = m.sectie || 'Overig';
+    if (!perSectie[s]) perSectie[s] = {};
+    if (!perSectie[s][m.naam]) perSectie[s][m.naam] = [];
+    perSectie[s][m.naam].push(m);
   }
-  const locaties = Object.keys(perLocatie).sort((a, b) => a === 'zaak' ? -1 : b === 'zaak' ? 1 : a.localeCompare(b));
+  const secties = Object.keys(perSectie).sort((a, b) =>
+    a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b)
+  );
 
-  el.innerHTML = locaties.map(loc => {
-    const items   = perLocatie[loc];
-    const klusObj = alleKlussen.find(k => k.werknr === loc);
-    const locNaam = loc === 'zaak' ? ic('building-2',13) + ' De Zaak – Depot' : ic('hard-hat',13) + ' ' + (klusObj ? klusObj.naam + ' (' + loc + ')' : loc);
-    const totaalStuds = items.reduce((s, m) => s + (m.aantal || 1), 0);
-    return `<div class="card" style="margin-bottom:10px;">
-      <div class="card-header" style="padding-bottom:8px;">
-        <div class="card-title-row">
-          <div>
-            <div class="card-title">${locNaam}</div>
-            <div class="card-sub">${totaalStuds} stuk${totaalStuds !== 1 ? 's' : ''}</div>
-          </div>
+  const delen = secties.map((sectie, si) => {
+    const types     = perSectie[sectie];
+    const typeNames = Object.keys(types).sort((a, b) => a.localeCompare(b));
+    const sectieOpen = expandedSectiesB.has(sectie) || !!term;
+    const sectieEsc  = sectie.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+
+    const typesHtml = sectieOpen ? typeNames.map((naam, ti) => {
+      const items      = types[naam];
+      const typeKey    = si + '_' + ti;
+      const typeOpen   = expandedTypesB.has(typeKey) || !!term;
+      const typeEsc    = naam.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      const typeKeyEsc = typeKey;
+      const totaalStuks = items.reduce((s, m) => s + (m.aantal != null ? m.aantal : 1), 0);
+
+      const itemsHtml = typeOpen ? items
+        .sort((a, b) => (Number(a.nummer) || 0) - (Number(b.nummer) || 0))
+        .map(m => {
+          const klusObj  = alleKlussen.find(k => k.werknr === m.locatie);
+          const locLabel = m.locatie === 'zaak' ? 'De Zaak' : (klusObj ? klusObj.naam + ' (' + m.locatie + ')' : m.locatie);
+          const badge    = m.aantal != null ? `${m.aantal} stuks` : m.nummer ? `Nr. ${m.nummer}` : '—';
+          const labelEsc = (m.naam + (m.aantal != null ? ' (' + m.aantal + ' stuks)' : m.nummer ? ' nr. ' + m.nummer : '')).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+          return `<div class="klus-item" style="padding:8px 16px 8px 32px;background:var(--surface-2);">
+            <div style="flex:1;">
+              <div class="klus-naam" style="font-size:12px;">${badge}</div>
+              <div style="font-size:11px;color:var(--zacht);margin-top:1px;">${locLabel}</div>
+            </div>
+            <button class="klus-btn klus-btn-del" onclick="verwijderMaterieelItem('${m.id}','${labelEsc}')"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
+          </div>`;
+        }).join('') : '';
+
+      return `<div class="klus-item" style="cursor:pointer;padding:8px 12px;" onclick="toggleTypeB('${typeKeyEsc}')">
+        <div style="flex:1;min-width:0;">
+          <div class="klus-naam" style="font-size:13px;">${naam} <span style="font-size:11px;color:var(--zacht);font-weight:400;">(${totaalStuks} stuk${totaalStuks!==1?'s':''})</span></div>
+        </div>
+        <div class="klus-acties">
+          <button class="klus-btn" style="background:rgba(255,255,255,.06);color:var(--tekst);" onclick="event.stopPropagation();hernoemType('${typeEsc}','${sectieEsc}')"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>
+          <button class="klus-btn klus-btn-del" onclick="event.stopPropagation();verwijderType('${typeEsc}')"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
+          <span style="color:var(--dim);font-size:12px;width:14px;text-align:center;pointer-events:none;">${typeOpen ? '▲' : '▼'}</span>
         </div>
       </div>
-      ${items.map(m => {
-        const badge    = m.aantal != null ? ' <span class="klus-nr">' + m.aantal + ' stuks</span>' : m.nummer ? ' <span class="klus-nr">Nr. ' + m.nummer + '</span>' : '';
-        const labelEsc = (m.naam + (m.aantal != null ? ' (' + m.aantal + ' stuks)' : m.nummer ? ' nr. ' + m.nummer : '')).replace(/'/g,"\\'");
-        return `<div class="klus-item">
-        <div class="klus-naam">${m.naam}${badge}</div>
-        <div class="klus-acties">
-          <button class="klus-btn klus-btn-del" onclick="verwijderMaterieelItem('${m.id}','${labelEsc}')"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+      ${itemsHtml}`;
+    }).join('') : '';
+
+    return `<div style="margin-bottom:${si < secties.length-1 ? '14' : '4'}px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;cursor:pointer;" onclick="toggleSectieB('${sectieEsc}')">
+        <span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--zacht);">${sectie}</span>
+        <div style="display:flex;gap:6px;align-items:center;" onclick="event.stopPropagation()">
+          <button class="klus-btn" style="background:rgba(255,255,255,.06);color:var(--tekst);width:26px;height:26px;" onclick="hernoemSectie('${sectieEsc}')"><i data-lucide="pencil" style="width:12px;height:12px;"></i></button>
+          <button class="klus-btn klus-btn-del" onclick="verwijderSectie('${sectieEsc}')" style="width:26px;height:26px;"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button>
+          <span style="color:var(--dim);font-size:12px;cursor:pointer;" onclick="toggleSectieB('${sectieEsc}')">${sectieOpen ? '▲' : '▼'}</span>
         </div>
-      </div>`;
-      }).join('')}
-    </div>`;
-  }).join('');
+      </div>
+      ${typesHtml}
+    </div>
+    ${si < secties.length-1 ? '<div class="divider"></div>' : ''}`;
+  });
+
+  el.innerHTML = `<div class="card"><div style="padding:14px 16px;">${delen.join('')}</div></div>`;
   lucide.createIcons();
 }
 
 function filterMaterieelBeheer() { renderMaterieelBeheer(); }
 
 function voegMaterieelToe() {
-  const typeVal = document.getElementById('add-mat-type').value;
+  const sectie  = document.getElementById('add-mat-sectie').value.trim();
+  const naam    = document.getElementById('add-mat-naam').value.trim();
   const locatie = document.getElementById('add-mat-locatie').value || 'zaak';
-  if (!typeVal) { showToast('Selecteer een type', 'warn'); return; }
-  const [type_id, naam, sectie] = typeVal.split('|');
-  const isHekken = sectie === 'Bouwhekken';
+  const isBulk  = document.getElementById('add-mat-bulk').checked;
+  if (!naam) { showToast('Vul een naam in', 'warn'); return; }
+  const type_id = naam.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
   let item;
-  if (isHekken) {
+  if (isBulk) {
     const aantalVal = parseInt(document.getElementById('add-mat-aantal').value) || 1;
-    item = { id: crypto.randomUUID(), type_id, naam, aantal: aantalVal, nummer: null, locatie };
+    item = { id: crypto.randomUUID(), type_id, naam, sectie: sectie || 'Overig', aantal: aantalVal, nummer: null, locatie };
   } else {
     const nummer = document.getElementById('add-mat-nummer').value.trim();
-    item = { id: crypto.randomUUID(), type_id, naam, nummer: nummer || null, locatie };
+    item = { id: crypto.randomUUID(), type_id, naam, sectie: sectie || 'Overig', aantal: null, nummer: nummer || null, locatie };
   }
   alleMaterieelBeheer.push(item);
-  document.getElementById('add-mat-type').value   = '';
+  document.getElementById('add-mat-sectie').value = '';
+  document.getElementById('add-mat-naam').value   = '';
   document.getElementById('add-mat-nummer').value = '';
   document.getElementById('add-mat-aantal').value = '';
-  updateAddMatVeld();
+  document.getElementById('add-mat-bulk').checked = false;
+  toggleBulkVeld();
+  vulDatalijsten();
   slaaMaterieelOp(true);
   renderMaterieelBeheer();
   showToast('Item toegevoegd', 'ok');
@@ -1421,10 +1725,10 @@ async function initialiseerMaterieel() {
   for (const [sectie, items] of Object.entries(SECTIES)) {
     for (const item of items) {
       if (sectie === 'Bouwhekken') {
-        nieuw.push({ id: crypto.randomUUID(), type_id: item.id, naam: item.naam, aantal: 20, nummer: null, locatie: 'zaak' });
+        nieuw.push({ id: crypto.randomUUID(), type_id: item.id, naam: item.naam, sectie, aantal: 20, nummer: null, locatie: 'zaak' });
       } else {
         for (let nr = 1; nr <= 5; nr++) {
-          nieuw.push({ id: crypto.randomUUID(), type_id: item.id, naam: item.naam, nummer: String(nr), locatie: 'zaak' });
+          nieuw.push({ id: crypto.randomUUID(), type_id: item.id, naam: item.naam, sectie, aantal: null, nummer: String(nr), locatie: 'zaak' });
         }
       }
     }
@@ -1433,6 +1737,29 @@ async function initialiseerMaterieel() {
   document.getElementById('mat-init-wrap').style.display = 'none';
   renderMaterieelBeheer();
   slaaMaterieelOp();
+}
+
+async function syncMasterlijst() {
+  const nieuw = [];
+  for (const item of MASTERLIJST) {
+    const type_id = item.n.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+    if (item.bulk != null) {
+      const bestaatAl = alleMaterieelBeheer.some(m => m.naam === item.n && m.aantal != null);
+      if (!bestaatAl) nieuw.push({ id: crypto.randomUUID(), type_id, naam: item.n, sectie: item.s, aantal: item.bulk, nummer: null, locatie: 'zaak' });
+    } else {
+      const bestaatAl = alleMaterieelBeheer.some(m => m.naam === item.n && m.nummer === item.nr);
+      if (!bestaatAl) nieuw.push({ id: crypto.randomUUID(), type_id, naam: item.n, sectie: item.s, aantal: null, nummer: item.nr, locatie: 'zaak' });
+    }
+  }
+  if (!nieuw.length) { showToast('Alles al aanwezig', 'ok'); return; }
+  const ok = await bevestig(`${nieuw.length} items toevoegen?`, `Deze items staan in de masterlijst maar ontbreken nog. Ze worden op "De Zaak" gezet.`, 'package', 'var(--accent)');
+  if (!ok) return;
+  alleMaterieelBeheer.push(...nieuw);
+  vulDatalijsten();
+  slaaMaterieelOp(true);
+  renderMaterieelBeheer();
+  document.getElementById('mat-init-wrap').style.display = 'none';
+  showToast(`${nieuw.length} items toegevoegd`, 'ok');
 }
 
 /* ── GEBRUIKERS ───────────────────────────────────── */
@@ -1627,6 +1954,125 @@ function exporteerPDF() {
     hdr.remove();
     document.querySelectorAll('.inz-card.open').forEach(c => c.classList.remove('open'));
   }, 1000);
+}
+
+/* ── MATERIEEL MATRIX EXPORT ──────────────────────── */
+function _bouwMatriceData() {
+  const secties = {};
+  alleMaterieelBeheer.forEach(m => {
+    const s = m.sectie || 'Overig';
+    if (!secties[s]) secties[s] = new Set();
+    secties[s].add(m.naam);
+  });
+  const sectieVolgorde = Object.keys(secties).sort((a,b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b,'nl'));
+  const kolommen = [];
+  for (const s of sectieVolgorde) {
+    for (const n of [...secties[s]].sort((a,b) => a.localeCompare(b,'nl'))) {
+      kolommen.push({ sectie: s, naam: n });
+    }
+  }
+  const locaties = [...new Set(alleMaterieelBeheer.map(m => m.locatie || 'zaak'))].sort((a,b) => {
+    if (a === 'zaak') return -1;
+    if (b === 'zaak') return 1;
+    const ka = alleKlussen.find(k => k.werknr === a);
+    const kb = alleKlussen.find(k => k.werknr === b);
+    return (ka ? ka.naam : a).localeCompare(kb ? kb.naam : b, 'nl');
+  });
+  const locNaam = loc => {
+    if (loc === 'zaak') return 'De Zaak / Magazijn';
+    const k = alleKlussen.find(k => k.werknr === loc);
+    return k ? `${k.naam} (${loc})` : loc;
+  };
+  const celWaarde = (loc, naam) => {
+    const items = alleMaterieelBeheer.filter(m => (m.locatie || 'zaak') === loc && m.naam === naam);
+    if (!items.length) return '';
+    const bulk = items.filter(m => m.aantal != null);
+    const ind  = items.filter(m => m.nummer != null).sort((a,b) => (Number(a.nummer)||0) - (Number(b.nummer)||0));
+    const delen = [];
+    if (bulk.length) delen.push(bulk.reduce((s,m) => s + (m.aantal||0), 0) + ' st.');
+    if (ind.length)  delen.push(ind.map(m => m.nummer).join(', '));
+    return delen.join(' + ');
+  };
+  return { kolommen, locaties, locNaam, celWaarde };
+}
+
+function exporteerMatriceCSV() {
+  if (!alleMaterieelBeheer.length) { showToast('Geen materieel om te exporteren', 'warn'); return; }
+  const { kolommen, locaties, locNaam, celWaarde } = _bouwMatriceData();
+  const rij1 = ['', ...kolommen.map(k => csvEscaped(k.sectie))].join(',');
+  const rij2 = ['Klus / Locatie', ...kolommen.map(k => csvEscaped(k.naam))].join(',');
+  const rijen = locaties.map(loc =>
+    [csvEscaped(locNaam(loc)), ...kolommen.map(k => csvEscaped(celWaarde(loc, k.naam)))].join(',')
+  );
+  const inhoud = '﻿' + rij1 + '\r\n' + rij2 + '\r\n' + rijen.join('\r\n');
+  const blob   = new Blob([inhoud], { type: 'text/csv;charset=utf-8;' });
+  const url    = URL.createObjectURL(blob);
+  const a      = document.createElement('a');
+  a.href       = url;
+  a.download   = `mwb-materieel-overzicht-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Materieel overzicht geëxporteerd als CSV', 'ok');
+}
+
+function exporteerMatricePrint() {
+  if (!alleMaterieelBeheer.length) { showToast('Geen materieel om af te drukken', 'warn'); return; }
+  const { kolommen, locaties, locNaam, celWaarde } = _bouwMatriceData();
+
+  // Sectie-header rij (colspan per sectie)
+  const sectieBlokken = [];
+  let huidig = null;
+  for (const k of kolommen) {
+    if (k.sectie !== huidig) { sectieBlokken.push({ sectie: k.sectie, count: 1 }); huidig = k.sectie; }
+    else sectieBlokken[sectieBlokken.length - 1].count++;
+  }
+  const thSectie = '<th style="border:none;background:#fff;"></th>' +
+    sectieBlokken.map(b => `<th colspan="${b.count}" style="background:#ff6b00;color:#fff;font-size:7pt;font-weight:900;text-align:center;text-transform:uppercase;border:1px solid #ccc;padding:3px 2px;">${b.sectie}</th>`).join('');
+
+  const thItems = '<th style="min-width:130px;background:#222;color:#fff;font-size:8pt;font-weight:700;border:1px solid #ccc;padding:4px;">Klus / Locatie</th>' +
+    kolommen.map(k => `<th style="background:#333;color:#fff;min-width:26px;max-width:32px;height:90px;padding:3px;border:1px solid #ccc;vertical-align:bottom;"><div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:7pt;font-weight:600;white-space:nowrap;">${k.naam}</div></th>`).join('');
+
+  const dataRijen = locaties.map((loc, ri) => {
+    const bg = ri % 2 === 0 ? '#fff' : '#f5f5f5';
+    const cellen = kolommen.map(k => {
+      const val = celWaarde(loc, k.naam);
+      return `<td style="text-align:center;font-size:7.5pt;font-weight:700;border:1px solid #ddd;padding:2px;background:${val ? bg : bg};">${val}</td>`;
+    }).join('');
+    return `<tr><td style="font-size:7.5pt;font-weight:700;background:${ri % 2 === 0 ? '#f0f0f0' : '#e8e8e8'};border:1px solid #ccc;padding:3px 5px;white-space:nowrap;">${locNaam(loc)}</td>${cellen}</tr>`;
+  }).join('');
+
+  const datum = new Date().toLocaleDateString('nl-NL', { day:'numeric', month:'long', year:'numeric' });
+  const html = `<!DOCTYPE html><html><head>
+<meta charset="UTF-8">
+<title>D28 Materieel Overzicht – Middelwatering Bouw</title>
+<style>
+@page{size:A3 landscape;margin:8mm;}
+body{font-family:Arial,sans-serif;font-size:8pt;color:#000;margin:0;}
+h1{font-size:13pt;font-weight:900;margin:0 0 1mm;}
+.meta{font-size:7.5pt;color:#555;margin-bottom:5mm;}
+table{border-collapse:collapse;width:100%;}
+@media print{.no-print{display:none;}}
+</style>
+</head><body>
+<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4mm;">
+  <div>
+    <h1>D28 Overzicht Groot Materieel – Middelwatering Bouw</h1>
+    <div class="meta">Gegenereerd op ${datum} &nbsp;·&nbsp; ${alleMaterieelBeheer.length} items &nbsp;·&nbsp; ${locaties.length} locaties</div>
+  </div>
+  <button class="no-print" onclick="window.print()" style="padding:8px 18px;background:#ff6b00;color:#fff;border:none;border-radius:4px;font-size:10pt;font-weight:700;cursor:pointer;">Afdrukken / PDF opslaan</button>
+</div>
+<table>
+<thead>
+  <tr>${thSectie}</tr>
+  <tr>${thItems}</tr>
+</thead>
+<tbody>${dataRijen}</tbody>
+</table>
+</body></html>`;
+
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
 }
 
 /* ── START ────────────────────────────────────────── */

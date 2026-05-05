@@ -994,30 +994,112 @@ let KLUSSEN = [...KLUSSEN_DEFAULT];
 
 /* ── MATERIEEL ───────────────────────────────────── */
 const SECTIES = {
-  'Aansluitingen': [
-    { id:'bouwmeterkast', naam:'Bouwmeterkast', hasNr:true, hasTypes:true },
-    { id:'waterput',      naam:'Waterput',      hasNr:true },
-    { id:'waterkraan',    naam:'Waterkraan / standvink' },
+  'Containers': [
+    { id:'magazijncontainer',   naam:'Magazijncontainer' },
+    { id:'container',           naam:'Materiaalcontainer' },
   ],
   'Keten': [
-    { id:'schaftkeet',      naam:'Schaftkeet',      hasNr:true },
-    { id:'uitvoerderskeet', naam:'Uitvoerderskeet',  hasNr:true },
-    { id:'pipokeet',        naam:'Pipokeet',         hasNr:true },
-    { id:'keettrap',        naam:'Keettrap (set)',   hasNr:true },
+    { id:'schaftkeet_klein',    naam:'Schaftkeet klein' },
+    { id:'schaftkeet_groot',    naam:'Schaftkeet groot' },
+    { id:'schaftkeet',          naam:'Schaftkeet' },
+    { id:'uitvoerderskeet',     naam:'Uitvoerderskeet' },
+    { id:'pipokeet',            naam:'Pipokeet' },
+    { id:'keettrap',            naam:'Keettrap (set)' },
   ],
-  'Containers': [
-    { id:'container', naam:'Materiaalcontainer', hasNr:true },
+  'Aansluitingen': [
+    { id:'meterkast_35a',       naam:'Meterkast 35A' },
+    { id:'meterkast_63a',       naam:'Meterkast 63A' },
+    { id:'meterkast_80a',       naam:'Meterkast 80A' },
+    { id:'meterkast_125a',      naam:'Meterkast 125A' },
+    { id:'bouwpaddestoel_32a',  naam:'Bouwpaddestoel 32A' },
+    { id:'bouwpaddestoel_63a',  naam:'Bouwpaddestoel 63A' },
+    { id:'bouwmeterkast',       naam:'Bouwmeterkast' },
+    { id:'waterput',            naam:'Waterput' },
+    { id:'waterkraan',          naam:'Waterkraan / standvink' },
+  ],
+  'Mobiele voorzieningen': [
+    { id:'aggregaat',           naam:'Aggregaat' },
+    { id:'watervat',            naam:'Watervat 1-kubs' },
   ],
   'Lichtmasten': [
-    { id:'lichtmast', naam:'Lichtmast', hasNr:true },
+    { id:'lichtmast_12m',       naam:'Lichtmast 12M' },
+    { id:'lichtmast_6m',        naam:'Lichtmast 6M' },
+    { id:'lichtmast',           naam:'Lichtmast' },
   ],
   'Bouwhekken': [
-    { id:'bouwhekken',          naam:'Bouwhekken',          hasDefect:true },
-    { id:'bouwhek_voeten',      naam:'Bouwhek voeten',      hasDefect:true },
-    { id:'hekklemmen',          naam:'Hekklemmen',          hasDefect:true },
-    { id:'hekwielen',           naam:'Hekwielen',           hasDefect:true },
-    { id:'hek_schoren',         naam:'Hek schoren',         hasDefect:true },
-    { id:'kunststof_rijplaten', naam:'Kunststof rijplaten', hasDefect:true },
+    { id:'bouwhek_1200',        naam:'Bouwhek 1200 hoog' },
+    { id:'bouwhek_2000',        naam:'Bouwhek 2000 hoog' },
+    { id:'bouwhek_bok',         naam:'Bouwhek bok' },
+    { id:'bouwhek_voet',        naam:'Bouwhek voet' },
+    { id:'bouwhekvoet_bok',     naam:'Bouwhekvoet bok' },
+    { id:'hekklemmen',          naam:'Hekklemmen' },
+    { id:'hekwielen',           naam:'Hekwielen' },
+    { id:'hek_schoren',         naam:'Hek schoren' },
+    { id:'schuifpoort',         naam:'Electr. schuifpoort 230V' },
+    { id:'materieelbak_open',   naam:'Materieelbak open' },
+    { id:'materieelbak_klep',   naam:'Materieelbak met klep' },
+    { id:'kunststof_rijplaten', naam:'Kunststof rijplaten' },
+    { id:'bouwhekken',          naam:'Bouwhekken' },
+    { id:'bouwhek_voeten',      naam:'Bouwhek voeten' },
+  ],
+  'Bouwmaterieel': [
+    { id:'bouwdroger',          naam:'BouwDroger (Dantherm)' },
+    { id:'bouwventilator',      naam:'BouwVentilator (Dryfast)' },
+    { id:'bouwzaag_220v',       naam:'Bouwzaag 220V' },
+    { id:'bouwzaag_380v',       naam:'Bouwzaag 380V' },
+    { id:'afzuigsysteem',       naam:'Afzuigsysteem bouwzaag' },
+    { id:'heater_400v',         naam:'Heater (Dryfast 400V)' },
+    { id:'heater_230v',         naam:'Heater (Dryfast 230V)' },
+    { id:'pompwagen',           naam:'Pompwagen' },
+    { id:'platte_kar',          naam:'Platte kar' },
+    { id:'platenkar',           naam:'Platenkar' },
+    { id:'betonmolen',          naam:'Betonmolen' },
+    { id:'bouwstofzuiger',      naam:'Bouwstofzuiger' },
+    { id:'bouwlamp',            naam:'Bouwlamp op statief' },
+    { id:'schroefstempel',      naam:'Schroefstempel BM300' },
+    { id:'randbeveiligingsklemmen', naam:'Randbeveiligingsklemmen' },
+    { id:'pannenlift',          naam:'Pannenlift (Set)' },
+    { id:'kanalenlift',         naam:'Kanalenlift' },
+    { id:'metselprofielen',     naam:'Metselprofielen (hout)' },
+    { id:'kim_profiel',         naam:'Kim-profiel verstelbaar' },
+    { id:'hmb_gevelklem',       naam:'HMB Gevelklem' },
+    { id:'stualone_315',        naam:'StutAlone gevelstempel 315cm' },
+    { id:'stualone_350',        naam:'StutAlone gevelstempel 350cm' },
+    { id:'stapelrek',           naam:'Stapelrek 120x75cm' },
+  ],
+  'Aluminiumsteiger': [
+    { id:'steiger_platform_z',  naam:'Steigerplatform (zonder luik)' },
+    { id:'steiger_platform_m',  naam:'Steigerplatform (met luik)' },
+    { id:'opbouwframe_heel',    naam:'Opbouwframe heel (juk)' },
+    { id:'opbouwframe_half',    naam:'Opbouwframe half (juk)' },
+    { id:'doorloopframe',       naam:'Doorloopframe' },
+    { id:'leuningframe_135',    naam:'Leuningframe 135cm' },
+    { id:'diagonaalschoor',     naam:'Diagonaalschoor' },
+    { id:'horizontaalschoor',   naam:'Horizontaalschoor' },
+    { id:'steigerwielen',       naam:'Steigerwielen' },
+    { id:'voorloopleuning',     naam:'Voorloopleuning' },
+    { id:'driehoekstab_alu',    naam:'Driehoekstabilisator' },
+    { id:'trappentoren',        naam:'Trappen tbv trappentoren' },
+    { id:'kantplank_los',       naam:'Kantplank (los)' },
+    { id:'kantplank_set',       naam:'Kantplank (set)' },
+  ],
+  'Kamersteiger': [
+    { id:'kamer_frame',         naam:'Frame' },
+    { id:'kamer_vloer',         naam:'Vloer' },
+    { id:'kamer_wielen',        naam:'Wielen' },
+    { id:'kamer_leuning',       naam:'Leuningframe 75cm' },
+    { id:'kamer_kantplankset',  naam:'Kantplankset' },
+    { id:'kamer_driehoek',      naam:'Driehoekstabilisator' },
+  ],
+  'Ladders': [
+    { id:'ladder_hout',         naam:'Houten ladder' },
+    { id:'ladder_alu',          naam:'Alu. Schuifladder' },
+    { id:'schaartrap',          naam:'Alu. Schaartrap hoog' },
+    { id:'aanlijnklemmen',      naam:'Aanlijnklemmen vloeren' },
+  ],
+  'Aanhangers': [
+    { id:'aanhanger_klein',     naam:'Aanhanger (klein)' },
+    { id:'aanhanger_groot',     naam:'Aanhanger (groot)' },
   ],
 };
 
@@ -1230,12 +1312,8 @@ async function renderStap2() {
   }
 
   const perSectie = {};
-  const sectionOrder = Object.keys(SECTIES);
   for (const item of hierItems) {
-    let sectie = 'Overig';
-    for (const [s, sItems] of Object.entries(SECTIES)) {
-      if (sItems.some(si => si.id === item.type_id)) { sectie = s; break; }
-    }
+    const sectie = item.sectie || 'Overig';
     if (!perSectie[sectie]) perSectie[sectie] = [];
     perSectie[sectie].push(item);
   }
@@ -1243,7 +1321,7 @@ async function renderStap2() {
   const allGeselecteerd = hierItems.filter(m => geselecteerdeItems.has(m.id)).length + Object.keys(geselecteerdeAantallen).length;
   let html = `<div id="stap2-teller" style="font-size:12px;color:var(--zacht);font-weight:700;margin-bottom:10px;text-align:right;">${allGeselecteerd} geselecteerd</div>`;
 
-  const secties = sectionOrder.filter(s => perSectie[s]);
+  const secties = Object.keys(perSectie).sort((a, b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b));
   for (const sectie of secties) {
     const items = perSectie[sectie];
 
@@ -2025,9 +2103,9 @@ function openDetailInz(inz) {
     opm:     '',
   }));
   // Voeg opmerkingen per regel toe
-  const alle = Object.values(SECTIES).flat();
+  const alleOpm = [...Object.values(SECTIES).flat(), ...alleMaterialen.map(m => ({ id: m.type_id, naam: m.naam }))].filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i);
   details.split('\n').forEach(line => {
-    for (const item of alle) {
+    for (const item of alleOpm) {
       if (line.startsWith(item.naam + ':')) {
         const opmMatch = line.match(/–\s*(.+)$/);
         if (opmMatch) {
@@ -2184,7 +2262,9 @@ function prop(page, name) {
 function parseDetails(tekst) {
   if (!tekst) return [];
   const items = [];
-  const alle  = Object.values(SECTIES).flat();
+  const secties = Object.values(SECTIES).flat();
+  const custom  = alleMaterialen.map(m => ({ id: m.type_id, naam: m.naam }));
+  const alle    = [...secties, ...custom].filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i);
   for (const line of tekst.split('\n')) {
     for (const item of alle) {
       if (line.startsWith(item.naam + ':')) {
@@ -2388,12 +2468,8 @@ function naarOvzLocatie(locKey) {
 
   // Groepeer individuele items per sectie
   const perSectie = {};
-  const sectionOrder = Object.keys(SECTIES);
   for (const m of rauwe) {
-    let sectie = 'Overig';
-    for (const [s, sItems] of Object.entries(SECTIES)) {
-      if (sItems.some(si => si.id === m.type_id)) { sectie = s; break; }
-    }
+    const sectie = m.sectie || 'Overig';
     if (!perSectie[sectie]) perSectie[sectie] = [];
     perSectie[sectie].push(m);
   }
@@ -2410,7 +2486,7 @@ function naarOvzLocatie(locKey) {
   if (!rauwe.length) {
     itemsHtml = '<div class="ovz-leeg" style="padding:40px 0;"><div class="ovz-leeg-icon"><i data-lucide="package" style="width:40px;height:40px"></i></div><div class="ovz-leeg-titel">Niets hier</div><div class="ovz-leeg-sub">Geen geregistreerd materieel op deze locatie.</div></div>';
   } else {
-    const secties = sectionOrder.filter(s => perSectie[s]).concat(perSectie['Overig'] ? ['Overig'] : []);
+    const secties = Object.keys(perSectie).sort((a, b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b));
     for (const sectie of secties) {
       const sItems = perSectie[sectie];
       itemsHtml += `<div class="mat-kies-sectie-titel" style="margin:16px 16px 6px;">${sectie}</div>
