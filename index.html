@@ -1119,7 +1119,7 @@ let geselecteerdeItems     = new Set();
 let geselecteerdeAantallen = {};
 let expandedTypes          = new Set();
 let expandedOvzTypes       = new Set();
-let collapsedSecties       = new Set();
+let expandedSecties        = new Set();
 let algemeneFotos          = [];
 let alleMaterialen     = [];
 let materieelLaden     = false;
@@ -1337,7 +1337,7 @@ async function renderStap2() {
     }
 
     const secKey2 = sectie.toLowerCase().replace(/[^a-z0-9]/g,'_');
-    const secOpen2 = !collapsedSecties.has(secKey2);
+    const secOpen2 = expandedSecties.has(secKey2);
     html += `<div class="mat-kies-sectie-titel" onclick="toggleSectie('${secKey2}')">
       <span>${sectie}</span>
       <span class="sec-chev" id="sec-chev-${secKey2}" style="transform:${secOpen2 ? '' : 'rotate(-90deg)'}">▼</span>
@@ -1404,9 +1404,9 @@ function toggleTypeExpand(typeId) {
 }
 
 function toggleSectie(secKey) {
-  if (collapsedSecties.has(secKey)) collapsedSecties.delete(secKey);
-  else collapsedSecties.add(secKey);
-  const open  = !collapsedSecties.has(secKey);
+  if (expandedSecties.has(secKey)) expandedSecties.delete(secKey);
+  else expandedSecties.add(secKey);
+  const open  = expandedSecties.has(secKey);
   const panel = document.getElementById('sec-panel-' + secKey);
   const chev  = document.getElementById('sec-chev-' + secKey);
   if (panel) panel.style.display = open ? '' : 'none';
@@ -2565,7 +2565,7 @@ function naarOvzLocatie(locKey) {
       }
 
       const secKey = sectie.toLowerCase().replace(/[^a-z0-9]/g,'_');
-      const secOpen = !collapsedSecties.has(secKey);
+      const secOpen = expandedSecties.has(secKey);
       itemsHtml += `<div class="mat-kies-sectie-titel" style="margin:16px 16px 6px;" onclick="toggleSectie('${secKey}')">
         <span>${sectie}</span>
         <span class="sec-chev" id="sec-chev-${secKey}" style="transform:${secOpen ? '' : 'rotate(-90deg)'}">▼</span>
