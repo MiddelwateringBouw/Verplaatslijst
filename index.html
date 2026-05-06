@@ -1367,7 +1367,7 @@ async function renderStap2() {
           <div class="mat-kies-chevron" id="chev-${typeId}">${isOpen ? '▲' : '▼'}</div>
         </div>
         <div class="mat-kies-sub" id="expand-${typeId}" style="${isOpen ? '' : 'display:none'}">
-          ${groep.items.map(item => {
+          ${groep.items.slice().sort((a,b) => (Number(a.nummer)||0) - (Number(b.nummer)||0)).map(item => {
             const gesel = geselecteerdeItems.has(item.id);
             return `<div class="mat-kies-row ${gesel ? 'geselecteerd' : ''}" data-item-id="${item.id}" onclick="event.stopPropagation();toggleItem('${item.id}')">
               <div class="mat-kies-check ${gesel ? 'checked' : ''}"></div>
@@ -2319,7 +2319,7 @@ function parseDetails(tekst) {
         const nummerMatch = line.match(/nr\.\s*([^)]+)\)/);
         const typeMatch   = line.match(/\[([^\]]+)\]/);
         const aantal      = aantalMatch ? parseInt(aantalMatch[1]) : 0;
-        const nummers     = nummerMatch ? nummerMatch[1].split(',').map(n => n.trim()).filter(Boolean) : [];
+        const nummers     = nummerMatch ? nummerMatch[1].split(',').map(n => n.trim()).filter(Boolean).sort((a,b) => (Number(a)||0) - (Number(b)||0)) : [];
         const type        = typeMatch   ? typeMatch[1].trim() : '';
         if (aantal > 0) {
           const id   = type ? `${item.id}_${type.toLowerCase().replace(/[^a-z0-9]/g,'')}` : item.id;
