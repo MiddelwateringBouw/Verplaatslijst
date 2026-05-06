@@ -1557,8 +1557,11 @@ async function laadMaterieel() {
     if (!res) return;
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
+    const naarSectieB = {};
+    for (const [s, its] of Object.entries(SECTIES)) for (const it of its) naarSectieB[it.naam] = s;
     alleMaterieelBeheer = data.materialen.map(m => {
       if (m.sectie) return m;
+      if (naarSectieB[m.naam]) return { ...m, sectie: naarSectieB[m.naam] };
       for (const [sectie, items] of Object.entries(SECTIES)) {
         if (items.some(i => i.id === m.type_id)) return { ...m, sectie };
       }

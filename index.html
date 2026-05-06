@@ -845,7 +845,7 @@ function fmtDatum(d, lang = false) {
 }
 
 /* ── CACHE (localStorage) ────────────────────────── */
-const CACHE_KEY_MAT = 'mwb_mat_v1';
+const CACHE_KEY_MAT = 'mwb_mat_v2';
 const CACHE_TTL     = 15 * 60 * 1000;
 function cacheOpslaan(key, data) { try { localStorage.setItem(key, JSON.stringify({ d: data, t: Date.now() })); } catch(_) {} }
 function cacheLaden(key, ttl) {
@@ -1447,18 +1447,38 @@ function updateStap2Teller() {
   if (teller) teller.textContent = gesel + ' van ' + totaal + ' geselecteerd';
 }
 
+function migrateerSectie(materialen) {
+  // Bouw naam→sectie lookup (betrouwbaarder dan type_id want naam is altijd consistent)
+  const naarSectie = {};
+  for (const [sectie, items] of Object.entries(SECTIES)) {
+    for (const item of items) naarSectie[item.naam] = sectie;
+  }
+  return materialen.map(m => {
+    if (m.sectie) return m;
+    // Zoek op naam (primair), fallback op type_id
+    if (naarSectie[m.naam]) return { ...m, sectie: naarSectie[m.naam] };
+    for (const [sectie, items] of Object.entries(SECTIES)) {
+      if (items.some(i => i.id === m.type_id)) return { ...m, sectie };
+    }
+    return { ...m, sectie: 'Overig' };
+  });
+}
+
 async function laadMaterialenApp() {
   materieelLaden = true;
   const cached = cacheLaden(CACHE_KEY_MAT, CACHE_TTL);
-  if (cached) { alleMaterialen = cached; return; }
+  if (cached) { alleMaterialen = migrateerSectie(cached); return; }
   try {
     const res  = await apiFetch(WORKER + '?action=materieel', { headers: { 'Authorization': 'Bearer ' + getToken() } });
     if (!res) return;
     const data = await res.json();
-    if (data.ok) { alleMaterialen = data.materialen; cacheOpslaan(CACHE_KEY_MAT, data.materialen); }
+    if (data.ok) {
+      alleMaterialen = migrateerSectie(data.materialen);
+      cacheOpslaan(CACHE_KEY_MAT, data.materialen);
+    }
   } catch (_) {
     const fallback = cacheLaden(CACHE_KEY_MAT, Infinity);
-    if (fallback) alleMaterialen = fallback;
+    if (fallback) alleMaterialen = migrateerSectie(fallback);
   }
 }
 
@@ -2403,18 +2423,18 @@ async function ovzLaadData() {
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     cacheOpslaan(CACHE_KEY_MAT, data.materialen);
-    alleMaterialen  = data.materialen;
-    ovzRawMateriaal = data.materialen;
-    ovzLocatieMap   = bouwLocatieMapFromKV(data.materialen);
+    alleMaterialen  = migrateerSectie(data.materialen);
+    ovzRawMateriaal = alleMaterialen;
+    ovzLocatieMap   = bouwLocatieMapFromKV(alleMaterialen);
     ovzLaadMoment   = new Date();
     ovzGeladen      = true;
     ovzRender();
   } catch (e) {
     const cached = cacheLaden(CACHE_KEY_MAT, Infinity);
     if (cached) {
-      alleMaterialen  = cached;
-      ovzRawMateriaal = cached;
-      ovzLocatieMap   = bouwLocatieMapFromKV(cached);
+      alleMaterialen  = migrateerSectie(cached);
+      ovzRawMateriaal = alleMaterialen;
+      ovzLocatieMap   = bouwLocatieMapFromKV(alleMaterialen);
       ovzGeladen      = true;
       ovzRender();
       showToast('Offline – gecachede data', 'warn');
