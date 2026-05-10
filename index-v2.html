@@ -1,0 +1,3178 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Verplaatslijst – Middelwatering Bouw</title>
+<meta name="theme-color" content="#111111" id="theme-meta">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('mwb_theme')||'dark');</script>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+i[data-lucide]{display:inline-flex;align-items:center;justify-content:center;width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;}
+</style>
+<style>
+:root {
+  --accent:    #f47c1f;
+  --groen:     #22c55e;
+  --success:   #5dcaa5;
+  --rood:      #ef4444;
+  --tekst:     #f1efe8;
+  --zacht:     #8c8a82;
+  --dim:       #5f5e58;
+  --border:    #1a1a12;
+  --border-2:  #252420;
+  --surface:   #1a1a14;
+  --surface-2: #252419;
+  --radius-lg: 14px;
+  --radius:    10px;
+  --radius-sm: 7px;
+
+  /* depth tokens — warm dark palette */
+  --bg-page:   #0a0a08;
+  --bg-chrome: #141410;
+  --bg-inset:  #060504;
+  --bg-surface:#1a1a14;
+  --bg-raised: #252419;
+
+  /* shadows — low opacity, high blur */
+  --sh-glow:   inset 0 1px 0 rgba(255,255,255,.06);
+  --sh-touch:  0 1px 2px rgba(0,0,0,.35);
+  --sh-sm:     0 1px 2px rgba(0,0,0,.28), 0 4px 14px rgba(0,0,0,.14);
+  --sh-md:     0 2px 4px rgba(0,0,0,.32), 0 8px 28px rgba(0,0,0,.20);
+  --sh-lg:     0 4px 8px rgba(0,0,0,.36), 0 16px 44px rgba(0,0,0,.26);
+  --sh-in-sm:  inset 0 1px 2px rgba(0,0,0,.35);
+  --sh-in-md:  inset 0 2px 4px rgba(0,0,0,.50), inset 0 -1px 0 rgba(255,255,255,.03);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{overflow:hidden;height:100%;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg-page);color:var(--tekst);height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;position:fixed;width:100%;touch-action:pan-y;}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:60;background:var(--bg-chrome);border-bottom:none;padding:12px 18px 0;}
+.header-top{display:flex;align-items:center;gap:12px;padding-bottom:12px;}
+.header-logo{width:32px;height:32px;background:var(--accent);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.header-title{color:#fff;font-size:15px;font-weight:800;line-height:1.2;flex:1;}
+.header-title small{display:block;font-size:9px;font-weight:600;color:var(--zacht);text-transform:uppercase;letter-spacing:.5px;}
+.header-beheer{font-size:10px;font-weight:800;color:var(--zacht);text-decoration:none;padding:5px 11px;border:1.5px solid var(--border-2);border-radius:var(--radius-sm);text-transform:uppercase;letter-spacing:.5px;}
+
+/* PROGRESS */
+.progress{display:flex;align-items:center;gap:0;padding:0 4px 12px;}
+.progress-step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;cursor:pointer;}
+.progress-dot{width:32px;height:32px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--surface);border:2px solid var(--border-2);color:var(--zacht);transition:all .25s;}
+.progress-step.active .progress-dot{background:var(--accent);border-color:var(--accent);color:#fff;}
+.progress-step.done .progress-dot{background:rgba(34,197,94,.15);border-color:var(--groen);color:var(--groen);}
+.progress-label{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;transition:color .25s;}
+.progress-step.active .progress-label{color:var(--accent);}
+.progress-step.done .progress-label{color:var(--groen);}
+.progress-line{flex:1;height:2px;background:var(--border);margin-bottom:16px;transition:background .25s;}
+.progress-line.done{background:rgba(34,197,94,.40);}
+
+/* WIZARD */
+.wizard{position:relative;}
+.step{display:none;padding:20px 16px 160px;max-width:680px;margin:0 auto;animation:fadeIn .2s ease;}
+.step.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:12px;}
+.card-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--zacht);padding:14px 18px 0;margin-bottom:14px;border-left:3px solid var(--accent);padding-left:14px;}
+.card-body{padding:0 18px 18px;}
+
+/* FIELDS */
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:800;color:var(--zacht);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;}
+.field input,.field textarea{width:100%;padding:14px 14px;border:1.5px solid var(--border-2);border-radius:var(--radius);font-family:inherit;font-size:16px;font-weight:600;color:var(--tekst);background:var(--surface-2);transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;}
+.field input::placeholder,.field textarea::placeholder{color:var(--dim);}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,0,.15);}
+.field input[type="date"]{color-scheme:dark;}
+.field.error input{border-color:var(--rood);box-shadow:0 0 0 3px rgba(239,68,68,.15);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.step-title{font-size:26px;font-weight:900;margin-bottom:6px;letter-spacing:-.5px;}
+.step-sub{font-size:14px;color:var(--zacht);margin-bottom:20px;}
+
+/* BEWEGING KAARTEN */
+.beweging-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+.beweging-card{background:var(--surface-2);border:2px solid var(--border);border-radius:var(--radius);padding:16px 10px;cursor:pointer;text-align:center;transition:all .2s;position:relative;-webkit-appearance:none;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.beweging-card:active{transform:scale(.96);}
+.beweging-card.selected{background:rgba(255,107,0,.10);border-color:var(--accent);}
+.bc-icon{font-size:22px;line-height:1;}
+.bc-arrow{font-size:11px;color:var(--accent);font-weight:800;letter-spacing:1px;}
+.bc-title{font-size:11px;font-weight:800;color:var(--tekst);line-height:1.3;text-transform:uppercase;letter-spacing:.3px;}
+.bc-sub{font-size:10px;color:var(--zacht);font-weight:600;}
+.bc-check{position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:2px;background:var(--accent);color:#fff;font-size:9px;font-weight:800;display:none;align-items:center;justify-content:center;}
+.beweging-card.selected .bc-check{display:flex;}
+
+/* LOCATIE VELDEN */
+.locatie-velden{display:none;animation:fadeIn .3s ease;}
+.locatie-velden.show{display:block;}
+.locatie-label{font-size:11px;font-weight:800;color:var(--zacht);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.locatie-zaak{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(34,197,94,.06);border:1.5px solid rgba(34,197,94,.25);border-radius:var(--radius);margin-bottom:16px;}
+.lz-icon{font-size:20px;}
+.lz-title{font-size:14px;font-weight:700;color:var(--groen);}
+.lz-sub{font-size:11px;color:var(--zacht);}
+
+/* AUTOCOMPLETE */
+.ac-wrap{position:relative;margin-bottom:16px;}
+.ac-input-row{position:relative;display:flex;align-items:center;}
+.ac-search-icon{position:absolute;left:13px;font-size:14px;color:var(--zacht);pointer-events:none;z-index:1;}
+.ac-input{width:100%;padding:14px 14px 14px 44px;border:1.5px solid var(--border-2);border-radius:var(--radius);font-family:inherit;font-size:16px;font-weight:600;color:var(--tekst);background:var(--surface-2);transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;}
+.ac-input::placeholder{color:var(--dim);}
+.ac-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,0,.15);}
+.ac-input.selected{border-color:rgba(255,107,0,.50);background:rgba(255,107,0,.06);}
+.ac-clear{position:absolute;right:10px;width:34px;height:34px;border-radius:var(--radius-sm);background:var(--surface);border:1.5px solid var(--border-2);color:var(--zacht);font-size:14px;cursor:pointer;display:none;align-items:center;justify-content:center;-webkit-appearance:none;z-index:1;}
+.ac-input.selected ~ .ac-clear{display:flex;}
+.ac-badge{margin-top:5px;display:none;font-size:10px;font-weight:800;color:var(--accent);padding:3px 10px;background:rgba(255,107,0,.12);border-radius:4px;width:fit-content;text-transform:uppercase;letter-spacing:.4px;}
+.ac-badge.show{display:block;}
+.ac-dropdown{position:absolute;z-index:9999;background:#1e1e1e;border:1.5px solid var(--border-2);border-radius:var(--radius);max-height:260px;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.70);display:none;width:100%;}
+.ac-dropdown.open{display:block;}
+.ac-item{padding:16px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);transition:background .15s;}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover,.ac-item:active{background:rgba(255,107,0,.10);}
+.ac-item-naam{font-size:14px;font-weight:600;color:var(--tekst);flex:1;}
+.ac-item-nr{font-size:10px;font-weight:800;color:var(--accent);padding:3px 9px;background:rgba(255,107,0,.12);border-radius:4px;flex-shrink:0;letter-spacing:.4px;}
+.ac-empty{padding:16px;text-align:center;font-size:13px;color:var(--dim);}
+
+/* MATERIEEL TAB BAR */
+.tab-bar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px;margin-bottom:12px;}
+.tab-bar{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:11px 16px;background:transparent;border:1.5px solid var(--border-2);border-radius:var(--radius-sm);font-family:inherit;font-size:12px;font-weight:800;color:var(--zacht);cursor:pointer;transition:all .2s;white-space:nowrap;-webkit-appearance:none;text-transform:uppercase;letter-spacing:.5px;}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* ITEM ROW */
+.item-row{display:flex;align-items:center;gap:10px;padding:16px 16px;border-bottom:1.5px solid var(--border);}
+.item-row:last-child{border-bottom:none;}
+.item-name{flex:1;font-size:14px;font-weight:700;line-height:1.3;}
+.item-sub{font-size:11px;color:var(--zacht);margin-top:2px;}
+
+/* STEPPER */
+.stepper{display:flex;align-items:center;gap:0;background:var(--surface-2);border:1.5px solid var(--border-2);border-radius:var(--radius-sm);overflow:hidden;}
+.step-btn{width:44px;height:44px;border:none;background:transparent;color:var(--tekst);font-size:22px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-appearance:none;flex-shrink:0;}
+.step-btn:active{background:rgba(255,107,0,.25);}
+.step-count{min-width:32px;text-align:center;font-size:16px;font-weight:800;color:var(--tekst);}
+.stepper.active{border-color:var(--accent);}
+.stepper.active .step-count{color:var(--accent);}
+
+/* NUMMERS INPUT */
+.nummers-wrap{margin:10px 16px 0;display:none;animation:fadeIn .2s ease;}
+.nummers-wrap.show{display:block;}
+.nummers-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.nr-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,107,0,.12);border:1.5px solid rgba(255,107,0,.35);border-radius:var(--radius-sm);padding:5px 10px;font-size:12px;font-weight:800;color:var(--accent);}
+.nr-chip button{background:none;border:none;color:var(--accent);font-size:14px;cursor:pointer;padding:0;line-height:1;}
+.nr-add-row{display:flex;gap:8px;}
+.nr-input{flex:1;padding:12px 12px;border:1.5px solid var(--border-2);border-radius:var(--radius-sm);font-family:inherit;font-size:16px;font-weight:600;color:var(--tekst);background:var(--surface-2);-webkit-appearance:none;}
+.nr-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,107,0,.15);}
+.nr-add-btn{padding:10px 14px;background:rgba(255,107,0,.12);border:1.5px solid rgba(255,107,0,.30);border-radius:var(--radius-sm);font-family:inherit;font-size:11px;font-weight:800;color:var(--accent);cursor:pointer;white-space:nowrap;-webkit-appearance:none;text-transform:uppercase;letter-spacing:.4px;}
+
+/* TYPES (bouwmeterkast) */
+.types-wrap{margin:10px 16px 0;display:none;animation:fadeIn .2s ease;}
+.types-wrap.show{display:block;}
+.types-row{display:flex;gap:6px;flex-wrap:wrap;}
+.type-chip{padding:7px 14px;background:var(--surface-2);border:1.5px solid var(--border-2);border-radius:var(--radius-sm);font-size:12px;font-weight:800;color:var(--zacht);cursor:pointer;transition:all .2s;-webkit-appearance:none;}
+.type-chip.selected{background:rgba(255,107,0,.15);border-color:var(--accent);color:var(--accent);}
+
+/* DEFECT ROW */
+.defect-row{display:flex;align-items:center;gap:8px;margin:0 16px 12px;padding:10px 12px;background:rgba(239,68,68,.05);border:1.5px solid rgba(239,68,68,.20);border-radius:var(--radius-sm);}
+.defect-label{font-size:12px;font-weight:700;color:rgba(239,68,68,.85);flex:1;}
+.defect-stepper{display:flex;align-items:center;gap:0;background:rgba(239,68,68,.08);border:1.5px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);overflow:hidden;}
+.defect-stepper .step-btn{width:40px;height:40px;font-size:18px;}
+.defect-stepper .step-count{min-width:24px;font-size:13px;color:rgba(239,68,68,.90);}
+
+/* FOTO KNOP */
+.foto-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--surface-2);border:1.5px solid var(--border-2);border-radius:var(--radius-sm);font-family:inherit;font-size:11px;font-weight:800;color:var(--zacht);cursor:pointer;white-space:nowrap;transition:all .2s;-webkit-appearance:none;margin:16px 16px 12px;text-transform:uppercase;letter-spacing:.5px;}
+.foto-btn:active,.foto-btn.has-foto{background:rgba(255,107,0,.10);border-color:rgba(255,107,0,.40);color:var(--accent);}
+.foto-thumbs{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 12px;}
+.foto-thumb{position:relative;width:64px;height:64px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--border-2);}
+.foto-thumb img{width:100%;height:100%;object-fit:cover;}
+.foto-thumb-del{position:absolute;top:2px;right:2px;width:26px;height:26px;border-radius:4px;background:rgba(0,0,0,.85);border:none;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;}
+
+/* NAV BAR */
+.nav-bar{position:fixed;bottom:90px;left:16px;right:16px;z-index:50;display:flex;align-items:center;gap:10px;max-width:680px;margin:0 auto;padding:24px 0 12px;background:linear-gradient(to top,var(--bg-page) 65%,transparent);border:none;box-shadow:none;}
+.btn-nav{border:none;border-radius:14px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .2s;-webkit-appearance:none;display:flex;align-items:center;}
+/* Ghost back — lower visual hierarchy */
+.btn-back{flex-shrink:0;background:transparent;color:var(--zacht);box-shadow:none;padding:0 14px;height:52px;gap:6px;}
+.btn-back:active{background:rgba(255,255,255,.07);}
+/* Primary next — highest hierarchy */
+.btn-next{flex:1;background:var(--accent);color:#fff;padding:0 20px;height:56px;justify-content:space-between;box-shadow:var(--sh-glow),var(--sh-touch),0 10px 22px -4px rgba(244,124,31,.45);}
+.btn-next:active{transform:scale(.98);}
+/* Send — green variant */
+.btn-verstuur{flex:1;background:var(--groen);color:#fff;padding:0 20px;height:56px;justify-content:center;gap:10px;box-shadow:var(--sh-glow),var(--sh-touch),0 8px 20px -4px rgba(34,197,94,.35);}
+.btn-verstuur:active{transform:scale(.98);}
+/* Two-line content inside next button */
+.btn-next-meta{display:flex;flex-direction:column;align-items:flex-start;gap:1px;}
+.btn-next-lbl{font-size:10px;font-weight:600;opacity:.65;letter-spacing:.5px;text-transform:uppercase;}
+.btn-next-val{font-size:15px;font-weight:700;}
+
+/* BOTTOM NAVIGATION */
+.bottom-nav{position:fixed;bottom:16px;left:16px;right:16px;z-index:55;display:flex;background:#1a1a1a;border:1px solid var(--border-2);border-radius:16px;height:64px;box-shadow:0 8px 32px rgba(0,0,0,.50);overflow:hidden;}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:var(--dim);transition:color .2s;padding:8px 0;background:none;border:none;font-family:inherit;cursor:pointer;-webkit-appearance:none;position:relative;}
+.bn-item+.bn-item::before{content:'';position:absolute;left:0;top:16%;height:68%;width:1px;background:var(--border-2);}
+.bn-item.active{color:var(--accent);}
+.bn-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.bn-icon i[data-lucide]{width:22px;height:22px;stroke-width:2;}
+.bn-label{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;}
+
+/* SAMENVATTING */
+.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden;}
+.sum-header{padding:14px 16px;background:rgba(255,107,0,.07);border-bottom:1.5px solid var(--border);}
+.sum-header-title{font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.6px;}
+.sum-header-sub{font-size:11px;color:var(--zacht);margin-top:2px;}
+.sum-row{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);}
+.sum-row:last-child{border-bottom:none;}
+.sum-label{font-size:12px;color:var(--zacht);}
+.sum-value{font-size:13px;font-weight:700;text-align:right;flex-shrink:0;max-width:60%;}
+.sum-foto-row{padding:10px 16px;border-bottom:1px solid var(--border);}
+.sum-foto-label{font-size:12px;color:var(--zacht);margin-bottom:8px;}
+.sum-foto-thumbs{display:flex;gap:6px;flex-wrap:wrap;}
+.sum-foto-thumb{width:60px;height:60px;border-radius:var(--radius-sm);object-fit:cover;border:1.5px solid var(--border-2);}
+
+/* FOTO SHEET OVERLAY */
+.foto-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.90);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
+.foto-overlay.open{opacity:1;pointer-events:all;}
+.foto-sheet{width:100%;max-width:680px;background:#1a1a1a;border-radius:12px 12px 0 0;border:1.5px solid var(--border-2);border-bottom:none;padding:20px 20px 40px;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.32,1);}
+.foto-overlay.open .foto-sheet{transform:translateY(0);}
+.foto-handle{width:40px;height:3px;background:var(--border-2);border-radius:2px;margin:0 auto 16px;}
+.foto-sheet-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+.foto-sheet-sub{font-size:13px;color:var(--zacht);margin-bottom:20px;}
+.foto-preview-area{display:none;margin-bottom:16px;}
+.foto-preview-area.show{display:block;}
+.foto-preview-img{width:100%;max-height:280px;object-fit:contain;border-radius:var(--radius);border:1.5px solid var(--border-2);}
+.foto-opmerking{width:100%;padding:13px 14px;border:1.5px solid var(--border-2);border-radius:var(--radius);font-family:inherit;font-size:16px;color:var(--tekst);background:var(--surface-2);resize:none;margin-top:10px;-webkit-appearance:none;}
+.foto-opmerking:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,0,.15);}
+.foto-actions{display:flex;gap:10px;margin-top:16px;}
+.foto-btn-camera{flex:1;padding:14px;background:rgba(255,107,0,.10);border:1.5px solid rgba(255,107,0,.35);border-radius:var(--radius);font-family:inherit;font-size:13px;font-weight:800;color:var(--accent);cursor:pointer;-webkit-appearance:none;text-align:center;text-transform:uppercase;letter-spacing:.5px;}
+.foto-btn-save{flex:1;padding:14px;background:var(--accent);border:none;border-radius:var(--radius);font-family:inherit;font-size:13px;font-weight:800;color:#fff;cursor:pointer;-webkit-appearance:none;display:none;text-transform:uppercase;letter-spacing:.5px;}
+.foto-btn-save.show{display:block;}
+#foto-file-input{display:none;}
+
+/* BOTTOM SHEET (nummers / types) */
+.sheet-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.70);opacity:0;pointer-events:none;transition:opacity .25s;}
+.sheet-overlay.open{opacity:1;pointer-events:all;}
+.bottom-sheet{position:fixed;bottom:0;left:0;right:0;z-index:101;max-width:680px;margin:0 auto;background:#1a1a1a;border-radius:12px 12px 0 0;border:1.5px solid var(--border-2);border-bottom:none;padding:20px 20px 40px;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.32,1);}
+.bottom-sheet.open{transform:translateY(0);}
+.sheet-handle{width:40px;height:3px;background:var(--border-2);border-radius:2px;margin:0 auto 16px;}
+.sheet-title{font-size:17px;font-weight:800;margin-bottom:4px;}
+.sheet-sub{font-size:13px;color:var(--zacht);margin-bottom:20px;}
+.sheet-save{width:100%;padding:15px;margin-top:16px;background:var(--accent);border:none;border-radius:var(--radius);font-family:inherit;font-size:14px;font-weight:800;color:#fff;cursor:pointer;-webkit-appearance:none;text-transform:uppercase;letter-spacing:.6px;}
+
+/* LOADING OVERLAY */
+.loading-overlay{position:fixed;inset:0;z-index:300;background:rgba(17,17,17,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
+.loading-overlay.show{opacity:1;pointer-events:all;}
+.loading-spinner{width:48px;height:48px;border:3px solid rgba(255,107,0,.20);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;font-weight:700;color:var(--zacht);text-transform:uppercase;letter-spacing:.8px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:160px;left:50%;transform:translateX(-50%) translateY(20px);z-index:400;background:#222222;border:1.5px solid var(--border-2);border-radius:var(--radius-sm);padding:11px 20px;font-size:12px;font-weight:800;color:var(--tekst);box-shadow:0 8px 32px rgba(0,0,0,.60);opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;text-transform:uppercase;letter-spacing:.5px;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* INFO ROW */
+.info-row{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:rgba(255,107,0,.06);border:1.5px solid rgba(255,107,0,.20);border-radius:var(--radius);margin-top:16px;}
+.ir-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.info-row span:last-child{font-size:13px;color:rgba(255,255,255,.65);line-height:1.5;}
+
+/* HEADER MENU */
+.header-menu-wrap{position:relative;flex-shrink:0;}
+.header-menu-btn{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--surface);border:1.5px solid var(--border-2);color:var(--tekst);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;transition:border-color .2s;}
+.header-menu-btn.open,.header-menu-btn:active{border-color:var(--accent);color:var(--accent);}
+.header-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:200px;background:var(--surface);border:1.5px solid var(--border-2);border-radius:var(--radius-lg);box-shadow:0 8px 32px rgba(0,0,0,.40);overflow:hidden;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;z-index:200;}
+.header-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0);}
+.dropdown-item{display:flex;align-items:center;gap:12px;width:100%;padding:13px 16px;border:none;background:transparent;color:var(--tekst);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;text-align:left;-webkit-appearance:none;transition:background .12s;}
+.dropdown-item:hover{background:rgba(255,255,255,.05);}
+.dropdown-item:active{background:rgba(255,255,255,.09);}
+.dropdown-item-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.dropdown-divider{height:1px;background:var(--border);margin:4px 0;}
+.dropdown-item-rood{color:var(--rood);}
+.dropdown-item-rood:hover{background:rgba(239,68,68,.07);}
+
+/* WACHTWOORD MODAL */
+.ww-modal-overlay{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;padding:0;}
+.ww-modal-overlay.open{opacity:1;pointer-events:all;}
+.ww-modal-box{width:100%;max-width:480px;background:var(--surface);border-radius:16px 16px 0 0;border:1px solid var(--border-2);border-bottom:none;padding:20px 20px 40px;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.32,1);}
+.ww-modal-overlay.open .ww-modal-box{transform:translateY(0);}
+.ww-handle{width:40px;height:3px;background:var(--border-2);border-radius:2px;margin:0 auto 20px;}
+.ww-titel{font-size:17px;font-weight:800;margin-bottom:4px;}
+.ww-sub{font-size:13px;color:var(--zacht);margin-bottom:20px;}
+.ww-input{width:100%;padding:14px 16px;border:1.5px solid var(--border-2);border-radius:var(--radius);font-family:inherit;font-size:16px;font-weight:600;color:var(--tekst);background:var(--surface-2);margin-bottom:10px;-webkit-appearance:none;}
+.ww-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,0,.15);}
+.ww-btn{width:100%;padding:15px;background:var(--accent);border:none;border-radius:var(--radius);font-family:inherit;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#fff;cursor:pointer;margin-top:4px;-webkit-appearance:none;}
+.ww-fout{font-size:13px;color:var(--rood);min-height:18px;margin-top:6px;font-weight:600;}
+
+/* LIGHT THEME */
+[data-theme="light"]{--tekst:#111111;--zacht:#666666;--dim:#bbbbbb;--border:#e5e5e5;--border-2:#d0d0d0;--surface:#ffffff;--surface-2:#f5f5f5;}
+[data-theme="light"] body{background:#f0f0f0;}
+[data-theme="light"] header{background:#f0f0f0;}
+[data-theme="light"] .nav-bar{background:#f0f0f0;}
+[data-theme="light"] .bottom-nav{background:#ffffff;box-shadow:0 8px 32px rgba(0,0,0,.12);}
+[data-theme="light"] .header-title{color:#111111;}
+[data-theme="light"] .loading-overlay{background:rgba(240,240,240,.97);}
+[data-theme="light"] .toast{background:#ffffff;}
+[data-theme="light"] .foto-sheet,[data-theme="light"] .bottom-sheet{background:#ffffff;}
+[data-theme="light"] .ac-dropdown{background:#ffffff;box-shadow:0 8px 24px rgba(0,0,0,.10);}
+[data-theme="light"] .field input[type="date"]{color-scheme:light;}
+[data-theme="light"] .info-row span:last-child{color:#555555;}
+[data-theme="light"] .header-dropdown{box-shadow:0 8px 32px rgba(0,0,0,.12);}
+
+/* OVERZICHT VIEW */
+.ovz-wrap{padding:16px 16px 110px;max-width:720px;margin:0 auto;}
+.ovz-search-wrap{position:relative;margin-bottom:14px;}
+.ovz-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--zacht);pointer-events:none;}
+.ovz-search-input{width:100%;padding:14px 14px 14px 44px;border:1px solid var(--border-2);border-radius:var(--radius);font-family:inherit;font-size:16px;font-weight:500;color:var(--tekst);background:var(--surface);-webkit-appearance:none;transition:border-color .2s;}
+.ovz-search-input::placeholder{color:var(--dim);}
+.ovz-search-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,0,.13);}
+.ovz-filter-wrap{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.ovz-filter-wrap::-webkit-scrollbar{display:none;}
+.ovz-filter-btn{flex-shrink:0;padding:11px 16px;border-radius:var(--radius-sm);font-family:inherit;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:transparent;border:1px solid var(--border-2);color:var(--zacht);cursor:pointer;transition:all .2s;-webkit-appearance:none;}
+.ovz-filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.ovz-sectie-header{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--zacht);padding:6px 12px 10px;border-left:2px solid var(--accent);margin-bottom:10px;}
+.ovz-klus-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden;}
+.ovz-klus-header{display:flex;align-items:center;justify-content:space-between;padding:16px 16px;cursor:pointer;gap:12px;}
+.ovz-klus-header:active{background:rgba(255,255,255,.03);}
+.ovz-klus-info{flex:1;min-width:0;}
+.ovz-klus-naam{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ovz-klus-nr{font-size:11px;font-weight:800;color:var(--accent);padding:3px 9px;background:rgba(255,107,0,.12);border-radius:var(--radius-sm);flex-shrink:0;}
+.ovz-klus-teller{font-size:11px;color:var(--zacht);margin-top:2px;}
+.ovz-klus-chevron{color:var(--dim);font-size:14px;transition:transform .25s;flex-shrink:0;}
+.ovz-klus-card{cursor:pointer;}
+.ovz-klus-card:active{opacity:.85;}
+.ovz-item-regel{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);gap:12px;}
+.ovz-item-regel:last-child{border-bottom:none;}
+.ovz-item-klikbaar{cursor:pointer;}
+.ovz-item-klikbaar:active{background:rgba(255,255,255,.04);}
+.gesch-rij{padding:16px 16px;border-bottom:1px solid var(--border);}
+.gesch-rij:last-child{border-bottom:none;}
+.success-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:24px 24px 110px;text-align:center;}
+.success-icon{width:72px;height:72px;border-radius:50%;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;color:#22c55e;}
+.success-titel{font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.success-sub{font-size:14px;color:var(--zacht);margin-bottom:28px;line-height:1.5;}
+.success-card{width:100%;background:var(--surface);border:1px solid var(--border-2);border-radius:var(--radius);margin-bottom:24px;text-align:left;overflow:hidden;}
+.success-row{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);}
+.success-row:last-child{border-bottom:none;}
+.success-label{font-size:12px;color:var(--zacht);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.success-value{font-size:13px;font-weight:700;}
+.success-btns{display:flex;flex-direction:column;gap:10px;width:100%;}
+.success-btn-primary{padding:17px;background:var(--accent);border:none;border-radius:var(--radius);font-family:inherit;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#fff;cursor:pointer;-webkit-appearance:none;}
+.success-btn-secondary{padding:16px;background:transparent;border:1.5px solid var(--border-2);border-radius:var(--radius);font-family:inherit;font-size:14px;font-weight:700;color:var(--tekst);cursor:pointer;-webkit-appearance:none;}
+.gesch-datum{font-size:11px;color:var(--zacht);margin-bottom:4px;}
+.gesch-route{font-size:13px;font-weight:700;}
+.gesch-medewerker{font-size:11px;color:var(--zacht);margin-top:2px;}
+.ovz-item-naam{font-size:13px;font-weight:600;}
+.ovz-item-detail{font-size:11px;color:var(--zacht);margin-top:2px;line-height:1.4;}
+.ovz-item-badge{font-size:12px;font-weight:800;color:var(--accent);background:rgba(255,107,0,.12);padding:3px 10px;border-radius:var(--radius-sm);white-space:nowrap;flex-shrink:0;}
+.ovz-zaak-card{background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.18);}
+.ovz-zaak-card .ovz-klus-naam{color:var(--groen);}
+.ovz-zaak-card .ovz-klus-nr{background:rgba(34,197,94,.12);color:var(--groen);}
+.ovz-status-banner{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:16px;}
+.ovz-status-dot{width:8px;height:8px;border-radius:50%;background:var(--groen);flex-shrink:0;}
+.ovz-status-tekst{font-size:13px;color:var(--zacht);}
+.ovz-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:60px 20px;}
+.ovz-leeg{text-align:center;padding:48px 20px;}
+.ovz-leeg-icon{font-size:40px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:var(--zacht);}
+.ovz-leeg-titel{font-size:16px;font-weight:800;margin-bottom:4px;}
+.ovz-leeg-sub{font-size:13px;color:var(--zacht);}
+
+/* HOME VIEW */
+.view{display:none;}
+.view.active{display:block;}
+.home-wrap{padding:16px 16px 120px;max-width:680px;margin:0 auto;}
+.home-welkom-card{background:linear-gradient(135deg,rgba(255,107,0,.13) 0%,rgba(255,107,0,.04) 100%);border:1px solid rgba(255,107,0,.25);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;}
+.home-welkom-avatar{width:52px;height:52px;background:rgba(255,107,0,.18);border:2px solid rgba(255,107,0,.35);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.home-welkom-groet{font-size:10px;color:var(--zacht);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px;}
+.home-welkom-naam{font-size:20px;font-weight:900;line-height:1.2;}
+.home-welkom-datum{font-size:12px;color:var(--zacht);margin-top:4px;}
+.home-cta{width:100%;padding:18px 20px;background:var(--accent);border:none;border-radius:var(--radius-lg);font-family:inherit;font-size:15px;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:space-between;text-transform:uppercase;letter-spacing:.6px;margin-bottom:24px;-webkit-appearance:none;transition:opacity .15s;}
+.home-cta:active{opacity:.85;}
+.home-cta-arrow{font-size:22px;font-weight:400;}
+.home-sectie-titel{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--zacht);margin-bottom:12px;}
+.home-inz-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.home-inz-icon{font-size:22px;flex-shrink:0;}
+.home-inz-info{flex:1;min-width:0;}
+.home-inz-naam{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.home-inz-meta{font-size:11px;color:var(--zacht);margin-top:2px;}
+.home-inz-status{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:3px 9px;border-radius:var(--radius-sm);flex-shrink:0;}
+.home-inz-status-nieuw{background:rgba(255,107,0,.15);color:var(--accent);}
+.home-inz-status-verwerkt{background:rgba(34,197,94,.15);color:var(--groen);}
+.home-leeg{text-align:center;padding:30px 20px;color:var(--zacht);font-size:13px;}
+.home-spinner{width:20px;height:20px;border:2px solid var(--border-2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:30px auto;}
+.home-inz-card{cursor:pointer;}
+.home-inz-card:active{opacity:.7;}
+
+/* DETAIL VIEW */
+.detail-wrap{padding:20px 20px 100px;}
+.detail-back{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;cursor:pointer;margin-bottom:20px;background:none;border:none;font-family:inherit;padding:0;}
+.detail-header{background:var(--surface);border:1px solid var(--border-2);border-radius:var(--radius);padding:18px;margin-bottom:14px;}
+.detail-titel{font-size:18px;font-weight:900;margin-bottom:6px;}
+.detail-datum{font-size:13px;color:var(--zacht);margin-bottom:12px;}
+.detail-status{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;}
+.detail-status.nieuw{background:rgba(255,107,0,.15);color:var(--accent);}
+.detail-status.verwerkt{background:rgba(34,197,94,.15);color:var(--groen);}
+.detail-route{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-2);}
+.detail-locatie{flex:1;background:var(--bg);border-radius:10px;padding:10px 12px;}
+.detail-locatie-label{font-size:11px;color:var(--zacht);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.detail-locatie-naam{font-size:14px;font-weight:800;}
+.detail-locatie-nr{font-size:12px;color:var(--zacht);margin-top:2px;}
+.detail-pijl{font-size:20px;color:var(--accent);flex-shrink:0;}
+.detail-sectie{margin-bottom:14px;}
+.detail-sectie-titel{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--tekst);margin-bottom:8px;border-left:3px solid var(--accent);padding-left:10px;}
+.detail-item-rij{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border:1px solid var(--border-2);border-radius:10px;margin-bottom:6px;}
+.detail-item-naam{font-size:14px;font-weight:700;}
+.detail-item-nrs{font-size:12px;color:var(--zacht);margin-top:2px;}
+.detail-item-aantal{font-size:20px;font-weight:900;color:var(--accent);}
+.detail-opmerking{background:var(--surface);border:1px solid var(--border-2);border-radius:var(--radius);padding:14px;font-size:14px;line-height:1.6;color:var(--tekst);}
+.detail-fotos{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.detail-foto{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--border-2);}
+
+/* LOGIN OVERLAY */
+.login-overlay{position:fixed;inset:0;z-index:500;background:#111111;display:flex;align-items:center;justify-content:center;padding:24px;}
+.login-overlay.verborgen{display:none;}
+.login-box{width:100%;max-width:360px;text-align:center;}
+.login-logo{width:56px;height:56px;background:var(--accent);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;}
+.login-titel{font-size:22px;font-weight:900;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.login-sub{font-size:14px;color:var(--zacht);margin-bottom:28px;line-height:1.5;}
+.login-input{width:100%;padding:15px 18px;border:1.5px solid var(--border-2);border-radius:var(--radius);font-family:inherit;font-size:16px;font-weight:600;color:var(--tekst);background:var(--surface);margin-bottom:10px;-webkit-appearance:none;}
+.login-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,0,.18);}
+.login-input.fout{border-color:var(--rood);animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.login-btn{width:100%;padding:15px;background:var(--accent);border:none;border-radius:var(--radius);font-family:inherit;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#fff;cursor:pointer;-webkit-appearance:none;margin-top:4px;}
+.login-fout{color:var(--rood);font-size:13px;margin-top:10px;min-height:20px;font-weight:600;}
+[data-theme="light"] .login-overlay{background:#f0f0f0;}
+[data-theme="light"] .login-titel{color:#111111;}
+
+/* WELKOM ROW (stap 1) */
+.welkom-row{display:flex;align-items:center;gap:14px;padding:14px 18px;}
+.welkom-icon{width:40px;height:40px;background:rgba(255,107,0,.12);border:1.5px solid rgba(255,107,0,.30);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.welkom-naam{font-size:16px;font-weight:800;color:var(--tekst);}
+.welkom-rol{font-size:11px;color:var(--zacht);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+
+/* LOCATIE KEUZE (stap 1 + 3) */
+.loc-zaak-btn{width:100%;padding:16px 18px;background:rgba(34,197,94,.06);border:2px solid rgba(34,197,94,.20);border-radius:var(--radius);font-family:inherit;font-size:14px;font-weight:800;color:var(--groen);cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;margin-bottom:14px;-webkit-appearance:none;transition:all .2s;}
+.loc-zaak-btn:active{background:rgba(34,197,94,.12);}
+.loc-zaak-btn.selected{background:rgba(34,197,94,.14);border-color:var(--groen);box-shadow:0 0 0 3px rgba(34,197,94,.12);}
+.loc-zaak-tekst{font-size:11px;color:var(--zacht);font-weight:500;margin-top:2px;}
+
+/* MATERIEEL KEUZE (stap 2) */
+.mat-kies-sectie-titel{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--tekst);margin:14px 0 6px;border-left:3px solid var(--accent);padding-left:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+.mat-kies-sectie-titel:active{opacity:.7;}
+.sec-chev{font-size:9px;padding-right:4px;transition:transform .15s;}
+.mat-kies-row{display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent;}
+.mat-kies-row:last-child{border-bottom:none;}
+.mat-kies-row:active{background:rgba(255,255,255,.03);}
+.mat-kies-row.geselecteerd{background:rgba(255,107,0,.06);}
+.mat-kies-check{width:22px;height:22px;border-radius:5px;border:2px solid var(--border-2);background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.mat-kies-check.checked{background:var(--accent);border-color:var(--accent);}
+.mat-kies-check.checked::after{content:'✓';color:#fff;font-size:12px;font-weight:800;}
+.mat-kies-check.partial{background:rgba(255,107,0,.2);border-color:var(--accent);}
+.mat-kies-check.partial::after{content:'–';color:var(--accent);font-size:16px;font-weight:800;line-height:1;}
+.mat-kies-naam{font-size:14px;font-weight:700;}
+.mat-kies-nr{font-size:11px;color:var(--zacht);margin-top:2px;}
+.mat-kies-chevron{font-size:12px;color:var(--zacht);margin-left:auto;padding-left:8px;}
+.mat-kies-sub{background:rgba(0,0,0,.18);}
+.mat-kies-sub .mat-kies-row{padding-left:36px;}
+
+/* SKELETON LOADER */
+.skeleton{background:linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 50%,var(--surface) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;overflow:hidden;}
+.skel-icon{width:24px;height:24px;border-radius:4px;flex-shrink:0;}
+.skel-line{height:12px;border-radius:4px;margin-bottom:6px;}
+.skel-line-sm{height:10px;border-radius:4px;}
+
+/* FILTER BAR (geschiedenis) */
+.gesch-filter-wrap{display:flex;gap:8px;padding:0 0 14px;overflow-x:auto;scrollbar-width:none;}
+.gesch-filter-wrap::-webkit-scrollbar{display:none;}
+.gesch-filter-btn{flex-shrink:0;padding:11px 16px;border-radius:var(--radius-sm);font-family:inherit;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:transparent;border:1px solid var(--border-2);color:var(--zacht);cursor:pointer;transition:all .2s;-webkit-appearance:none;}
+.gesch-filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* RETRY KNOP */
+.retry-btn{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:10px 18px;background:transparent;border:1.5px solid var(--border-2);border-radius:var(--radius-sm);font-family:inherit;font-size:12px;font-weight:700;color:var(--tekst);cursor:pointer;-webkit-appearance:none;}
+.retry-btn:active{background:var(--surface-2);}
+
+/* ===== DEPTH-UI V2 — VOLLEDIGE TOEPASSING ===== */
+
+/* HEADER */
+header{border-bottom:none;box-shadow:0 2px 14px rgba(0,0,0,.5);}
+.header-logo{box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+
+/* PROGRESS */
+.progress-dot{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.progress-step.active .progress-dot{background:var(--accent);border:none;box-shadow:var(--sh-glow),var(--sh-touch),0 0 18px rgba(255,107,0,.45);}
+.progress-step.done .progress-dot{background:rgba(34,197,94,.15);border:none;box-shadow:var(--sh-in-sm);}
+.progress-line{background:rgba(255,255,255,.06);}
+.progress-line.done{background:rgba(34,197,94,.35);}
+
+/* CARDS */
+.card{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+
+/* INTERNE LIJSTSCHEIDINGEN — subtiel ipv harde borders */
+.item-row{border-bottom:1px solid rgba(255,255,255,.055);}
+.item-row:last-child{border-bottom:none;}
+.mat-kies-row{border-bottom:1px solid rgba(255,255,255,.05);}
+.mat-kies-row:last-child{border-bottom:none;}
+.ovz-item-regel{border-bottom:1px solid rgba(255,255,255,.05);}
+.ovz-item-regel:last-child{border-bottom:none;}
+.gesch-rij{border-bottom:1px solid rgba(255,255,255,.055);}
+.gesch-rij:last-child{border-bottom:none;}
+.sum-row{border-bottom:1px solid rgba(255,255,255,.055);}
+.sum-row:last-child{border-bottom:none;}
+.sum-foto-row{border-bottom:1px solid rgba(255,255,255,.055);}
+.success-row{border-bottom:1px solid rgba(255,255,255,.055);}
+.success-row:last-child{border-bottom:none;}
+.ac-item{border-bottom:1px solid rgba(255,255,255,.05);}
+.ac-item:last-child{border-bottom:none;}
+.dropdown-divider{background:rgba(255,255,255,.07);}
+.dropdown-item:hover{background:rgba(255,255,255,.06);}
+.detail-route{border-top:1px solid rgba(255,255,255,.07);}
+
+/* BEWEGING CARDS — raised, lift on hover */
+.beweging-card{background:var(--bg-raised);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);transition:box-shadow .25s,transform .25s;}
+.beweging-card:hover{box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-md);transform:translateY(-1px);}
+.beweging-card:active{transform:scale(.97);box-shadow:var(--sh-in-sm);}
+.beweging-card.selected{background:rgba(255,107,0,.12);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm),0 0 0 2px var(--accent);}
+
+/* INPUTS — recessed (verzonken in de pagina) */
+.field input,.field textarea{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.field input:focus,.field textarea:focus{box-shadow:var(--sh-in-sm),0 0 0 2px rgba(255,107,0,.4);}
+.field.error input{box-shadow:var(--sh-in-sm),0 0 0 2px rgba(239,68,68,.45);}
+.ac-input{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.ac-input:focus{box-shadow:var(--sh-in-sm),0 0 0 2px rgba(255,107,0,.4);}
+.ac-input.selected{background:rgba(255,107,0,.08);box-shadow:var(--sh-in-sm),0 0 0 2px rgba(255,107,0,.3);}
+.ovz-search-input{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.ovz-search-input:focus{box-shadow:var(--sh-in-sm),0 0 0 2px rgba(255,107,0,.35);}
+.nr-input{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.nr-input:focus{box-shadow:var(--sh-in-sm),0 0 0 2px rgba(255,107,0,.4);}
+.foto-opmerking{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.foto-opmerking:focus{box-shadow:var(--sh-in-sm),0 0 0 2px rgba(255,107,0,.35);}
+.ww-input{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.ww-input:focus{box-shadow:var(--sh-in-sm),0 0 0 2px rgba(255,107,0,.35);}
+.login-input{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.login-input:focus{box-shadow:var(--sh-in-sm),0 0 0 2px rgba(255,107,0,.4);}
+.login-input.fout{box-shadow:var(--sh-in-sm),0 0 0 2px rgba(239,68,68,.5);}
+
+/* STEPPER — raised */
+.stepper{background:var(--bg-raised);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.stepper.active{box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm),0 0 0 2px rgba(255,107,0,.35);}
+
+/* AC DROPDOWN */
+.ac-dropdown{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-lg);}
+.ac-clear{background:var(--bg-raised);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+
+/* TAB BAR — recessed container, raised actief */
+.tab-bar-wrap{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.tab-btn{border:none;background:transparent;box-shadow:none;}
+.tab-btn.active{background:var(--bg-raised);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);color:var(--accent);}
+
+/* HOME VIEW */
+.home-welkom-card{border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-md);}
+.home-welkom-avatar{box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.home-cta{box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-md),0 0 22px rgba(255,107,0,.25);transition:box-shadow .25s,transform .2s,opacity .15s;}
+.home-cta:hover{box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-lg),0 0 30px rgba(255,107,0,.35);transform:translateY(-1px);}
+.home-cta:active{opacity:1;transform:scale(.98);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.home-inz-card{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);transition:box-shadow .2s,transform .2s;}
+.home-inz-card:active{transform:scale(.98);opacity:1;}
+
+/* OVERZICHT */
+.ovz-klus-card{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.ovz-zaak-card{background:rgba(34,197,94,.06);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm),0 0 0 1px rgba(34,197,94,.2);}
+.ovz-status-banner{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.ovz-status-dot{box-shadow:0 0 8px rgba(34,197,94,.5);}
+
+/* LOCATIE BUTTONS */
+.loc-zaak-btn{border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.loc-zaak-btn.selected{box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm),0 0 0 2px var(--groen);}
+
+/* TYPE CHIPS */
+.type-chip{background:var(--bg-raised);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.type-chip.selected{background:rgba(255,107,0,.15);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm),0 0 0 2px rgba(255,107,0,.5);}
+
+/* NR CHIPS */
+.nr-chip{border:none;background:rgba(255,107,0,.15);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.nr-add-btn{border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+
+/* DEFECT ROW */
+.defect-row{border:none;background:rgba(239,68,68,.07);box-shadow:var(--sh-in-sm);}
+.defect-stepper{border:none;box-shadow:var(--sh-in-sm);}
+
+/* FOTO ELEMENTEN */
+.foto-thumb{border:none;box-shadow:var(--sh-touch),var(--sh-sm);}
+.foto-preview-img{border:none;box-shadow:var(--sh-touch),var(--sh-sm);}
+.foto-btn{border:none;background:var(--bg-raised);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.foto-btn.has-foto{background:rgba(255,107,0,.12);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm),0 0 0 2px rgba(255,107,0,.4);}
+.sum-foto-thumb{border:none;box-shadow:var(--sh-touch),var(--sh-sm);}
+
+/* SAMENVATTING */
+.sum-card{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.sum-header{background:rgba(255,107,0,.09);border-bottom:1px solid rgba(255,107,0,.12);}
+
+/* SUCCESS */
+.success-card{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.success-icon{background:rgba(34,197,94,.18);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-md);}
+.success-btn-secondary{border:none;background:var(--bg-raised);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+
+/* DETAIL VIEW */
+.detail-header{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.detail-item-rij{background:var(--bg-raised);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);margin-bottom:8px;}
+.detail-opmerking{background:var(--bg-inset);border:none;box-shadow:var(--sh-in-sm);}
+.detail-foto{border:none;box-shadow:var(--sh-touch),var(--sh-sm);}
+
+/* BOTTOM NAV */
+.bottom-nav{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-lg);border-radius:20px;}
+.bn-item+.bn-item::before{background:rgba(255,255,255,.07);}
+
+/* HEADER MENU */
+.header-menu-btn{background:var(--bg-raised);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.header-dropdown{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-lg);}
+
+/* BOTTOM SHEETS & MODAL */
+.foto-sheet,.bottom-sheet,.ww-modal-box{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-lg);border-radius:20px 20px 0 0;}
+.sheet-handle,.foto-handle,.ww-handle{background:rgba(255,255,255,.12);}
+
+/* TOAST */
+.toast{background:var(--bg-raised);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-lg);}
+
+/* LOGIN — kaart-behandeling */
+.login-box{background:var(--bg-surface);border-radius:20px;padding:32px 24px;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-lg);}
+.login-logo{box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-md),0 0 20px rgba(255,107,0,.3);border-radius:14px;}
+
+/* INFO ROW */
+.info-row{border:none;background:rgba(255,107,0,.08);box-shadow:var(--sh-in-sm);}
+
+/* MATERIEEL KEUZE SUB-RIJEN */
+.mat-kies-sub{background:var(--bg-inset);box-shadow:var(--sh-in-sm);}
+.mat-kies-sub .mat-kies-row{border-bottom:1px solid rgba(255,255,255,.04);}
+
+/* RETRY */
+.retry-btn{border:none;background:var(--bg-raised);box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.retry-btn:active{transform:scale(.97);}
+
+/* SKELETON */
+.skel-card{background:var(--bg-surface);border:none;box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);}
+.skeleton{background:linear-gradient(90deg,var(--bg-surface) 25%,var(--bg-raised) 50%,var(--bg-surface) 75%);background-size:200% 100%;}
+
+/* ── STEPPER — cirkels + checkmark bij done ────────────────────── */
+.progress-dot{width:26px;height:26px;border-radius:50%;font-size:11px;position:relative;}
+.progress-step.done .progress-dot{color:transparent;overflow:hidden;}
+.progress-step.done .progress-dot::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--success);font-size:13px;font-weight:800;color:transparent;}
+/* Use a Lucide checkmark via background trick */
+.progress-step.done .progress-dot{background:rgba(93,202,165,.15);box-shadow:none;}
+.progress-step.done .progress-dot::before{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--success);font-size:12px;font-weight:900;}
+.progress-step.active .progress-dot{box-shadow:var(--sh-glow),var(--sh-touch),0 4px 10px rgba(244,124,31,.4);}
+.progress-label{font-size:10px;letter-spacing:.04em;}
+
+/* ── CAT-CARDS (stap 2 categorie-kaarten) ──────────────────────── */
+.cat-card{
+  background:var(--bg-surface);
+  border-radius:var(--radius-lg);
+  padding:14px;
+  display:grid;
+  grid-template-columns:40px 1fr 20px;
+  gap:12px;
+  align-items:center;
+  cursor:pointer;
+  box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm);
+  transition:background .15s,transform .1s;
+  margin-bottom:8px;
+}
+.cat-card:active{background:var(--bg-raised);transform:scale(.99);}
+.cat-card.open{background:var(--bg-raised);}
+.cat-card.heeft-selectie{
+  background:rgba(244,124,31,.08);
+  box-shadow:var(--sh-glow),var(--sh-touch),var(--sh-sm),inset 0 0 0 1px rgba(244,124,31,.35);
+}
+.cat-icon{
+  width:40px;height:40px;
+  background:rgba(241,239,232,.05);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--zacht);
+  box-shadow:var(--sh-in-sm);
+}
+.cat-icon i[data-lucide]{width:20px;height:20px;stroke-width:1.75;}
+.cat-card.heeft-selectie .cat-icon{background:rgba(244,124,31,.14);color:var(--accent);}
+.cat-content{min-width:0;}
+.cat-name{font-size:15px;font-weight:600;color:var(--tekst);margin:0;line-height:1.2;}
+.cat-meta{font-size:12px;color:var(--zacht);margin:3px 0 0;}
+.cat-meta strong{color:var(--tekst);font-weight:500;}
+.cat-chev{color:var(--dim);transition:transform .2s;}
+.cat-chev i[data-lucide]{width:16px;height:16px;stroke-width:2;}
+.cat-card.open .cat-chev{transform:rotate(90deg);color:var(--accent);}
+.cat-badge{font-size:10px;color:var(--accent);background:rgba(244,124,31,.14);padding:2px 8px;border-radius:999px;margin-left:7px;font-weight:600;vertical-align:middle;display:inline-block;}
+.cat-panel{border-radius:0 0 var(--radius-lg) var(--radius-lg);overflow:hidden;margin-top:-6px;margin-bottom:8px;}
+
+/* ── NAV BAR spacing override ───────────────────────────────────── */
+
+/* Stap2 teller pill */
+.stap2-teller-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(244,124,31,.12);color:var(--accent);
+  padding:5px 12px;border-radius:999px;
+  font-size:12px;font-weight:600;margin-bottom:14px;
+}
+.stap2-teller-pill.leeg{background:rgba(241,239,232,.06);color:var(--zacht);}
+
+/* ── TYPOGRAFIE (mobiele schaal: titel 30px, body 16-17px) ──────── */
+.step-title{font-size:30px;letter-spacing:-.6px;line-height:1.15;}
+.step-sub{font-size:15px;line-height:1.55;color:var(--zacht);margin-bottom:24px;}
+.item-name{font-size:16px;font-weight:700;}
+.item-sub{font-size:12px;color:var(--zacht);}
+.mat-kies-naam{font-size:16px;font-weight:700;}
+.mat-kies-nr{font-size:12px;}
+.ovz-klus-naam{font-size:15px;font-weight:700;}
+.ovz-item-naam{font-size:14px;font-weight:600;}
+.home-welkom-naam{font-size:22px;font-weight:900;letter-spacing:-.3px;}
+.home-sectie-titel{font-size:11px;letter-spacing:.8px;margin-bottom:14px;}
+.home-inz-naam{font-size:15px;font-weight:700;}
+.home-inz-meta{font-size:12px;}
+.gesch-route{font-size:14px;font-weight:700;}
+.gesch-datum{font-size:12px;}
+.detail-titel{font-size:20px;font-weight:900;letter-spacing:-.3px;}
+.detail-item-naam{font-size:15px;font-weight:700;}
+.sum-header-title{font-size:12px;letter-spacing:.5px;}
+.bc-title{font-size:12px;letter-spacing:.2px;}
+.login-titel{font-size:24px;letter-spacing:-.2px;}
+
+/* ── SPACING (4-punt grid) ──────────────────────────────────────── */
+.card{margin-bottom:16px;}
+.card-title{padding:16px 20px 0;margin-bottom:16px;}
+.card-body{padding:0 20px 20px;}
+.step{padding:20px 16px 172px;}
+.home-wrap{padding:20px 16px 124px;}
+.home-inz-card{padding:16px 18px;gap:14px;}
+.home-welkom-card{padding:22px;margin-bottom:20px;gap:18px;}
+.home-cta{padding:20px 22px;margin-bottom:28px;border-radius:var(--radius-lg);}
+.detail-wrap{padding:20px 16px 108px;}
+.ovz-wrap{padding:20px 16px 112px;}
+.item-row{padding:16px 20px;}
+.mat-kies-row{padding:16px 18px;}
+.ovz-item-regel{padding:16px 18px;}
+.gesch-rij{padding:16px 18px;}
+.sum-row{padding:12px 18px;}
+.success-row{padding:12px 18px;}
+.sum-header{padding:16px 18px;}
+.bottom-nav{bottom:20px;left:20px;right:20px;}
+.nav-bar{bottom:100px;left:16px;right:16px;}
+
+/* ── BUTTON HIËRARCHIE ─────────────────────────────────────────── */
+/* Primary (accent): meest prominent, glow */
+.btn-next{box-shadow:var(--sh-glow),var(--sh-touch),0 0 18px rgba(255,107,0,.22);}
+.btn-verstuur{box-shadow:var(--sh-glow),var(--sh-touch),0 0 14px rgba(34,197,94,.22);}
+/* Back: ghost — duidelijk lager in hiërarchie */
+.btn-back{background:transparent;border:none;color:var(--zacht);box-shadow:none;}
+.btn-back:active{background:rgba(255,255,255,.06);}
+/* Nav buttons algemeen */
+.btn-nav{border-radius:var(--radius-lg);font-size:14px;padding:16px 18px;}
+/* Login knop */
+.login-btn{box-shadow:var(--sh-glow),var(--sh-touch),0 0 18px rgba(255,107,0,.22);border-radius:var(--radius-lg);}
+/* Sheet save */
+.sheet-save{box-shadow:var(--sh-glow),var(--sh-touch),0 0 14px rgba(255,107,0,.18);}
+
+/* ── VISUELE HIËRARCHIE HOME (deemphasis) ──────────────────────── */
+/* CTA = hoogste prioriteit: meest elevated + glow */
+/* Welcome card = tweede prioriteit: medium shadow */
+/* Inzendingen = derde prioriteit: laagste shadow, recede naar achter */
+.home-inz-card{box-shadow:var(--sh-touch),var(--sh-sm);}
+
+/* ── CARD DETAILS VERFIJNING ───────────────────────────────────── */
+.progress-dot{width:34px;height:34px;font-size:13px;border-radius:6px;}
+.progress-label{font-size:11px;letter-spacing:.5px;}
+.bn-label{font-size:11px;letter-spacing:.4px;}
+.bn-icon i[data-lucide]{width:24px;height:24px;}
+.header-title{font-size:16px;}
+.header-title small{font-size:10px;letter-spacing:.4px;}
+
+/* ── LEGE STATEN (empty states) ────────────────────────────────── */
+.ovz-leeg-icon{color:var(--zacht);opacity:.6;}
+.ovz-leeg-titel{font-size:17px;font-weight:800;}
+.ovz-leeg-sub{font-size:14px;line-height:1.5;}
+.home-leeg{font-size:14px;line-height:1.5;padding:40px 20px;}
+
+/* LIGHT MODE */
+[data-theme="light"]{
+  --bg-page:   #d4d3cc;
+  --bg-inset:  #c2c1ba;
+  --bg-surface:#eeecea;
+  --bg-raised: #ffffff;
+  --sh-glow:   inset 0 1px 0 rgba(255,255,255,.9);
+  --sh-touch:  0 1px 2px rgba(60,55,40,.06);
+  --sh-sm:     0 4px 10px -3px rgba(60,55,40,.12);
+  --sh-md:     0 8px 18px -6px rgba(60,55,40,.18);
+  --sh-lg:     0 18px 32px -8px rgba(60,55,40,.22);
+  --sh-in-sm:  inset 0 1px 1px rgba(60,55,40,.09);
+  --sh-in-md:  inset 0 2px 4px rgba(60,55,40,.18),inset 0 -1px 0 rgba(255,255,255,.6);
+}
+[data-theme="light"] body{background:var(--bg-page);}
+[data-theme="light"] header{background:var(--bg-page);box-shadow:0 2px 10px rgba(60,55,40,.14);}
+[data-theme="light"] .nav-bar{background:linear-gradient(to top,var(--bg-page) 60%,transparent);}
+[data-theme="light"] .bottom-nav{background:var(--bg-raised);}
+[data-theme="light"] .login-box{background:var(--bg-raised);}
+[data-theme="light"] .foto-sheet,[data-theme="light"] .bottom-sheet,[data-theme="light"] .ww-modal-box{background:var(--bg-raised);}
+[data-theme="light"] .ac-dropdown{background:var(--bg-raised);}
+[data-theme="light"] .header-dropdown{background:var(--bg-raised);}
+[data-theme="light"] .cat-card{background:var(--bg-raised);}
+[data-theme="light"] .cat-card.open,[data-theme="light"] .cat-card:active{background:var(--bg-surface);}
+[data-theme="light"] .cat-icon{background:rgba(0,0,0,.05);}
+[data-theme="light"] .mat-kies-sub{background:rgba(0,0,0,.04);}
+[data-theme="light"] .item-row{border-bottom-color:rgba(0,0,0,.07);}
+[data-theme="light"] .mat-kies-row{border-bottom-color:rgba(0,0,0,.06);}
+[data-theme="light"] .ovz-item-regel{border-bottom-color:rgba(0,0,0,.06);}
+[data-theme="light"] .gesch-rij{border-bottom-color:rgba(0,0,0,.07);}
+[data-theme="light"] .sum-row{border-bottom-color:rgba(0,0,0,.07);}
+[data-theme="light"] .success-row{border-bottom-color:rgba(0,0,0,.07);}
+[data-theme="light"] .ac-item{border-bottom-color:rgba(0,0,0,.06);}
+[data-theme="light"] .dropdown-divider{background:rgba(0,0,0,.08);}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo"><i data-lucide="hard-hat" style="width:28px;height:28px;color:#fff;"></i></div>
+    <div class="login-titel">Middelwatering Bouw</div>
+    <div class="login-sub">Log in om verplaatsingen te registreren.</div>
+    <input class="login-input" type="text" id="login-gebruiker" placeholder="Gebruikersnaam"
+      autocomplete="username" autocapitalize="none" spellcheck="false"
+      onkeydown="if(event.key==='Enter')document.getElementById('login-ww').focus()">
+    <input class="login-input" type="password" id="login-ww" placeholder="Wachtwoord"
+      autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')loginUser()">
+    <button class="login-btn" onclick="loginUser()">Inloggen →</button>
+    <div class="login-fout" id="login-fout"></div>
+    <div style="margin-top:16px;font-size:13px;color:var(--zacht);">Nog geen account? <a href="#" onclick="toonRegistreren(event)" style="color:var(--accent);text-decoration:none;font-weight:600;">Aanmelden</a></div>
+  </div>
+</div>
+
+<!-- REGISTREREN OVERLAY -->
+<div class="login-overlay verborgen" id="registreer-overlay">
+  <div class="login-box">
+    <div class="login-logo"><i data-lucide="pen-line" style="width:28px;height:28px;color:#fff;"></i></div>
+    <div class="login-titel">Account aanmaken</div>
+    <div class="login-sub">Vul je gegevens in om je aan te melden.</div>
+    <input class="login-input" type="text" id="reg-naam" placeholder="Volledige naam"
+      autocomplete="name" spellcheck="false"
+      onkeydown="if(event.key==='Enter')document.getElementById('reg-gebruiker').focus()">
+    <input class="login-input" type="text" id="reg-gebruiker" placeholder="Gebruikersnaam"
+      autocomplete="username" autocapitalize="none" spellcheck="false"
+      onkeydown="if(event.key==='Enter')document.getElementById('reg-ww').focus()">
+    <input class="login-input" type="password" id="reg-ww" placeholder="Wachtwoord (min. 6 tekens)"
+      autocomplete="new-password"
+      onkeydown="if(event.key==='Enter')registreerUser()">
+    <button class="login-btn" onclick="registreerUser()">Account aanmaken →</button>
+    <div class="login-fout" id="reg-fout"></div>
+    <div style="margin-top:16px;font-size:13px;color:var(--zacht);">Al een account? <a href="#" onclick="toonInloggen(event)" style="color:var(--accent);text-decoration:none;font-weight:600;">Inloggen</a></div>
+  </div>
+</div>
+
+<header>
+  <div class="header-top">
+    <div class="header-logo"><i data-lucide="hard-hat" style="width:18px;height:18px;color:#fff;"></i></div>
+    <div class="header-title">
+      Middelwatering Bouw
+      <small>Verplaatslijst</small>
+    </div>
+    <div class="header-menu-wrap">
+      <button class="header-menu-btn" id="menu-btn" onclick="toggleMenu()"><i data-lucide="more-vertical"></i></button>
+      <div class="header-dropdown" id="header-dropdown">
+        <button class="dropdown-item" onclick="toggleTheme()">
+          <span class="dropdown-item-icon" id="theme-icon"><i data-lucide="sun"></i></span>
+          <span id="theme-label">Licht thema</span>
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item" onclick="openWachtwoord()">
+          <span class="dropdown-item-icon"><i data-lucide="key"></i></span>
+          Wachtwoord wijzigen
+        </button>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="beheer.html" id="header-beheer-link" style="display:none">
+          <span class="dropdown-item-icon"><i data-lucide="settings"></i></span>
+          Beheer
+        </a>
+        <div class="dropdown-divider" id="beheer-divider" style="display:none"></div>
+        <button class="dropdown-item dropdown-item-rood" onclick="uitloggen()">
+          <span class="dropdown-item-icon"><i data-lucide="log-out"></i></span>
+          Uitloggen
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="progress" id="progress-bar">
+    <div class="progress-step" id="ps-1" onclick="goToStep(1)">
+      <div class="progress-dot">1</div>
+      <div class="progress-label">Locatie</div>
+    </div>
+    <div class="progress-line" id="pl-1"></div>
+    <div class="progress-step" id="ps-2" onclick="goToStep(2)">
+      <div class="progress-dot">2</div>
+      <div class="progress-label">Materieel</div>
+    </div>
+    <div class="progress-line" id="pl-2"></div>
+    <div class="progress-step" id="ps-3" onclick="goToStep(3)">
+      <div class="progress-dot">3</div>
+      <div class="progress-label">Bestemming</div>
+    </div>
+    <div class="progress-line" id="pl-3"></div>
+    <div class="progress-step" id="ps-4" onclick="goToStep(4)">
+      <div class="progress-dot">4</div>
+      <div class="progress-label">Verstuur</div>
+    </div>
+  </div>
+</header>
+
+<!-- HOME VIEW -->
+<div class="view active" id="view-home">
+  <div class="home-wrap">
+    <div class="home-welkom-card">
+      <div class="home-welkom-avatar"><i data-lucide="hard-hat" style="width:28px;height:28px;color:var(--accent);"></i></div>
+      <div>
+        <div class="home-welkom-groet" id="home-groet">Welkom</div>
+        <div class="home-welkom-naam" id="home-naam">—</div>
+        <div class="home-welkom-datum" id="home-datum-str"></div>
+      </div>
+    </div>
+    <button class="home-cta" onclick="naarWizard()">
+      <span>Nieuwe verplaatsing</span>
+      <span class="home-cta-arrow">→</span>
+    </button>
+    <div class="home-sectie-titel">Mijn recente inzendingen</div>
+    <div id="home-inzendingen"><div class="home-spinner"></div></div>
+  </div>
+</div>
+
+<!-- WIZARD VIEW -->
+<div class="view" id="view-wizard">
+<div class="wizard">
+
+<!-- STAP 1 -->
+<div class="step active" id="step-1">
+  <p class="step-title">Locatie</p>
+  <p class="step-sub">Vul de datum in en geef aan waar je nu staat.</p>
+  <div class="card">
+    <div class="card-title">Datum</div>
+    <div class="card-body">
+      <div class="field" id="f-datum">
+        <label>Datum verplaatsing</label>
+        <input type="date" id="datum">
+      </div>
+    </div>
+  </div>
+  <div class="card" style="overflow:visible;">
+    <div class="card-title">Waar sta jij nu?</div>
+    <div class="card-body" style="padding-top:12px;">
+      <button class="loc-zaak-btn" id="van-zaak-btn" onclick="selectLocatieVan('zaak')">
+        <span style="font-size:0;"><i data-lucide="building-2" style="width:22px;height:22px;color:currentColor;"></i></span>
+        <div><div>De Zaak – Depot</div><div class="loc-zaak-tekst">Magazijn / depot</div></div>
+      </button>
+      <div class="locatie-label" style="margin-bottom:8px;">Of zoek een klus:</div>
+      <div class="ac-wrap">
+        <div class="ac-input-row">
+          <span class="ac-search-icon"><i data-lucide="search"></i></span>
+          <input class="ac-input" id="ac-input-van" type="text" placeholder="Typ naam of werknummer..." oninput="acFilter('van',this.value)" onfocus="acOpen('van')" autocomplete="off">
+          <button class="ac-clear" onclick="acClear('van')"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+        </div>
+        <div class="ac-badge" id="ac-badge-van"></div>
+        <div class="ac-dropdown" id="ac-dropdown-van"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STAP 2 -->
+<div class="step" id="step-2">
+  <p class="step-title">Materieel</p>
+  <p class="step-sub" id="stap2-sub">Selecteer wat je wilt verplaatsen</p>
+  <div id="stap2-inhoud"><div class="home-spinner" style="margin:40px auto;"></div></div>
+</div>
+
+<!-- STAP 3 -->
+<div class="step" id="step-3">
+  <p class="step-title">Bestemming</p>
+  <p class="step-sub">Waar naartoe?</p>
+  <div class="card" style="overflow:visible;">
+    <div class="card-body" style="padding-top:12px;">
+      <button class="loc-zaak-btn" id="naar-zaak-btn" onclick="selectLocatieNaar('zaak')">
+        <span style="font-size:0;"><i data-lucide="building-2" style="width:22px;height:22px;color:currentColor;"></i></span>
+        <div><div>De Zaak – Depot</div><div class="loc-zaak-tekst">Magazijn / depot</div></div>
+      </button>
+      <div class="locatie-label" style="margin-bottom:8px;">Of zoek een klus:</div>
+      <div class="ac-wrap">
+        <div class="ac-input-row">
+          <span class="ac-search-icon"><i data-lucide="search"></i></span>
+          <input class="ac-input" id="ac-input-naar" type="text" placeholder="Typ naam of werknummer..." oninput="acFilter('naar',this.value)" onfocus="acOpen('naar')" autocomplete="off">
+          <button class="ac-clear" onclick="acClear('naar')"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+        </div>
+        <div class="ac-badge" id="ac-badge-naar"></div>
+        <div class="ac-dropdown" id="ac-dropdown-naar"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STAP 4 -->
+<div class="step" id="step-4">
+  <p class="step-title">Controleer & verstuur</p>
+  <p class="step-sub">Kijk alles na en tik op Verstuur.</p>
+  <div id="summary-content"></div>
+  <div class="card">
+    <div class="card-title">Foto's toevoegen</div>
+    <div class="card-body" style="padding-top:8px;">
+      <div id="fotos-preview" class="foto-thumbs"></div>
+      <button class="foto-btn" onclick="openFotoSheetAlgemeen()">
+        <i data-lucide="camera"></i> Foto toevoegen
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Opmerkingen</div>
+    <div class="card-body">
+      <div class="field">
+        <textarea id="algemeen_opmerking" rows="3" placeholder="Eventuele opmerkingen..."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wizard -->
+
+<div class="nav-bar" id="nav-bar">
+  <button class="btn-nav btn-back" id="btn-prev" onclick="prevStep()" style="display:none">← Terug</button>
+  <button class="btn-nav btn-next" id="btn-next" onclick="nextStep()">Volgende →</button>
+</div>
+
+<!-- FOTO OVERLAY -->
+<div class="foto-overlay" id="foto-overlay" onclick="fotoBgClick(event)">
+  <div class="foto-sheet">
+    <div class="foto-handle"></div>
+    <div class="foto-sheet-title" id="foto-title">Foto toevoegen</div>
+    <div class="foto-sheet-sub" id="foto-sub">Maak een foto of kies er een uit</div>
+    <div class="foto-preview-area" id="foto-preview-area">
+      <img class="foto-preview-img" id="foto-preview-img" src="" alt="Preview">
+      <textarea class="foto-opmerking" id="foto-opmerking" rows="2" placeholder="Opmerking bij deze foto (bijv. schade beschrijving)..."></textarea>
+    </div>
+    <div class="foto-actions">
+      <button class="foto-btn-camera" onclick="triggerCamera('camera')"><i data-lucide="camera"></i> Camera</button>
+      <button class="foto-btn-camera" onclick="triggerCamera('library')" style="background:rgba(255,255,255,.06);border-color:var(--border-2);color:var(--tekst);"><i data-lucide="image"></i> Bibliotheek</button>
+    </div>
+    <button class="foto-btn-save" id="foto-save-btn" onclick="fotoOpslaan()" style="display:none;width:100%;margin-top:10px;">Opslaan</button>
+    <input type="file" id="foto-file-input-camera" accept="image/*" capture="environment" onchange="fotoGekozen(event)" style="display:none">
+    <input type="file" id="foto-file-input-library" accept="image/*" onchange="fotoGekozen(event)" style="display:none">
+  </div>
+</div>
+
+<!-- BOTTOM SHEET (nummers) -->
+<div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
+<div class="bottom-sheet" id="bottom-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title" id="sheet-title"></div>
+  <div class="sheet-sub" id="sheet-sub"></div>
+  <div id="sheet-body"></div>
+  <button class="sheet-save" onclick="saveSheet()">Opslaan</button>
+</div>
+
+</div><!-- /view-wizard -->
+
+<!-- OVERZICHT VIEW -->
+<div class="view" id="view-overzicht">
+  <div class="ovz-wrap">
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <div class="ovz-search-wrap" style="flex:1;margin-bottom:0;">
+        <span class="ovz-search-icon"><i data-lucide="search"></i></span>
+        <input class="ovz-search-input" type="text" id="ovz-zoek" placeholder="Zoek op klus of werknummer..." oninput="ovzFilter()">
+      </div>
+      <button onclick="ovzHerlaad()" style="width:48px;height:48px;flex-shrink:0;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border-2);color:var(--tekst);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;" title="Verversen"><i data-lucide="refresh-cw"></i></button>
+    </div>
+    <div class="ovz-filter-wrap">
+      <button class="ovz-filter-btn active" onclick="ovzSetFilter('alles',this)">Alles</button>
+      <button class="ovz-filter-btn" onclick="ovzSetFilter('keten',this)">Keten</button>
+      <button class="ovz-filter-btn" onclick="ovzSetFilter('containers',this)">Containers</button>
+      <button class="ovz-filter-btn" onclick="ovzSetFilter('lichtmasten',this)">Lichtmasten</button>
+      <button class="ovz-filter-btn" onclick="ovzSetFilter('hekken',this)">Bouwhekken</button>
+      <button class="ovz-filter-btn" onclick="ovzSetFilter('aansluitingen',this)">Aansluitingen</button>
+    </div>
+    <div id="ovz-status-banner"></div>
+    <div id="ovz-content"><div class="ovz-loading"><div class="spinner"></div><div style="font-size:13px;color:var(--zacht)">Materieel laden...</div></div></div>
+  </div>
+</div>
+
+<!-- WACHTWOORD MODAL -->
+<div class="ww-modal-overlay" id="ww-overlay" onclick="if(event.target===this)sluitWachtwoord()">
+  <div class="ww-modal-box">
+    <div class="ww-handle"></div>
+    <div class="ww-titel">Wachtwoord wijzigen</div>
+    <div class="ww-sub">Kies een nieuw wachtwoord van minimaal 6 tekens.</div>
+    <input class="ww-input" type="password" id="ww-huidig" placeholder="Huidig wachtwoord" autocomplete="current-password">
+    <input class="ww-input" type="password" id="ww-nieuw" placeholder="Nieuw wachtwoord">
+    <input class="ww-input" type="password" id="ww-bevestig" placeholder="Bevestig nieuw wachtwoord" onkeydown="if(event.key==='Enter')slaWachtwoordOp()">
+    <div class="ww-fout" id="ww-fout"></div>
+    <button class="ww-btn" id="ww-btn" onclick="slaWachtwoordOp()">Wachtwoord opslaan →</button>
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loading-text">Bezig met versturen...</div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div class="view" id="view-detail">
+  <div class="detail-wrap" id="detail-inhoud"></div>
+</div>
+
+<!-- VERPLAATSINGEN VIEW -->
+<div class="view" id="view-verplaatsingen">
+  <div class="home-wrap">
+    <div class="gesch-filter-wrap">
+      <button class="gesch-filter-btn active" onclick="setGeschFilter('alles',this)">Alles</button>
+      <button class="gesch-filter-btn" onclick="setGeschFilter('vandaag',this)">Vandaag</button>
+      <button class="gesch-filter-btn" onclick="setGeschFilter('week',this)">Deze week</button>
+      <button class="gesch-filter-btn" onclick="setGeschFilter('maand',this)">Deze maand</button>
+    </div>
+    <div class="home-sectie-titel" id="gesch-sectie-titel" style="margin-bottom:14px;">Verplaatsingen</div>
+    <div id="verpl-lijst"><div class="home-spinner"></div></div>
+  </div>
+</div>
+
+<!-- OVZ LOCATIE DETAIL VIEW -->
+<div class="view" id="view-ovz-locatie">
+  <div style="position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:14px 16px;">
+    <button onclick="naarOverzicht()" style="background:none;border:none;color:var(--accent);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px;">
+      ← Terug
+    </button>
+  </div>
+  <div id="ovz-locatie-inhoud" style="padding:0 0 110px;"></div>
+</div>
+
+<!-- ITEM GESCHIEDENIS VIEW -->
+<div class="view" id="view-item-history">
+  <div style="position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:14px 16px;">
+    <button onclick="itemHistoryTerug()" style="background:none;border:none;color:var(--accent);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px;">
+      ← Terug
+    </button>
+  </div>
+  <div id="item-history-inhoud" style="padding:0 0 110px;"></div>
+</div>
+
+<!-- SUCCESS VIEW -->
+<div class="view" id="view-success">
+  <div class="success-wrap">
+    <div class="success-icon"><i data-lucide="check" style="width:36px;height:36px;stroke-width:3;"></i></div>
+    <div class="success-titel">Geregistreerd!</div>
+    <div class="success-sub">De verplaatsing is succesvol opgeslagen.</div>
+    <div class="success-card" id="success-details"></div>
+    <div class="success-btns">
+      <button class="success-btn-primary" onclick="naarHome()">Terug naar home</button>
+      <button class="success-btn-secondary" onclick="nieuweVerplaatsing()">Nieuwe verplaatsing</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAVIGATION -->
+<nav class="bottom-nav">
+  <button class="bn-item active" id="bn-home" onclick="naarHome()">
+    <span class="bn-icon"><i data-lucide="home"></i></span>
+    <span class="bn-label">Home</span>
+  </button>
+  <button class="bn-item" id="bn-wizard" onclick="naarWizard()">
+    <span class="bn-icon"><i data-lucide="clipboard-list"></i></span>
+    <span class="bn-label">Verplaatsen</span>
+  </button>
+  <button class="bn-item" id="bn-overzicht" onclick="naarOverzicht()">
+    <span class="bn-icon"><i data-lucide="map-pin"></i></span>
+    <span class="bn-label">Overzicht</span>
+  </button>
+  <button class="bn-item" id="bn-verplaatsingen" onclick="naarVerplaatsingen()">
+    <span class="bn-icon"><i data-lucide="history"></i></span>
+    <span class="bn-label">Geschiedenis</span>
+  </button>
+</nav>
+
+<script>
+const WORKER = 'https://mwb-verplaatslijst.je-mudde.workers.dev';
+
+const SECTIE_ICONS = {
+  'Aanhangers':           'truck',
+  'Aansluitingen':        'plug',
+  'Aluminiumsteiger':     'layers',
+  'Bouwhekken':           'shield',
+  'Bouwmaterieel':        'hammer',
+  'Bouwmeterkast':        'zap',
+  'Containers':           'package',
+  'Kamersteiger':         'layout-grid',
+  'Keten':                'home',
+  'Ladders':              'arrow-up-from-line',
+  'Lichtmasten':          'lamp',
+  'Mobiele voorzieningen':'box',
+  'Overig':               'more-horizontal',
+};
+
+function fmtDatum(d, lang = false) {
+  if (!d) return '—';
+  try {
+    const opts = lang
+      ? { day: 'numeric', month: 'long', year: 'numeric' }
+      : { day: '2-digit', month: '2-digit', year: 'numeric' };
+    return new Date(d + 'T12:00:00').toLocaleDateString('nl-NL', opts);
+  } catch { return d; }
+}
+
+/* ── CACHE (localStorage) ────────────────────────── */
+const CACHE_KEY_MAT = 'mwb_mat_v2';
+const CACHE_TTL     = 15 * 60 * 1000;
+function cacheOpslaan(key, data) { try { localStorage.setItem(key, JSON.stringify({ d: data, t: Date.now() })); } catch(_) {} }
+function cacheLaden(key, ttl) {
+  try {
+    const obj = JSON.parse(localStorage.getItem(key) || 'null');
+    if (!obj) return null;
+    if (ttl !== Infinity && Date.now() - obj.t > ttl) return null;
+    return obj.d;
+  } catch(_) { return null; }
+}
+
+/* ── SKELETON HELPERS ────────────────────────────── */
+function skeletonKaarten(n = 3) {
+  return Array(n).fill('').map(() =>
+    `<div class="skel-card">
+      <div class="skel-icon skeleton"></div>
+      <div style="flex:1;min-width:0;">
+        <div class="skel-line skeleton" style="width:65%;"></div>
+        <div class="skel-line-sm skeleton" style="width:40%;"></div>
+      </div>
+      <div class="skeleton" style="width:48px;height:20px;border-radius:4px;flex-shrink:0;"></div>
+    </div>`
+  ).join('');
+}
+function skeletonOvz() {
+  const kaart = (w) =>
+    `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;overflow:hidden;">
+      <div style="flex:1">
+        <div class="skel-line skeleton" style="width:${w}%;height:14px;margin-bottom:8px;"></div>
+        <div class="skel-line-sm skeleton" style="width:${Math.round(w * 0.55)}%;"></div>
+      </div>
+      <div class="skeleton" style="width:40px;height:22px;border-radius:4px;"></div>
+    </div>`;
+  return `<div class="skel-line skeleton" style="width:100px;height:11px;margin-bottom:10px;"></div>
+    ${kaart(60)}
+    <div class="skel-line skeleton" style="width:100px;height:11px;margin:20px 0 10px;"></div>
+    ${kaart(70)}${kaart(55)}${kaart(65)}`;
+}
+
+/* ── THEMA ───────────────────────────────────────── */
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('mwb_theme', t);
+  const icon  = document.getElementById('theme-icon');
+  const label = document.getElementById('theme-label');
+  if (icon)  { icon.innerHTML = t === 'light' ? '<i data-lucide="moon"></i>' : '<i data-lucide="sun"></i>'; lucide.createIcons({nodes:[icon]}); }
+  if (label) label.textContent = t === 'light' ? 'Donker thema' : 'Licht thema';
+  document.getElementById('theme-meta').content = t === 'light' ? '#f0f0f0' : '#111111';
+}
+function toggleTheme() {
+  setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+}
+function toggleMenu() {
+  const btn      = document.getElementById('menu-btn');
+  const dropdown = document.getElementById('header-dropdown');
+  const isOpen   = dropdown.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+}
+document.addEventListener('click', e => {
+  const wrap = document.querySelector('.header-menu-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('header-dropdown').classList.remove('open');
+    document.getElementById('menu-btn').classList.remove('open');
+  }
+});
+document.addEventListener('DOMContentLoaded', () => {
+  setTheme(localStorage.getItem('mwb_theme') || 'dark');
+  lucide.createIcons();
+});
+
+/* ── KLUSSEN ─────────────────────────────────────── */
+const KLUSSEN_DEFAULT = [
+  { naam:'Inkopen tbv voorraad',                                        werknr:'300026' },
+  { naam:'Sodexo, KLM kleine werken',                                   werknr:'400126' },
+  { naam:'Sodexo, Janssen, Leiden',                                     werknr:'401026' },
+  { naam:'Sodexo, Unilever, Rotterdam',                                 werknr:'401126' },
+  { naam:'Garantiewerken, diverse projecten',                           werknr:'401226' },
+  { naam:'Facilicom/Hitachi, kleine werken',                            werknr:'401326' },
+  { naam:'Anovi',                                                       werknr:'401426' },
+  { naam:'Particulieren kleine werken',                                 werknr:'410026' },
+  { naam:'Sineth Builing Maintenance',                                  werknr:'435226' },
+  { naam:'Wartburg, diverse onderhoudsklusjes',                         werknr:'477026' },
+  { naam:'Willebrordusshof Rotterdam, nwbouw 11 won',                   werknr:'4783' },
+  { naam:'Nieuwbouw 11 woningen, Middelharnis',                         werknr:'4807' },
+  { naam:'IKC, De 2 Wieken, Zwijndrecht, nieuwbouw',                   werknr:'4837' },
+  { naam:'Stephanusschool, Rotterdam, nieuwbouw',                       werknr:'4838' },
+  { naam:'Babypark, diverse adressen',                                  werknr:'484326' },
+  { naam:'Boor, OBS Bloemhof en Pantarijn, Rotterdam',                  werknr:'4846' },
+  { naam:'Middelburgseweg 3C, Waddinxveen, nwbouw woning',              werknr:'4847' },
+  { naam:'Maassluissedijk Vlaardingen, nwbouw 4 woningen',              werknr:'4848' },
+  { naam:'Fortune Coffee, Zoetermeer, uitbreiding',                     werknr:'4849' },
+  { naam:'Evides, service en onderhoud, Spijkenisse',                   werknr:'485026' },
+  { naam:'Zwart-Wit Bedrijfsverzamelgebouw, nwbouw',                    werknr:'4851' },
+  { naam:'RVKO, Nicolaasschool, Rotterdam, nwbouw',                     werknr:'4852' },
+  { naam:'Ouderenkliniek, Poortmolen, Capelle, nwbouw',                 werknr:'4854' },
+  { naam:'Hoornbeeck Rotterdam, renovatie',                             werknr:'4855' },
+  { naam:'Hoornbeeck, div locaties',                                    werknr:'485626' },
+  { naam:'Gebouwonderhoud, div. locaties',                              werknr:'485726' },
+  { naam:'Skadi renovatie clubgebouw, Rotterdam',                       werknr:'4860' },
+  { naam:'Hitachi, Amsterdam, hal B, aanp staalconstr',                 werknr:'4861' },
+  { naam:'MY College, Spijkenisse, nieuwbouw',                          werknr:'4862' },
+  { naam:'Kleine Prins, Rotterdam, uitbreiding',                        werknr:'4863' },
+  { naam:'Evides, Beerenplaat, div werkz RWTP',                        werknr:'4864' },
+  { naam:'Scheurleer, Ouddorp, nwbouw schuur',                          werknr:'4865' },
+  { naam:'Lammers, Voorburg, verbouwing woning',                        werknr:'4866' },
+  { naam:'Hitachi, Amsterdam, hal A, trappentoren',                     werknr:'4867' },
+  { naam:'Brekelmans, Den Haag, gevelrenovatie',                        werknr:'4868' },
+  { naam:'Evides, project deuren, diverse locaties',                    werknr:'4869' },
+  { naam:'Vd Starre, Nieuw Lekkerland, herstel woning',                 werknr:'4870' },
+  { naam:'Fam. Bentum, Voorschoten, verbouw woning',                    werknr:'4871' },
+  { naam:'Orange, Zoetermeer, transformatie',                           werknr:'4872' },
+  { naam:'Janssen, kantine geb B, Leiden',                              werknr:'4873' },
+  { naam:'ABS Lansingerland, nieuwbouw',                                werknr:'4874' },
+  { naam:'Janssen, geb K1 tm K3, vervangen tapijt',                    werknr:'4875' },
+  { naam:'Fam. Folkerts, Nieuwerkerk, aanbouw',                         werknr:'4876' },
+  { naam:'Fam. Slingerland, Nieuwerkerk, verbouw',                      werknr:'4877' },
+  { naam:'Interfilter Hellevoetsluis',                                  werknr:'4878' },
+  { naam:'DHG, Smartlog, Rotterdam, nieuwbouw',                         werknr:'4879' },
+  { naam:'IKC Driemaster, Ridderkerk, nieuwbouw',                       werknr:'4880' },
+  { naam:'Fam. Servais, Oostvoorne, verbouwing woning',                 werknr:'4881' },
+  { naam:'Fam. Folkerts, Waddinxveen, nieuwbouw',                       werknr:'4882' },
+  { naam:'KLM H 11',                                                    werknr:'4883' },
+  { naam:'Nebula Airbus Netherlands, herinrichting',                    werknr:'4884' },
+  { naam:'GB Butaanweg, terrein, Hoogvliet',                            werknr:'4885' },
+  { naam:'OBS De Margriet, Rotterdam, nieuwbouw',                       werknr:'4886' },
+  { naam:'Kesper College, Gouda, uitbreiding en renovatie',             werknr:'4887' },
+  { naam:'Westhoff en Hofwijck, Rijswijk, verbouw en uitbreiding',      werknr:'4888' },
+  { naam:'J&J, herindeling ktr L-Building, Sassenheim',                 werknr:'4889' },
+  { naam:'Visser, Capelle ad IJssel, verbouwing kantoor',               werknr:'4890' },
+  { naam:'Riverenland/Peer, herstel woning en nwb schuur',              werknr:'4891' },
+  { naam:'Vivere, zorgstudio, nieuwbouw, Moordrecht',                   werknr:'4892' },
+  { naam:'Viku, Huize Kinderdijk, verbouwing',                          werknr:'4893' },
+  { naam:'Fam. Graafland, Nieuwerkerk, verbouwing woning',              werknr:'4894' },
+  { naam:'Zorgstede, Moordrecht, nieuwbouw woon-zorgcomplex',           werknr:'4895' },
+  { naam:'Plomp, Ringvaartpark 51, Capelle, aanbouw',                   werknr:'4896' },
+  { naam:'DOM, Den Hoorn, nieuwbouw bedrijfsgebouw',                    werknr:'4897' },
+  { naam:'Driestar Leiden, uitbreiding',                                werknr:'4898' },
+  { naam:'Fam. Toet, Ouddorp, verbouwing woning',                       werknr:'4899' },
+  { naam:'VvE Woningen Westerlaan 21 tm 65, Rotterdam',                 werknr:'4900' },
+  { naam:'Evides, Civielwerk, Berenplaat',                              werknr:'4901' },
+  { naam:'Schuurbiers, Zuurbes 21, Rotterdam, ver-aanbouw woning',      werknr:'4902' },
+  { naam:'Sodexo, MSD, diversen, Haarlem',                              werknr:'490326' },
+  { naam:'Fam. Mujcinovic, Rotterdam, verbouwing woning',               werknr:'4904' },
+];
+let KLUSSEN = [...KLUSSEN_DEFAULT];
+
+/* ── MATERIEEL ───────────────────────────────────── */
+const SECTIES = {
+  'Containers': [
+    { id:'magazijncontainer',   naam:'Magazijncontainer' },
+    { id:'container',           naam:'Materiaalcontainer' },
+  ],
+  'Keten': [
+    { id:'schaftkeet_klein',    naam:'Schaftkeet klein' },
+    { id:'schaftkeet_groot',    naam:'Schaftkeet groot' },
+    { id:'schaftkeet',          naam:'Schaftkeet' },
+    { id:'uitvoerderskeet',     naam:'Uitvoerderskeet' },
+    { id:'pipokeet',            naam:'Pipokeet' },
+    { id:'keettrap',            naam:'Keettrap (set)' },
+  ],
+  'Aansluitingen': [
+    { id:'meterkast_35a',       naam:'Meterkast 35A' },
+    { id:'meterkast_63a',       naam:'Meterkast 63A' },
+    { id:'meterkast_80a',       naam:'Meterkast 80A' },
+    { id:'meterkast_125a',      naam:'Meterkast 125A' },
+    { id:'bouwpaddestoel_32a',  naam:'Bouwpaddestoel 32A' },
+    { id:'bouwpaddestoel_63a',  naam:'Bouwpaddestoel 63A' },
+    { id:'bouwmeterkast',       naam:'Bouwmeterkast' },
+    { id:'waterput',            naam:'Waterput' },
+    { id:'waterkraan',          naam:'Waterkraan / standvink' },
+  ],
+  'Mobiele voorzieningen': [
+    { id:'aggregaat',           naam:'Aggregaat' },
+    { id:'watervat',            naam:'Watervat 1-kubs' },
+  ],
+  'Lichtmasten': [
+    { id:'lichtmast_12m',       naam:'Lichtmast 12M' },
+    { id:'lichtmast_6m',        naam:'Lichtmast 6M' },
+    { id:'lichtmast',           naam:'Lichtmast' },
+  ],
+  'Bouwhekken': [
+    { id:'bouwhek_1200',        naam:'Bouwhek 1200 hoog' },
+    { id:'bouwhek_2000',        naam:'Bouwhek 2000 hoog' },
+    { id:'bouwhek_bok',         naam:'Bouwhek bok' },
+    { id:'bouwhek_voet',        naam:'Bouwhek voet' },
+    { id:'bouwhekvoet_bok',     naam:'Bouwhekvoet bok' },
+    { id:'hekklemmen',          naam:'Hekklemmen' },
+    { id:'hekwielen',           naam:'Hekwielen' },
+    { id:'hek_schoren',         naam:'Hek schoren' },
+    { id:'schuifpoort',         naam:'Electr. schuifpoort 230V' },
+    { id:'materieelbak_open',   naam:'Materieelbak open' },
+    { id:'materieelbak_klep',   naam:'Materieelbak met klep' },
+    { id:'kunststof_rijplaten', naam:'Kunststof rijplaten' },
+    { id:'bouwhekken',          naam:'Bouwhekken' },
+    { id:'bouwhek_voeten',      naam:'Bouwhek voeten' },
+  ],
+  'Bouwmaterieel': [
+    { id:'bouwdroger',          naam:'BouwDroger (Dantherm)' },
+    { id:'bouwventilator',      naam:'BouwVentilator (Dryfast)' },
+    { id:'bouwzaag_220v',       naam:'Bouwzaag 220V' },
+    { id:'bouwzaag_380v',       naam:'Bouwzaag 380V' },
+    { id:'afzuigsysteem',       naam:'Afzuigsysteem bouwzaag' },
+    { id:'heater_400v',         naam:'Heater (Dryfast 400V)' },
+    { id:'heater_230v',         naam:'Heater (Dryfast 230V)' },
+    { id:'pompwagen',           naam:'Pompwagen' },
+    { id:'platte_kar',          naam:'Platte kar' },
+    { id:'platenkar',           naam:'Platenkar' },
+    { id:'betonmolen',          naam:'Betonmolen' },
+    { id:'bouwstofzuiger',      naam:'Bouwstofzuiger' },
+    { id:'bouwlamp',            naam:'Bouwlamp op statief' },
+    { id:'schroefstempel',      naam:'Schroefstempel BM300' },
+    { id:'randbeveiligingsklemmen', naam:'Randbeveiligingsklemmen' },
+    { id:'pannenlift',          naam:'Pannenlift (Set)' },
+    { id:'kanalenlift',         naam:'Kanalenlift' },
+    { id:'metselprofielen',     naam:'Metselprofielen (hout)' },
+    { id:'kim_profiel',         naam:'Kim-profiel verstelbaar' },
+    { id:'hmb_gevelklem',       naam:'HMB Gevelklem' },
+    { id:'stualone_315',        naam:'StutAlone gevelstempel 315cm' },
+    { id:'stualone_350',        naam:'StutAlone gevelstempel 350cm' },
+    { id:'stapelrek',           naam:'Stapelrek 120x75cm' },
+  ],
+  'Aluminiumsteiger': [
+    { id:'steiger_platform_z',  naam:'Steigerplatform (zonder luik)' },
+    { id:'steiger_platform_m',  naam:'Steigerplatform (met luik)' },
+    { id:'opbouwframe_heel',    naam:'Opbouwframe heel (juk)' },
+    { id:'opbouwframe_half',    naam:'Opbouwframe half (juk)' },
+    { id:'doorloopframe',       naam:'Doorloopframe' },
+    { id:'leuningframe_135',    naam:'Leuningframe 135cm' },
+    { id:'diagonaalschoor',     naam:'Diagonaalschoor' },
+    { id:'horizontaalschoor',   naam:'Horizontaalschoor' },
+    { id:'steigerwielen',       naam:'Steigerwielen' },
+    { id:'voorloopleuning',     naam:'Voorloopleuning' },
+    { id:'driehoekstab_alu',    naam:'Driehoekstabilisator' },
+    { id:'trappentoren',        naam:'Trappen tbv trappentoren' },
+    { id:'kantplank_los',       naam:'Kantplank (los)' },
+    { id:'kantplank_set',       naam:'Kantplank (set)' },
+  ],
+  'Kamersteiger': [
+    { id:'kamer_frame',         naam:'Frame' },
+    { id:'kamer_vloer',         naam:'Vloer' },
+    { id:'kamer_wielen',        naam:'Wielen' },
+    { id:'kamer_leuning',       naam:'Leuningframe 75cm' },
+    { id:'kamer_kantplankset',  naam:'Kantplankset' },
+    { id:'kamer_driehoek',      naam:'Driehoekstabilisator' },
+  ],
+  'Ladders': [
+    { id:'ladder_hout',         naam:'Houten ladder' },
+    { id:'ladder_alu',          naam:'Alu. Schuifladder' },
+    { id:'schaartrap',          naam:'Alu. Schaartrap hoog' },
+    { id:'aanlijnklemmen',      naam:'Aanlijnklemmen vloeren' },
+  ],
+  'Aanhangers': [
+    { id:'aanhanger_klein',     naam:'Aanhanger (klein)' },
+    { id:'aanhanger_groot',     naam:'Aanhanger (groot)' },
+  ],
+};
+
+/* ── STATE ───────────────────────────────────────── */
+const STATE = {};
+const AC_STATE = {};
+let sheetItemId = null;
+let fotoItemId  = null;
+let fotoDataUrl = null;
+
+// Nieuwe verplaats-state
+const VAN  = { type: null, naam: '', werknr: '' };
+const NAAR = { type: null, naam: '', werknr: '' };
+let geselecteerdeItems     = new Set();
+let geselecteerdeAantallen = {};
+let expandedTypes          = new Set();
+let expandedOvzTypes       = new Set();
+let expandedSecties        = new Set();
+let algemeneFotos          = [];
+let alleMaterialen     = [];
+let materieelLaden     = false;
+
+function initState() {
+  VAN.type = null; VAN.naam = ''; VAN.werknr = '';
+  NAAR.type = null; NAAR.naam = ''; NAAR.werknr = '';
+  geselecteerdeItems     = new Set();
+  geselecteerdeAantallen = {};
+  expandedTypes          = new Set();
+  algemeneFotos          = [];
+}
+function alleItems() { return Object.values(SECTIES).flat(); }
+
+/* ── WIZARD ──────────────────────────────────────── */
+let currentStep = 1;
+const TOTAL = 4;
+
+function goToStep(n) {
+  if (n < 1 || n > TOTAL) return;
+  if (n > currentStep && !validateStep(currentStep)) return;
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step-' + currentStep).classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+  document.querySelectorAll('.ac-dropdown.open').forEach(d => d.classList.remove('open'));
+  updateProgress(); updateNav(); autosave();
+  if (currentStep === 2) renderStap2();
+  if (currentStep === 4) renderSummary();
+}
+function nextStep() { goToStep(currentStep + 1); }
+function prevStep() { goToStep(currentStep - 1); }
+
+function updateProgress() {
+  for (let i = 1; i <= TOTAL; i++) {
+    const ps = document.getElementById('ps-' + i);
+    ps.classList.remove('active','done');
+    if (i < currentStep) ps.classList.add('done');
+    if (i === currentStep) ps.classList.add('active');
+    const dot = ps.querySelector('.progress-dot'); if (i < currentStep) { dot.innerHTML = ic('check',12); lucide.createIcons({nodes:[dot]}); } else dot.textContent = i;
+  }
+  for (let i = 1; i < TOTAL; i++) {
+    document.getElementById('pl-' + i).classList.toggle('done', i < currentStep);
+  }
+}
+
+function updateNav() {
+  const prev = document.getElementById('btn-prev');
+  const next = document.getElementById('btn-next');
+  prev.style.display = currentStep > 1 ? '' : 'none';
+  if (currentStep === TOTAL) {
+    next.innerHTML = ic('check',14) + ' Verstuur'; lucide.createIcons({nodes:[next]});
+    next.className   = 'btn-nav btn-verstuur';
+    next.onclick     = verstuurAlles;
+  } else {
+    next.textContent = 'Volgende →';
+    next.className   = 'btn-nav btn-next';
+    next.onclick     = nextStep;
+  }
+}
+
+function validateStep(n) {
+  if (n === 1) {
+    if (!document.getElementById('datum').value) {
+      const wrap = document.getElementById('f-datum');
+      wrap && wrap.classList.add('error');
+      document.getElementById('datum').addEventListener('input', () => wrap && wrap.classList.remove('error'), { once:true });
+      showToast('Vul een datum in', 'warn');
+      return false;
+    }
+    if (!VAN.type) { showToast('Selecteer je huidige locatie', 'warn'); return false; }
+    return true;
+  }
+  if (n === 2) {
+    if (geselecteerdeItems.size === 0 && Object.keys(geselecteerdeAantallen).length === 0) {
+      showToast('Selecteer minstens 1 item om te verplaatsen', 'warn'); return false;
+    }
+    return true;
+  }
+  if (n === 3) {
+    if (!NAAR.type) { showToast('Selecteer de bestemming', 'warn'); return false; }
+    if (VAN.werknr === NAAR.werknr) { showToast('Van en naar locatie zijn hetzelfde', 'warn'); return false; }
+    return true;
+  }
+  return true;
+}
+
+/* ── LOCATIE SELECTIE ────────────────────────────── */
+function selectLocatieVan(type, naam, werknr) {
+  VAN.type   = type;
+  VAN.naam   = type === 'zaak' ? 'De Zaak – Depot' : (naam || '');
+  VAN.werknr = type === 'zaak' ? 'zaak' : (werknr || '');
+  document.getElementById('van-zaak-btn')?.classList.toggle('selected', type === 'zaak');
+  if (type === 'zaak') acClearSilent('van');
+  // Reset materieel selectie wanneer locatie wijzigt
+  geselecteerdeItems.clear();
+}
+
+function selectLocatieNaar(type, naam, werknr) {
+  NAAR.type   = type;
+  NAAR.naam   = type === 'zaak' ? 'De Zaak – Depot' : (naam || '');
+  NAAR.werknr = type === 'zaak' ? 'zaak' : (werknr || '');
+  document.getElementById('naar-zaak-btn')?.classList.toggle('selected', type === 'zaak');
+  if (type === 'zaak') acClearSilent('naar');
+}
+
+/* ── AUTOCOMPLETE ────────────────────────────────── */
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ac-wrap') && !e.target.closest('.ac-dropdown')) {
+    document.querySelectorAll('.ac-dropdown.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+function acOpen(veldId) {
+  const input    = document.getElementById('ac-input-' + veldId);
+  const dropdown = document.getElementById('ac-dropdown-' + veldId);
+  if (dropdown.parentElement !== document.body) document.body.appendChild(dropdown);
+  const rect = input.getBoundingClientRect();
+  dropdown.style.top      = (rect.bottom + window.scrollY + 6) + 'px';
+  dropdown.style.left     = (rect.left + window.scrollX) + 'px';
+  dropdown.style.width    = rect.width + 'px';
+  dropdown.style.position = 'absolute';
+  acFilter(veldId, input.value);
+  syncKlussen().then(() => {
+    if (dropdown.classList.contains('open')) acFilter(veldId, input.value);
+  });
+}
+
+function acFilter(veldId, q) {
+  const dropdown = document.getElementById('ac-dropdown-' + veldId);
+  const term = q.toLowerCase().trim();
+  const hits  = term
+    ? KLUSSEN.filter(k => k.naam.toLowerCase().includes(term) || k.werknr.toLowerCase().includes(term))
+    : KLUSSEN;
+  dropdown.innerHTML = hits.length
+    ? hits.map(k => `<div class="ac-item" onclick="acSelect('${veldId}','${k.naam.replace(/'/g,"\\'")}','${k.werknr}')">
+        <span class="ac-item-naam">${k.naam}</span>
+        <span class="ac-item-nr">${k.werknr}</span>
+      </div>`).join('')
+    : '<div class="ac-empty">Geen klussen gevonden</div>';
+  dropdown.classList.add('open');
+}
+
+function acSelect(veldId, naam, werknr) {
+  const input  = document.getElementById('ac-input-' + veldId);
+  const badge  = document.getElementById('ac-badge-' + veldId);
+  const dropdown = document.getElementById('ac-dropdown-' + veldId);
+  input.value = naam;
+  input.classList.add('selected');
+  badge.textContent = 'Werknr: ' + werknr;
+  badge.classList.add('show');
+  dropdown.classList.remove('open');
+  AC_STATE[veldId] = { naam, werknr };
+  if (veldId === 'van')  { selectLocatieVan('klus',  naam, werknr); document.getElementById('van-zaak-btn')?.classList.remove('selected'); }
+  if (veldId === 'naar') { selectLocatieNaar('klus', naam, werknr); document.getElementById('naar-zaak-btn')?.classList.remove('selected'); }
+  autosave();
+}
+
+function acClear(veldId) {
+  acClearSilent(veldId);
+  if (veldId === 'van')  { VAN.type  = null; VAN.naam  = ''; VAN.werknr  = ''; geselecteerdeItems.clear(); document.getElementById('van-zaak-btn')?.classList.remove('selected'); }
+  if (veldId === 'naar') { NAAR.type = null; NAAR.naam = ''; NAAR.werknr = ''; document.getElementById('naar-zaak-btn')?.classList.remove('selected'); }
+  autosave();
+}
+function acClearSilent(veldId) {
+  const input  = document.getElementById('ac-input-' + veldId);
+  const badge  = document.getElementById('ac-badge-' + veldId);
+  if (!input) return;
+  input.value = '';
+  input.classList.remove('selected');
+  if (badge) badge.classList.remove('show');
+  AC_STATE[veldId] = null;
+}
+
+/* ── MATERIEEL STAP 2 ────────────────────────────── */
+async function renderStap2() {
+  const el  = document.getElementById('stap2-inhoud');
+  const sub = document.getElementById('stap2-sub');
+  el.innerHTML = '<div class="home-spinner" style="margin:40px auto;"></div>';
+  if (sub) sub.textContent = 'Selecteer wat je wilt verplaatsen';
+
+  if (!materieelLaden) await laadMaterialenApp();
+
+  const vanLocatie = VAN.type === 'zaak' ? 'zaak' : VAN.werknr;
+  const hierItems  = alleMaterialen.filter(m => m.locatie === vanLocatie);
+  if (sub) sub.textContent = 'Materieel op: ' + VAN.naam;
+
+  if (!hierItems.length) {
+    el.innerHTML = `<div class="info-row" style="margin-top:0;">
+      <span class="ir-icon"><i data-lucide="info" style="width:16px;height:16px"></i></span>
+      <span>Geen geregistreerd materieel gevonden op <strong>${VAN.naam}</strong>. Vraag de beheerder om materieel toe te voegen via de beheerpagina.</span>
+    </div>`;
+    return;
+  }
+
+  const perSectie = {};
+  for (const item of hierItems) {
+    const sectie = item.sectie || 'Overig';
+    if (!perSectie[sectie]) perSectie[sectie] = [];
+    perSectie[sectie].push(item);
+  }
+
+  const allGeselecteerd = hierItems.filter(m => geselecteerdeItems.has(m.id)).length + Object.keys(geselecteerdeAantallen).length;
+  const leeg = allGeselecteerd === 0;
+  let html = `<div class="stap2-teller-pill ${leeg ? 'leeg' : ''}" id="stap2-teller">
+    <i data-lucide="package" style="width:13px;height:13px;"></i>
+    <span>${leeg ? 'Niets geselecteerd' : allGeselecteerd + ' item' + (allGeselecteerd !== 1 ? 's' : '') + ' geselecteerd'}</span>
+  </div>`;
+
+  const secties = Object.keys(perSectie).sort((a, b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b));
+  for (const sectie of secties) {
+    const items = perSectie[sectie];
+
+    // Groepeer per type_id
+    const perType = {};
+    for (const item of items) {
+      if (!perType[item.type_id]) perType[item.type_id] = { naam: item.naam, items: [] };
+      perType[item.type_id].items.push(item);
+    }
+
+    const secKey2   = sectie.toLowerCase().replace(/[^a-z0-9]/g,'_');
+    const secOpen2  = expandedSecties.has(secKey2);
+    const icon      = SECTIE_ICONS[sectie] || 'box';
+    const totItems  = items.length;
+    const geselSec  = items.filter(m => geselecteerdeItems.has(m.id)).length +
+                      items.filter(m => m.aantal != null && geselecteerdeAantallen[m.id]).length;
+    const heeftSel  = geselSec > 0;
+
+    html += `<div class="cat-card ${secOpen2 ? 'open' : ''} ${heeftSel ? 'heeft-selectie' : ''}"
+               id="cat-card-${secKey2}" onclick="toggleSectie('${secKey2}')">
+      <div class="cat-icon"><i data-lucide="${icon}"></i></div>
+      <div class="cat-content">
+        <p class="cat-name">${sectie}${heeftSel ? `<span class="cat-badge">${geselSec}</span>` : ''}</p>
+        <p class="cat-meta">${totItems} item${totItems !== 1 ? 's' : ''} beschikbaar</p>
+      </div>
+      <span class="cat-chev" id="sec-chev-${secKey2}"><i data-lucide="chevron-right"></i></span>
+    </div>
+    <div class="cat-panel" id="sec-panel-${secKey2}" style="${secOpen2 ? '' : 'display:none'}">
+    <div class="card" style="margin-bottom:0;border-radius:0 0 var(--radius-lg) var(--radius-lg);">`;
+
+    for (const [typeId, groep] of Object.entries(perType)) {
+      const eersteItem = groep.items[0];
+
+      if (eersteItem.aantal != null) {
+        // Bulk item (hekken): aantal-input
+        const huidig = geselecteerdeAantallen[eersteItem.id] || 0;
+        html += `<div class="mat-kies-row" style="justify-content:space-between;">
+          <div>
+            <div class="mat-kies-naam">${eersteItem.naam}</div>
+            <div class="mat-kies-nr">${eersteItem.aantal} stuks beschikbaar</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;color:var(--zacht);">verplaats:</span>
+            <input type="number" min="0" max="${eersteItem.aantal}" value="${huidig}"
+              style="width:56px;padding:4px 8px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:6px;color:var(--tekst);font-size:14px;text-align:center;font-family:inherit;"
+              oninput="setBulkAantal('${eersteItem.id}',this.value,${eersteItem.aantal})">
+          </div>
+        </div>`;
+      } else {
+        // Normaal: expand-header + sub-items
+        const aantalGesel = groep.items.filter(m => geselecteerdeItems.has(m.id)).length;
+        const checkState  = aantalGesel === groep.items.length && groep.items.length > 0 ? 'checked' : aantalGesel > 0 ? 'partial' : '';
+        const isOpen      = expandedTypes.has(typeId);
+        html += `<div class="mat-kies-row" data-expand-type="${typeId}" onclick="toggleTypeExpand('${typeId}')">
+          <div class="mat-kies-check ${checkState}"></div>
+          <div style="flex:1">
+            <div class="mat-kies-naam">${groep.naam}</div>
+            <div class="mat-kies-nr" id="sub-lbl-${typeId}">${groep.items.length} beschikbaar${aantalGesel > 0 ? ' · ' + aantalGesel + ' geselecteerd' : ''}</div>
+          </div>
+          <div class="mat-kies-chevron" id="chev-${typeId}">${isOpen ? '▲' : '▼'}</div>
+        </div>
+        <div class="mat-kies-sub" id="expand-${typeId}" style="${isOpen ? '' : 'display:none'}">
+          ${groep.items.slice().sort((a,b) => (Number(a.nummer)||0) - (Number(b.nummer)||0)).map(item => {
+            const gesel = geselecteerdeItems.has(item.id);
+            return `<div class="mat-kies-row ${gesel ? 'geselecteerd' : ''}" data-item-id="${item.id}" onclick="event.stopPropagation();toggleItem('${item.id}')">
+              <div class="mat-kies-check ${gesel ? 'checked' : ''}"></div>
+              <div class="mat-kies-naam">Nr. ${item.nummer || '—'}</div>
+            </div>`;
+          }).join('')}
+        </div>`;
+      }
+    }
+    html += '</div></div>'; // sluit card + sec-panel
+  }
+  el.innerHTML = html;
+  lucide.createIcons();
+}
+
+function toggleTypeExpand(typeId) {
+  if (expandedTypes.has(typeId)) expandedTypes.delete(typeId);
+  else expandedTypes.add(typeId);
+  const open  = expandedTypes.has(typeId);
+  const panel = document.getElementById('expand-' + typeId);
+  const chev  = document.getElementById('chev-' + typeId);
+  if (panel) panel.style.display = open ? '' : 'none';
+  if (chev)  chev.textContent    = open ? '▲' : '▼';
+}
+
+function toggleSectie(secKey) {
+  if (expandedSecties.has(secKey)) expandedSecties.delete(secKey);
+  else expandedSecties.add(secKey);
+  const open  = expandedSecties.has(secKey);
+  const panel = document.getElementById('sec-panel-' + secKey);
+  const card  = document.getElementById('cat-card-' + secKey);
+  if (panel) panel.style.display = open ? '' : 'none';
+  if (card)  card.classList.toggle('open', open);
+}
+
+function toggleOvzType(typeKey) {
+  if (expandedOvzTypes.has(typeKey)) expandedOvzTypes.delete(typeKey);
+  else expandedOvzTypes.add(typeKey);
+  const open  = expandedOvzTypes.has(typeKey);
+  const panel = document.getElementById('ovz-exp-' + typeKey);
+  const chev  = document.getElementById('ovz-chev-' + typeKey);
+  if (panel) panel.style.display = open ? '' : 'none';
+  if (chev)  chev.textContent    = open ? '▲' : '▼';
+}
+
+function toggleItem(id) {
+  if (geselecteerdeItems.has(id)) geselecteerdeItems.delete(id);
+  else geselecteerdeItems.add(id);
+  const row   = document.querySelector(`[data-item-id="${id}"]`);
+  const check = row?.querySelector('.mat-kies-check');
+  const gesel = geselecteerdeItems.has(id);
+  row?.classList.toggle('geselecteerd', gesel);
+  check?.classList.toggle('checked', gesel);
+
+  // Update groep-header check + label
+  const item = alleMaterialen.find(m => m.id === id);
+  if (item) {
+    const vanLoc    = VAN.type === 'zaak' ? 'zaak' : VAN.werknr;
+    const groepItems = alleMaterialen.filter(m => m.type_id === item.type_id && m.locatie === vanLoc);
+    const aantalGesel = groepItems.filter(m => geselecteerdeItems.has(m.id)).length;
+    const headerRow   = document.querySelector(`[data-expand-type="${item.type_id}"]`);
+    if (headerRow) {
+      const hCheck = headerRow.querySelector('.mat-kies-check');
+      if (hCheck) {
+        hCheck.className = 'mat-kies-check' +
+          (aantalGesel === groepItems.length && groepItems.length > 0 ? ' checked' : aantalGesel > 0 ? ' partial' : '');
+      }
+      const lbl = document.getElementById('sub-lbl-' + item.type_id);
+      if (lbl) lbl.textContent = groepItems.length + ' beschikbaar' + (aantalGesel > 0 ? ' · ' + aantalGesel + ' geselecteerd' : '');
+    }
+  }
+  updateStap2Teller();
+}
+
+function setBulkAantal(id, value, max) {
+  const n = Math.max(0, Math.min(parseInt(max) || 0, parseInt(value) || 0));
+  if (n > 0) geselecteerdeAantallen[id] = n;
+  else delete geselecteerdeAantallen[id];
+  updateStap2Teller();
+}
+
+function updateStap2Teller() {
+  const gesel  = geselecteerdeItems.size + Object.keys(geselecteerdeAantallen).length;
+  const teller = document.getElementById('stap2-teller');
+  if (!teller) return;
+  const leeg = gesel === 0;
+  teller.className = 'stap2-teller-pill' + (leeg ? ' leeg' : '');
+  teller.innerHTML = `<i data-lucide="package" style="width:13px;height:13px;"></i>
+    <span>${leeg ? 'Niets geselecteerd' : gesel + ' item' + (gesel !== 1 ? 's' : '') + ' geselecteerd'}</span>`;
+  lucide.createIcons({ nodes: [teller] });
+}
+
+function migrateerSectie(materialen) {
+  // Bouw naam→sectie lookup (betrouwbaarder dan type_id want naam is altijd consistent)
+  const naarSectie = {};
+  for (const [sectie, items] of Object.entries(SECTIES)) {
+    for (const item of items) naarSectie[item.naam] = sectie;
+  }
+  return materialen.map(m => {
+    if (m.sectie) return m;
+    // Zoek op naam (primair), fallback op type_id
+    if (naarSectie[m.naam]) return { ...m, sectie: naarSectie[m.naam] };
+    for (const [sectie, items] of Object.entries(SECTIES)) {
+      if (items.some(i => i.id === m.type_id)) return { ...m, sectie };
+    }
+    return { ...m, sectie: 'Overig' };
+  });
+}
+
+async function laadMaterialenApp() {
+  materieelLaden = true;
+  const cached = cacheLaden(CACHE_KEY_MAT, CACHE_TTL);
+  if (cached) { alleMaterialen = migrateerSectie(cached); return; }
+  try {
+    const res  = await apiFetch(WORKER + '?action=materieel', { headers: { 'Authorization': 'Bearer ' + getToken() } });
+    if (!res) return;
+    const data = await res.json();
+    if (data.ok) {
+      alleMaterialen = migrateerSectie(data.materialen);
+      cacheOpslaan(CACHE_KEY_MAT, data.materialen);
+    }
+  } catch (_) {
+    const fallback = cacheLaden(CACHE_KEY_MAT, Infinity);
+    if (fallback) alleMaterialen = migrateerSectie(fallback);
+  }
+}
+
+/* ── FOTO ────────────────────────────────────────── */
+function openFotoSheetAlgemeen() {
+  fotoItemId  = '__algemeen__';
+  fotoDataUrl = null;
+  document.getElementById('foto-title').textContent = 'Foto toevoegen';
+  document.getElementById('foto-sub').textContent   = 'Maak een foto of kies er een uit';
+  document.getElementById('foto-preview-area').classList.remove('show');
+  document.getElementById('foto-opmerking').value   = '';
+  document.getElementById('foto-save-btn').style.display = 'none';
+  document.getElementById('foto-overlay').classList.add('open');
+}
+
+function closeFotoSheet() {
+  document.getElementById('foto-overlay').classList.remove('open');
+  fotoItemId  = null;
+  fotoDataUrl = null;
+}
+
+function fotoBgClick(e) {
+  if (e.target === document.getElementById('foto-overlay')) closeFotoSheet();
+}
+
+function triggerCamera(type = 'camera') {
+  const id = type === 'library' ? 'foto-file-input-library' : 'foto-file-input-camera';
+  document.getElementById(id).click();
+}
+
+function fotoGekozen(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    fotoDataUrl = ev.target.result;
+    document.getElementById('foto-preview-img').src = fotoDataUrl;
+    document.getElementById('foto-preview-area').classList.add('show');
+    document.getElementById('foto-save-btn').style.display = 'block';
+    lucide.createIcons();
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function fotoOpslaan() {
+  if (!fotoDataUrl) return;
+  const opm = document.getElementById('foto-opmerking').value.trim();
+  algemeneFotos.push({ dataUrl: fotoDataUrl, opm });
+  renderFotosStap4();
+  closeFotoSheet();
+  showToast('Foto opgeslagen', 'ok');
+}
+
+function renderFotosStap4() {
+  const el = document.getElementById('fotos-preview');
+  if (!el) return;
+  el.innerHTML = algemeneFotos.map((f, i) =>
+    `<div class="foto-thumb">
+      <img src="${f.dataUrl}" alt="foto">
+      <button class="foto-thumb-del" onclick="verwijderAlgemeneFoto(${i})"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
+    </div>`
+  ).join('');
+}
+
+function verwijderAlgemeneFoto(idx) {
+  algemeneFotos.splice(idx, 1);
+  renderFotosStap4();
+}
+
+/* ── SHEET (legacy – kan nog gebruikt worden) ────── */
+function openSheet(itemId) { /* niet meer in gebruik */ }
+function closeSheet() {
+  document.getElementById('sheet-overlay').classList.remove('open');
+  document.getElementById('bottom-sheet').classList.remove('open');
+}
+function saveSheet() { closeSheet(); }
+
+/* ── SAMENVATTING ────────────────────────────────── */
+function renderSummary() {
+  const el     = document.getElementById('summary-content');
+  const datum  = document.getElementById('datum').value;
+  const vanNr  = VAN.werknr  !== 'zaak' ? VAN.werknr  : '';
+  const naarNr = NAAR.werknr !== 'zaak' ? NAAR.werknr : '';
+
+  let html = `<div class="detail-header" style="margin-bottom:14px;">
+    <div class="detail-titel">Verplaatsing overzicht</div>
+    <div class="detail-datum">${fmtDatum(datum, true)}</div>
+    <div class="detail-route">
+      <div class="detail-locatie">
+        <div class="detail-locatie-label">Van</div>
+        <div class="detail-locatie-naam">${VAN.naam || '—'}</div>
+        ${vanNr ? `<div class="detail-locatie-nr">${vanNr}</div>` : ''}
+      </div>
+      <div class="detail-pijl">→</div>
+      <div class="detail-locatie">
+        <div class="detail-locatie-label">Naar</div>
+        <div class="detail-locatie-naam">${NAAR.naam || '—'}</div>
+        ${naarNr ? `<div class="detail-locatie-nr">${naarNr}</div>` : ''}
+      </div>
+    </div>
+  </div>`;
+
+  const selectedList = alleMaterialen.filter(m => geselecteerdeItems.has(m.id));
+  const bulkList     = Object.entries(geselecteerdeAantallen).map(([id, aantal]) => {
+    const m = alleMaterialen.find(x => x.id === id);
+    return m ? { ...m, verplaatsAantal: aantal } : null;
+  }).filter(Boolean);
+  const totaal = selectedList.length + bulkList.length;
+  if (totaal > 0) {
+    html += `<div class="detail-sectie">
+      <div class="detail-sectie-titel">Materieel (${totaal} type${totaal !== 1 ? 's' : ''})</div>
+      ${selectedList.map(m => `
+        <div class="detail-item-rij">
+          <div>
+            <div class="detail-item-naam">${m.naam}</div>
+            ${m.nummer ? `<div class="detail-item-nrs">Nr. ${m.nummer}</div>` : ''}
+          </div>
+          <div class="detail-item-aantal">×1</div>
+        </div>`).join('')}
+      ${bulkList.map(m => `
+        <div class="detail-item-rij">
+          <div><div class="detail-item-naam">${m.naam}</div></div>
+          <div class="detail-item-aantal">×${m.verplaatsAantal}</div>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  el.innerHTML = html;
+  lucide.createIcons();
+}
+
+/* ── FOTO COMPRIMEREN ────────────────────────────── */
+function compressPhoto(dataUrl, maxSize = 1280, quality = 0.78) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+        else { w = Math.round(w * maxSize / h); h = maxSize; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = dataUrl;
+  });
+}
+
+/* ── FOTO UPLOADEN ───────────────────────────────── */
+async function uploadFotos() {
+  if (algemeneFotos.length === 0) return [];
+  const ts    = Date.now();
+  const urls  = [];
+  const total = algemeneFotos.length;
+  for (let i = 0; i < total; i++) {
+    const foto = algemeneFotos[i];
+    setLoading(`Foto ${i+1} van ${total} uploaden...`);
+    const compressed   = await compressPhoto(foto.dataUrl);
+    const bestandsnaam = `${ts}_algemeen_${i}.jpg`;
+    const res  = await fetch(WORKER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ action:'foto_upload', bestandsnaam, data: compressed }),
+    });
+    const data = await res.json();
+    if (data.ok) urls.push({ url: data.url, opm: foto.opm || '' });
+  }
+  return urls;
+}
+
+/* ── VERSTUUR ────────────────────────────────────── */
+async function verstuurAlles() {
+  setLoading('Foto\'s uploaden...');
+  let fotoUrls = [];
+  try {
+    fotoUrls = await uploadFotos();
+  } catch (e) {
+    console.warn('Foto upload mislukt:', e);
+  }
+
+  setLoading('Verplaatsing registreren...');
+
+  const bulkItems = Object.entries(geselecteerdeAantallen).map(([id, aantal]) => {
+    const m = alleMaterialen.find(x => x.id === id);
+    return m ? { id, type_id: m.type_id, naam: m.naam, aantal } : null;
+  }).filter(Boolean);
+
+  const payload = {
+    action:     'verplaatsing_uitvoeren',
+    naam:       getTokenPayload()?.naam || '',
+    datum:      document.getElementById('datum').value,
+    van:        { naam: VAN.naam, werknr: VAN.werknr },
+    naar:       { naam: NAAR.naam, werknr: NAAR.werknr },
+    item_ids:   [...geselecteerdeItems],
+    bulk_items: bulkItems,
+    foto_urls:  fotoUrls,
+    opmerking:  document.getElementById('algemeen_opmerking').value.trim(),
+  };
+
+  try {
+    const res  = await apiFetch(WORKER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify(payload),
+    });
+    if (!res) return hideLoading();
+    const data = await res.json();
+    hideLoading();
+    if (data.ok) {
+      localStorage.removeItem('mwb_draft');
+      alleMaterialen     = [];
+      mijnInzendingen    = [];
+      alleVerplaatsingen = [];
+      ovzGeladen         = false;
+      toonBevestiging(payload);
+    } else {
+      showToast('Fout: ' + (data.error || 'onbekend'), 'err');
+    }
+  } catch (e) {
+    hideLoading();
+    showToast('Verbindingsfout. Controleer internet.', 'err');
+  }
+}
+
+/* ── KLUSSEN SYNC ────────────────────────────────── */
+async function syncKlussen() {
+  try {
+    const res  = await fetch(WORKER + '?action=klussen');
+    const data = await res.json();
+    if (data.ok && data.klussen.length) {
+      KLUSSEN.length = 0;
+      KLUSSEN.push(...data.klussen);
+    }
+  } catch (_) {}
+}
+
+/* ── AUTOSAVE ────────────────────────────────────── */
+function autosave() {
+  try {
+    const draft = {
+      datum:     document.getElementById('datum')?.value || '',
+      van:       { ...VAN },
+      naar:      { ...NAAR },
+      items:     [...geselecteerdeItems],
+      aantallen: { ...geselecteerdeAantallen },
+    };
+    localStorage.setItem('mwb_draft', JSON.stringify(draft));
+  } catch(_) {}
+}
+
+/* ── LOADING ─────────────────────────────────────── */
+function setLoading(tekst) {
+  document.getElementById('loading-text').textContent = tekst;
+  document.getElementById('loading-overlay').classList.add('show');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('show');
+}
+
+/* ── HELPERS ─────────────────────────────────────── */
+function ic(name, px) {
+  return `<i data-lucide="${name}"${px ? ` style="width:${px}px;height:${px}px"` : ''}></i>`;
+}
+
+/* ── TOAST ───────────────────────────────────────── */
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  const iconName = type === 'ok' ? 'check' : type === 'err' ? 'x-circle' : type === 'warn' ? 'alert-triangle' : null;
+  t.innerHTML = iconName ? `<span style="display:inline-flex;align-items:center;gap:6px;">${ic(iconName, 14)} ${msg}</span>` : msg;
+  lucide.createIcons({nodes:[t]});
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ── AUTH ────────────────────────────────────────── */
+function getToken() {
+  return localStorage.getItem('mwb_token') || '';
+}
+
+function getTokenPayload() {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (payload.exp < Math.floor(Date.now() / 1000)) return null;
+    return payload;
+  } catch { return null; }
+}
+
+async function loginUser() {
+  const gebruiker = document.getElementById('login-gebruiker').value.trim();
+  const wachtwoord = document.getElementById('login-ww').value;
+  const fout = document.getElementById('login-fout');
+  const btn  = document.querySelector('.login-btn');
+
+  if (!gebruiker || !wachtwoord) {
+    fout.textContent = 'Vul gebruikersnaam en wachtwoord in.';
+    return;
+  }
+
+  btn.textContent = 'Bezig...';
+  btn.disabled    = true;
+  fout.textContent = '';
+
+  try {
+    const res  = await fetch(WORKER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login', gebruikersnaam: gebruiker, wachtwoord }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      localStorage.setItem('mwb_token', data.token);
+      document.getElementById('login-overlay').classList.add('verborgen');
+      document.getElementById('login-ww').value = '';
+      startApp(data.naam, data.role);
+    } else {
+      fout.textContent = data.error || 'Inloggen mislukt.';
+      document.getElementById('login-ww').classList.add('fout');
+      setTimeout(() => document.getElementById('login-ww').classList.remove('fout'), 600);
+    }
+  } catch (e) {
+    fout.textContent = 'Verbindingsfout. Controleer internet.';
+  } finally {
+    btn.textContent = 'Inloggen →';
+    btn.disabled    = false;
+  }
+}
+
+function toonRegistreren(e) {
+  e.preventDefault();
+  document.getElementById('login-overlay').classList.add('verborgen');
+  document.getElementById('registreer-overlay').classList.remove('verborgen');
+  document.getElementById('reg-fout').textContent = '';
+}
+
+function toonInloggen(e) {
+  e.preventDefault();
+  document.getElementById('registreer-overlay').classList.add('verborgen');
+  document.getElementById('login-overlay').classList.remove('verborgen');
+  document.getElementById('login-fout').textContent = '';
+}
+
+async function registreerUser() {
+  const naam       = document.getElementById('reg-naam').value.trim();
+  const gebruiker  = document.getElementById('reg-gebruiker').value.trim();
+  const wachtwoord = document.getElementById('reg-ww').value;
+  const fout       = document.getElementById('reg-fout');
+  const btn        = document.querySelector('#registreer-overlay .login-btn');
+
+  if (!naam || !gebruiker || wachtwoord.length < 6) {
+    fout.textContent = 'Vul alle velden in (wachtwoord min. 6 tekens).';
+    return;
+  }
+
+  btn.textContent = 'Bezig...';
+  btn.disabled    = true;
+  fout.textContent = '';
+
+  try {
+    const res  = await fetch(WORKER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'registreren', naam, gebruikersnaam: gebruiker, wachtwoord }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      localStorage.setItem('mwb_token', data.token);
+      document.getElementById('registreer-overlay').classList.add('verborgen');
+      document.getElementById('reg-ww').value = '';
+      startApp(data.naam, data.role);
+    } else {
+      fout.textContent = data.error || 'Aanmelden mislukt.';
+      document.getElementById('reg-gebruiker').classList.add('fout');
+      setTimeout(() => document.getElementById('reg-gebruiker').classList.remove('fout'), 600);
+    }
+  } catch (e) {
+    fout.textContent = 'Verbindingsfout. Controleer internet.';
+  } finally {
+    btn.textContent = 'Account aanmaken →';
+    btn.disabled    = false;
+  }
+}
+
+function uitloggen() {
+  localStorage.removeItem('mwb_token');
+  location.reload();
+}
+
+async function apiFetch(url, opties = {}) {
+  const res = await fetch(url, opties);
+  if (res.status === 401) {
+    localStorage.removeItem('mwb_token');
+    alert('Je sessie is verlopen. Log opnieuw in.');
+    location.reload();
+    return null;
+  }
+  return res;
+}
+
+/* ── HOME ────────────────────────────────────────── */
+function alleViewsUit() {
+  ['view-home','view-wizard','view-overzicht','view-detail','view-verplaatsingen','view-ovz-locatie','view-item-history','view-success'].forEach(id =>
+    document.getElementById(id).classList.remove('active')
+  );
+  ['bn-home','bn-wizard','bn-overzicht','bn-verplaatsingen'].forEach(id =>
+    document.getElementById(id).classList.remove('active')
+  );
+  document.getElementById('progress-bar').style.display = 'none';
+}
+
+function naarHome() {
+  alleViewsUit();
+  document.getElementById('view-home').classList.add('active');
+  document.getElementById('bn-home').classList.add('active');
+}
+
+function naarWizard() {
+  alleViewsUit();
+  document.getElementById('view-wizard').classList.add('active');
+  document.getElementById('bn-wizard').classList.add('active');
+  document.getElementById('progress-bar').style.display = '';
+}
+
+function naarOverzicht() {
+  alleViewsUit();
+  document.getElementById('view-overzicht').classList.add('active');
+  document.getElementById('bn-overzicht').classList.add('active');
+  if (!ovzGeladen) ovzLaadData();
+}
+
+function naarVerplaatsingen() {
+  alleViewsUit();
+  document.getElementById('view-verplaatsingen').classList.add('active');
+  document.getElementById('bn-verplaatsingen').classList.add('active');
+  const el = document.getElementById('verpl-lijst');
+  if (!alleVerplaatsingen.length) {
+    el.innerHTML = skeletonKaarten(3);
+    laadAlleVerplaatsingen().then(() => renderVerplaatsingenLijst());
+  } else {
+    renderVerplaatsingenLijst();
+  }
+}
+
+let detailBackView = 'home';
+function detailTerug() {
+  if (detailBackView === 'verplaatsingen') naarVerplaatsingen();
+  else naarHome();
+}
+
+let itemHistoryBackView = 'ovz-locatie';
+function itemHistoryTerug() {
+  if (itemHistoryBackView === 'detail') {
+    alleViewsUit();
+    document.getElementById('view-detail').classList.add('active');
+  } else if (itemHistoryBackView === 'ovz-locatie') {
+    naarOvzLocatieTerugVanHistory();
+  } else {
+    naarOverzicht();
+  }
+}
+
+let mijnInzendingen   = [];
+let alleVerplaatsingen = [];
+
+async function laadAlleVerplaatsingen() {
+  const el = document.getElementById('verpl-lijst');
+  const sorteer = arr => (arr || []).sort((a,b) => {
+    const da = a.properties?.['Datum']?.date?.start || '';
+    const db = b.properties?.['Datum']?.date?.start || '';
+    return db.localeCompare(da);
+  });
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    // Probeer eerst het nieuwe alle_verplaatsingen endpoint
+    const res = await fetch(WORKER + '?action=alle_verplaatsingen', {
+      headers: { 'Authorization': 'Bearer ' + getToken() },
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.ok) { alleVerplaatsingen = sorteer(data.results); return; }
+    }
+    // Fallback: admin haalt alle inzendingen op, user haalt eigen op
+    const isAdmin  = getTokenPayload()?.role === 'admin';
+    const action   = isAdmin ? 'inzendingen' : 'mijn_inzendingen';
+    const res2 = await fetch(`${WORKER}?action=${action}`, {
+      headers: { 'Authorization': 'Bearer ' + getToken() },
+    });
+    if (res2.ok) {
+      const data2 = await res2.json();
+      if (data2.ok) { alleVerplaatsingen = sorteer(data2.results); return; }
+    }
+    if (el) el.innerHTML = `<div class="home-leeg">Kon verplaatsingen niet laden.<br><button class="retry-btn" onclick="naarVerplaatsingen()">${ic('refresh-cw',14)} Opnieuw</button></div>`;
+    lucide.createIcons({nodes:[el]});
+  } catch (e) {
+    if (el) {
+      el.innerHTML = `<div class="home-leeg">${e.name === 'AbortError' ? 'Verbinding te traag.' : 'Kon verplaatsingen niet laden.'}<br><button class="retry-btn" onclick="naarVerplaatsingen()">${ic('refresh-cw',14)} Opnieuw</button></div>`;
+      lucide.createIcons({nodes:[el]});
+    }
+  }
+}
+
+async function laadMijnInzendingen() {
+  const el = document.getElementById('home-inzendingen');
+  if (!el) return;
+  el.innerHTML = skeletonKaarten(3);
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch(WORKER + '?action=mijn_inzendingen', {
+      headers: { 'Authorization': 'Bearer ' + getToken() },
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    if (res.status === 401) {
+      el.innerHTML = '<div class="home-leeg">Sessie verlopen. Log opnieuw in.</div>';
+      return;
+    }
+    const data = await res.json();
+    if (!data.ok) {
+      el.innerHTML = `<div class="home-leeg">${data.error || 'Kon inzendingen niet laden.'}<br><button class="retry-btn" onclick="laadMijnInzendingen()">${ic('refresh-cw',14)} Opnieuw</button></div>`;
+      lucide.createIcons({nodes:[el]});
+      return;
+    }
+    const results = (data.results || []).sort((a,b) => {
+      const da = a.properties?.['Datum']?.date?.start || '';
+      const db = b.properties?.['Datum']?.date?.start || '';
+      return db.localeCompare(da);
+    });
+    if (!results.length) {
+      el.innerHTML = '<div class="home-leeg">Nog geen inzendingen gevonden.</div>';
+      return;
+    }
+    mijnInzendingen = results;
+    el.innerHTML = mijnInzendingen.map((inz, i) => {
+      const naam   = inz.properties?.['Naam']?.title?.[0]?.plain_text || '—';
+      const bp     = inz.properties?.['Bouwplaats']?.rich_text?.[0]?.plain_text || '';
+      const vanNr  = inz.properties?.['Werknr. Van']?.rich_text?.[0]?.plain_text || '';
+      const datum  = inz.properties?.['Datum']?.date?.start || '';
+      const status = inz.properties?.['Status']?.select?.name || 'Nieuw';
+      const type   = inz.properties?.['Opslag / Zaak']?.rich_text?.[0]?.plain_text || '';
+      const icon   = type.includes('Zaak') ? ic('building-2',13) : ic('arrow-left-right',13);
+      const route  = bp || inz.properties?.['Werknr. Naar']?.rich_text?.[0]?.plain_text || '';
+      const sc     = status === 'Verwerkt' ? 'home-inz-status-verwerkt' : 'home-inz-status-nieuw';
+      return `<div class="home-inz-card" onclick="openDetail(${i})">
+        <span class="home-inz-icon">${icon}</span>
+        <div class="home-inz-info">
+          <div class="home-inz-naam">${vanNr ? vanNr + ' → ' + (route || '?') : naam}</div>
+          <div class="home-inz-meta">${fmtDatum(datum)}${route && vanNr ? ' · ' + route : ''}</div>
+        </div>
+        <span class="home-inz-status ${sc}">${status}</span>
+      </div>`;
+    }).join('');
+    lucide.createIcons({nodes:[el]});
+  } catch (e) {
+    el.innerHTML = `<div class="home-leeg">${e.name === 'AbortError' ? 'Verbinding te traag.' : 'Kon inzendingen niet laden.'}<br><button class="retry-btn" onclick="laadMijnInzendingen()">${ic('refresh-cw',14)} Opnieuw</button></div>`;
+    lucide.createIcons({nodes:[el]});
+  }
+}
+
+let geschFilter = 'alles';
+function setGeschFilter(filter, btn) {
+  geschFilter = filter;
+  document.querySelectorAll('.gesch-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVerplaatsingenLijst();
+}
+
+function renderVerplaatsingenLijst() {
+  const el = document.getElementById('verpl-lijst');
+  if (!el) return;
+
+  // Filter op datum
+  const nu = new Date();
+  const vandaag = nu.toISOString().slice(0, 10);
+  const maandStart = new Date(nu.getFullYear(), nu.getMonth(), 1).toISOString().slice(0, 10);
+  const weekStart  = (() => { const d = new Date(nu); d.setDate(nu.getDate() - ((nu.getDay() + 6) % 7)); return d.toISOString().slice(0, 10); })();
+
+  const geindexeerd = alleVerplaatsingen.map((inz, i) => ({ inz, i }));
+  const gefilterd = geschFilter === 'vandaag' ? geindexeerd.filter(({inz}) => (inz.properties?.['Datum']?.date?.start || '') === vandaag)
+    : geschFilter === 'week'   ? geindexeerd.filter(({inz}) => (inz.properties?.['Datum']?.date?.start || '') >= weekStart)
+    : geschFilter === 'maand'  ? geindexeerd.filter(({inz}) => (inz.properties?.['Datum']?.date?.start || '') >= maandStart)
+    : geindexeerd;
+
+  // Update sectie-titel met teller
+  const titelEl = document.getElementById('gesch-sectie-titel');
+  if (titelEl) titelEl.textContent = `Verplaatsingen (${gefilterd.length})`;
+
+  if (!gefilterd.length) {
+    el.innerHTML = `<div class="home-leeg">${alleVerplaatsingen.length ? 'Geen verplaatsingen in deze periode.' : 'Nog geen verplaatsingen gevonden.'}</div>`;
+    return;
+  }
+  el.innerHTML = gefilterd.map(({ inz, i }) => {
+    const medewerker = inz.properties?.['Ingevuld door']?.rich_text?.[0]?.plain_text || inz.properties?.['Naam']?.title?.[0]?.plain_text || '—';
+    const vanNr  = inz.properties?.['Werknr. Van']?.rich_text?.[0]?.plain_text || '';
+    const bp     = inz.properties?.['Bouwplaats']?.rich_text?.[0]?.plain_text || '';
+    const naarNr = inz.properties?.['Werknr. Naar']?.rich_text?.[0]?.plain_text || '';
+    const datum  = inz.properties?.['Datum']?.date?.start || '';
+    const status = inz.properties?.['Status']?.select?.name || 'Nieuw';
+    const type   = inz.properties?.['Opslag / Zaak']?.rich_text?.[0]?.plain_text || '';
+    const icon   = type.includes('Zaak') ? ic('building-2',13) : ic('arrow-left-right',13);
+    const route  = vanNr ? vanNr + ' → ' + (bp || naarNr || '?') : (bp || naarNr || '—');
+    const sc     = status === 'Verwerkt' ? 'home-inz-status-verwerkt' : 'home-inz-status-nieuw';
+    return `<div class="home-inz-card" onclick="openDetailVerpl(${i})">
+      <span class="home-inz-icon">${icon}</span>
+      <div class="home-inz-info">
+        <div class="home-inz-naam">${route}</div>
+        <div class="home-inz-meta">${fmtDatum(datum)}${medewerker ? ' · ' + medewerker : ''}</div>
+      </div>
+      <span class="home-inz-status ${sc}">${status}</span>
+    </div>`;
+  }).join('');
+  lucide.createIcons({nodes:[el]});
+}
+
+function openDetailVerpl(index) {
+  detailBackView = 'verplaatsingen';
+  openDetailInz(alleVerplaatsingen[index]);
+}
+
+function openDetail(index) {
+  detailBackView = 'home';
+  openDetailInz(mijnInzendingen[index]);
+}
+
+function openDetailInz(inz) {
+  if (!inz) return;
+  const p       = inz.properties || {};
+  const naam    = p['Naam']?.title?.[0]?.plain_text || '—';
+  const datum   = p['Datum']?.date?.start || '';
+  const status  = p['Status']?.select?.name || 'Nieuw';
+  const type    = p['Opslag / Zaak']?.rich_text?.[0]?.plain_text || '';
+  const vanNr   = p['Werknr. Van']?.rich_text?.[0]?.plain_text || '—';
+  const naarNr  = p['Werknr. Naar']?.rich_text?.[0]?.plain_text || '—';
+  const naarNaam = p['Bouwplaats']?.rich_text?.[0]?.plain_text || naarNr;
+  const details  = p['Details']?.rich_text?.[0]?.plain_text || '';
+  const opmerking = p['Opmerkingen']?.rich_text?.[0]?.plain_text || '';
+  const sc      = status === 'Verwerkt' ? 'verwerkt' : 'nieuw';
+
+  // Parse items uit details via herbruikbare functie
+  const itemRegels = parseDetails(details).map(it => ({
+    naam:    it.naam,
+    aantal:  it.aantal,
+    nummers: it.nummers.join(', '),
+    opm:     '',
+  }));
+  // Voeg opmerkingen per regel toe
+  const alleOpm = [...Object.values(SECTIES).flat(), ...alleMaterialen.map(m => ({ id: m.type_id, naam: m.naam }))].filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i);
+  details.split('\n').forEach(line => {
+    for (const item of alleOpm) {
+      if (line.startsWith(item.naam + ':')) {
+        const opmMatch = line.match(/–\s*(.+)$/);
+        if (opmMatch) {
+          const typeMatch = line.match(/\[([^\]]+)\]/);
+          const type      = typeMatch ? typeMatch[1].trim() : '';
+          const naam      = type ? `${item.naam} ${type}` : item.naam;
+          const regel = itemRegels.find(r => r.naam === naam);
+          if (regel) regel.opm = opmMatch[1];
+        }
+        break;
+      }
+    }
+  });
+
+  let itemsHtml = '';
+  if (itemRegels.length) {
+    // Groepeer verplaatst materieel per sectie
+    const getSectie = naam => {
+      const gevonden = alleMaterialen.find(m => m.naam === naam);
+      return gevonden?.sectie || 'Overig';
+    };
+    const perSectie = {};
+    for (const it of itemRegels) {
+      const s = getSectie(it.naam);
+      if (!perSectie[s]) perSectie[s] = [];
+      perSectie[s].push(it);
+    }
+    const sectieVolgorde = Object.keys(perSectie).sort((a,b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b,'nl'));
+
+    const itemRow = it => {
+      const naamEsc  = it.naam.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      const numArr   = it.nummers ? it.nummers.split(', ').filter(Boolean) : [];
+      const numParam = numArr.length === 1 ? `'${numArr[0]}'` : 'null';
+      return `<div class="detail-item-rij ovz-item-klikbaar" onclick="toonItemGeschiedenis('${naamEsc}', ${numParam}, 'detail')">
+        <div>
+          <div class="detail-item-naam">${it.naam}</div>
+          ${it.nummers ? `<div class="detail-item-nrs">Nr. ${it.nummers}</div>` : ''}
+          ${it.opm     ? `<div class="detail-item-nrs">${it.opm}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="detail-item-aantal">×${it.aantal}</div>
+          <i data-lucide="chevron-right" style="width:14px;height:14px;color:var(--zacht);flex-shrink:0;"></i>
+        </div>
+      </div>`;
+    };
+
+    itemsHtml = sectieVolgorde.map(sectie => `
+      <div class="detail-sectie">
+        <div class="detail-sectie-titel">${sectie}</div>
+        ${perSectie[sectie].map(itemRow).join('')}
+      </div>`).join('');
+  }
+
+  const opmHtml = opmerking ? `<div class="detail-sectie">
+    <div class="detail-sectie-titel">Opmerking</div>
+    <div class="detail-opmerking">${opmerking}</div>
+  </div>` : '';
+
+  document.getElementById('detail-inhoud').innerHTML = `
+    <button class="detail-back" onclick="detailTerug()">← Terug</button>
+    <div class="detail-header">
+      <div class="detail-titel">${naam}</div>
+      <div class="detail-datum">${fmtDatum(datum, true)} · ${type}</div>
+      <span class="detail-status ${sc}">${status === 'Verwerkt' ? '<i data-lucide="check" style="width:11px;height:11px;"></i> Verwerkt' : '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;vertical-align:middle;margin-right:3px;"></span>Nieuw'}</span>
+      <div class="detail-route">
+        <div class="detail-locatie">
+          <div class="detail-locatie-label">Van</div>
+          <div class="detail-locatie-naam">${vanNr}</div>
+        </div>
+        <div class="detail-pijl">→</div>
+        <div class="detail-locatie">
+          <div class="detail-locatie-label">Naar</div>
+          <div class="detail-locatie-naam">${naarNaam}</div>
+          ${naarNr !== naarNaam ? `<div class="detail-locatie-nr">${naarNr}</div>` : ''}
+        </div>
+      </div>
+    </div>
+    ${itemsHtml}
+    ${opmHtml}
+  `;
+
+  alleViewsUit();
+  document.getElementById('view-detail').classList.add('active');
+  lucide.createIcons();
+}
+
+function toonBevestiging(payload) {
+  const sortDatum = d => fmtDatum(d, true);
+  const vanLabel  = (payload.van.werknr  || '').toLowerCase() === 'zaak' ? 'De Zaak – Depot' : (payload.van.naam  || payload.van.werknr  || '—');
+  const naarLabel = (payload.naar.werknr || '').toLowerCase() === 'zaak' ? 'De Zaak – Depot' : (payload.naar.naam || payload.naar.werknr || '—');
+  const aantalItems = (payload.item_ids?.length || 0) + (payload.bulk_items?.reduce((s,b) => s + (b.aantal||0), 0) || 0);
+  document.getElementById('success-details').innerHTML = `
+    <div class="success-row"><span class="success-label">Van</span><span class="success-value">${vanLabel}</span></div>
+    <div class="success-row"><span class="success-label">Naar</span><span class="success-value">${naarLabel}</span></div>
+    <div class="success-row"><span class="success-label">Datum</span><span class="success-value">${payload.datum ? sortDatum(payload.datum) : '—'}</span></div>
+    <div class="success-row"><span class="success-label">Materieel</span><span class="success-value">${aantalItems} item${aantalItems !== 1 ? 's' : ''}</span></div>
+  `;
+  alleViewsUit();
+  document.getElementById('view-success').classList.add('active');
+  lucide.createIcons();
+}
+
+function nieuweVerplaatsing() {
+  initState();
+  goToStep(1);
+  naarWizard();
+}
+
+function startApp(naam, role) {
+  // Wizard stap 1
+  const elWNaam = document.getElementById('welkom-naam');
+  if (elWNaam) elWNaam.textContent = naam;
+  const elWRol = document.getElementById('welkom-rol');
+  if (elWRol) elWRol.textContent = role === 'admin' ? 'Beheerder' : 'Medewerker';
+  if (role === 'admin') {
+    document.getElementById('header-beheer-link').style.display = '';
+    document.getElementById('beheer-divider').style.display = '';
+  }
+  // Home view
+  const groeten = ['Goedenacht','Goedemorgen','Goedemiddag','Goedenavond'];
+  const uur = new Date().getHours();
+  const groet = uur < 6 ? groeten[0] : uur < 12 ? groeten[1] : uur < 18 ? groeten[2] : groeten[3];
+  document.getElementById('home-groet').textContent = groet;
+  document.getElementById('home-naam').textContent  = naam;
+  const nu = new Date();
+  document.getElementById('home-datum-str').textContent =
+    nu.toLocaleDateString('nl-NL', { weekday:'long', day:'numeric', month:'long' });
+  // Start op home, progress bar verborgen
+  document.getElementById('progress-bar').style.display = 'none';
+  laadMijnInzendingen();
+  init();
+}
+
+/* ── INIT ────────────────────────────────────────── */
+function init() {
+  initState();
+
+  const nu = new Date();
+  document.getElementById('datum').value = nu.toISOString().slice(0, 10);
+
+  updateProgress();
+  updateNav();
+  syncKlussen();
+  laadMaterialenApp();
+}
+
+/* ── OVERZICHT ───────────────────────────────────── */
+const OVZ_FILTER_MAP = {
+  keten:        ['schaftkeet','uitvoerderskeet','pipokeet','keettrap'],
+  containers:   ['container'],
+  lichtmasten:  ['lichtmast'],
+  hekken:       ['bouwhekken','bouwhek_voeten','hekklemmen','hekwielen','hek_schoren','kunststof_rijplaten'],
+  aansluitingen:['bouwmeterkast','bouwmeterkast_35a','bouwmeterkast_63a','bouwmeterkast_125a','waterput','waterkraan'],
+};
+function klusNaamVoor(werknr, fallback) {
+  const k = KLUSSEN.find(k => k.werknr === werknr);
+  return k ? k.naam : (fallback || werknr);
+}
+
+let ovzLocatieMap   = {};
+let ovzRawMateriaal = [];
+let ovzActiefFilter = 'alles';
+let ovzLaadMoment   = null;
+let ovzGeladen      = false;
+
+function prop(page, name) {
+  return page?.properties?.[name];
+}
+
+function parseDetails(tekst) {
+  if (!tekst) return [];
+  const items = [];
+  const secties = Object.values(SECTIES).flat();
+  const custom  = alleMaterialen.map(m => ({ id: m.type_id, naam: m.naam }));
+  const alle    = [...secties, ...custom].filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i);
+  for (const line of tekst.split('\n')) {
+    for (const item of alle) {
+      if (line.startsWith(item.naam + ':')) {
+        const aantalMatch = line.match(/:\s*(\d+)/);
+        const nummerMatch = line.match(/nr\.\s*([^)]+)\)/);
+        const typeMatch   = line.match(/\[([^\]]+)\]/);
+        const aantal      = aantalMatch ? parseInt(aantalMatch[1]) : 0;
+        const nummers     = nummerMatch ? nummerMatch[1].split(',').map(n => n.trim()).filter(Boolean).sort((a,b) => (Number(a)||0) - (Number(b)||0)) : [];
+        const type        = typeMatch   ? typeMatch[1].trim() : '';
+        if (aantal > 0) {
+          const id   = type ? `${item.id}_${type.toLowerCase().replace(/[^a-z0-9]/g,'')}` : item.id;
+          const naam = type ? `${item.naam} ${type}` : item.naam;
+          items.push({ id, naam, aantal, nummers, type });
+        }
+        break;
+      }
+    }
+  }
+  return items;
+}
+
+function bouwLocatieMap(inzendingen) {
+  const gesorteerd = [...inzendingen].sort((a, b) => {
+    const da = prop(a, 'Datum')?.date?.start || '';
+    const db = prop(b, 'Datum')?.date?.start || '';
+    return da.localeCompare(db);
+  });
+  const nummerLocatie = {};
+  const locaties = {};
+
+  function getLocatieKey(naam, werknr) { return werknr || naam; }
+
+  function ensureLocatie(naam, werknr) {
+    const key = getLocatieKey(naam, werknr);
+    if (!locaties[key]) locaties[key] = { naam, werknr, items: {} };
+    return key;
+  }
+
+  function addItem(locKey, itemId, itemNaam, aantal, nummers) {
+    if (!locaties[locKey]) return;
+    if (!locaties[locKey].items[itemId])
+      locaties[locKey].items[itemId] = { naam: itemNaam, aantal: 0, nummers: [] };
+    locaties[locKey].items[itemId].aantal += aantal;
+    if (nummers) nummers.forEach(n => {
+      if (!locaties[locKey].items[itemId].nummers.includes(n))
+        locaties[locKey].items[itemId].nummers.push(n);
+    });
+  }
+
+  function removeItem(locKey, itemId, aantal, nummers) {
+    if (!locaties[locKey] || !locaties[locKey].items[itemId]) return;
+    locaties[locKey].items[itemId].aantal = Math.max(0, locaties[locKey].items[itemId].aantal - aantal);
+    if (nummers) nummers.forEach(n => {
+      const idx = locaties[locKey].items[itemId].nummers.indexOf(n);
+      if (idx >= 0) locaties[locKey].items[itemId].nummers.splice(idx, 1);
+    });
+    if (locaties[locKey].items[itemId].aantal <= 0 && locaties[locKey].items[itemId].nummers.length === 0)
+      delete locaties[locKey].items[itemId];
+  }
+
+
+  for (const inz of gesorteerd) {
+    const details   = prop(inz, 'Details')?.rich_text?.[0]?.plain_text || '';
+    const vanNr     = prop(inz, 'Werknr. Van')?.rich_text?.[0]?.plain_text || '';
+    const naarNr    = prop(inz, 'Werknr. Naar')?.rich_text?.[0]?.plain_text || '';
+    const naarNaam  = prop(inz, 'Bouwplaats')?.rich_text?.[0]?.plain_text || naarNr;
+    const vanKey    = vanNr  ? ensureLocatie(klusNaamVoor(vanNr, vanNr),          vanNr)  : null;
+    const naarKey   = naarNr ? ensureLocatie(klusNaamVoor(naarNr, naarNaam || naarNr), naarNr) : null;
+    if (!vanKey && !naarKey) continue;
+    const regelItems = parseDetails(details);
+    for (const ri of regelItems) {
+      if (vanKey)  removeItem(vanKey,  ri.id, ri.aantal, ri.nummers);
+      if (naarKey) addItem(naarKey, ri.id, ri.naam, ri.aantal, ri.nummers);
+    }
+  }
+
+  for (const key of Object.keys(locaties)) {
+    if (Object.keys(locaties[key].items).length === 0) delete locaties[key];
+  }
+  return locaties;
+}
+
+function bouwLocatieMapFromKV(materialen) {
+  const locaties = {};
+  for (const m of materialen) {
+    const loc = m.locatie || 'zaak';
+    if (!locaties[loc]) {
+      const klusObj = KLUSSEN.find(k => k.werknr === loc);
+      locaties[loc] = { naam: loc === 'zaak' ? 'De Zaak – Depot' : (klusObj ? klusObj.naam : loc), werknr: loc, items: {} };
+    }
+    const typeId = m.type_id;
+    if (!locaties[loc].items[typeId]) locaties[loc].items[typeId] = { naam: m.naam, aantal: 0, nummers: [] };
+    if (m.aantal != null) {
+      locaties[loc].items[typeId].aantal += m.aantal;
+    } else {
+      locaties[loc].items[typeId].aantal += 1;
+      if (m.nummer) locaties[loc].items[typeId].nummers.push(String(m.nummer));
+    }
+  }
+  if (!locaties['zaak']) locaties['zaak'] = { naam: 'De Zaak – Depot', werknr: 'zaak', items: {} };
+  return locaties;
+}
+
+async function ovzLaadData() {
+  document.getElementById('ovz-content').innerHTML = skeletonOvz();
+  try {
+    const res  = await apiFetch(WORKER + '?action=materieel', { headers: { 'Authorization': 'Bearer ' + getToken() } });
+    if (!res) return;
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error);
+    cacheOpslaan(CACHE_KEY_MAT, data.materialen);
+    alleMaterialen  = migrateerSectie(data.materialen);
+    ovzRawMateriaal = alleMaterialen;
+    ovzLocatieMap   = bouwLocatieMapFromKV(alleMaterialen);
+    ovzLaadMoment   = new Date();
+    ovzGeladen      = true;
+    ovzRender();
+  } catch (e) {
+    const cached = cacheLaden(CACHE_KEY_MAT, Infinity);
+    if (cached) {
+      alleMaterialen  = migrateerSectie(cached);
+      ovzRawMateriaal = alleMaterialen;
+      ovzLocatieMap   = bouwLocatieMapFromKV(alleMaterialen);
+      ovzGeladen      = true;
+      ovzRender();
+      showToast('Offline – gecachede data', 'warn');
+    } else {
+      document.getElementById('ovz-content').innerHTML =
+        `<div class="ovz-leeg"><div class="ovz-leeg-icon"><i data-lucide="wifi-off" style="width:36px;height:36px"></i></div><div class="ovz-leeg-titel">Geen verbinding</div><div class="ovz-leeg-sub">${e.message || 'Controleer internet.'}</div><button class="retry-btn" onclick="ovzHerlaad()">${ic('refresh-cw',14)} Opnieuw proberen</button></div>`;
+      lucide.createIcons();
+    }
+  }
+}
+
+function ovzRender() {
+  const statusEl = document.getElementById('ovz-status-banner');
+  statusEl.innerHTML = ovzLaadMoment
+    ? `<div class="ovz-status-banner"><div class="ovz-status-dot"></div><div class="ovz-status-tekst">Bijgewerkt om ${ovzLaadMoment.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})} · ${Object.keys(ovzLocatieMap).length} locaties</div></div>`
+    : '';
+
+  const zoek = (document.getElementById('ovz-zoek').value || '').toLowerCase();
+  const alle = Object.keys(ovzLocatieMap);
+
+  const zaakKeys = alle.filter(k => k === 'zaak');
+  const klusKeys = alle.filter(k => k !== 'zaak').filter(k => {
+    const loc = ovzLocatieMap[k];
+    if (zoek && !loc.naam.toLowerCase().includes(zoek) && !loc.werknr.toLowerCase().includes(zoek)) return false;
+    if (ovzActiefFilter !== 'alles') {
+      const ids = OVZ_FILTER_MAP[ovzActiefFilter] || [];
+      if (!Object.keys(loc.items).some(id => ids.includes(id))) return false;
+    }
+    return true;
+  }).sort((a, b) => ovzLocatieMap[a].naam.localeCompare(ovzLocatieMap[b].naam));
+
+  let html = '<div class="ovz-sectie-header"><i data-lucide="building-2" style="width:13px;height:13px;"></i> De Zaak – Depot</div>';
+  html += ovzKlusKaart('zaak', true);
+
+  if (klusKeys.length) {
+    html += '<div class="ovz-sectie-header" style="margin-top:20px;">' + ic('hard-hat',14) + ' Bouwplaatsen</div>';
+    klusKeys.forEach(k => { html += ovzKlusKaart(k, false); });
+  }
+
+  if (!klusKeys.length && zoek) {
+    html += '<div class="ovz-leeg"><div class="ovz-leeg-icon"><i data-lucide="inbox" style="width:36px;height:36px"></i></div><div class="ovz-leeg-titel">Niets gevonden</div><div class="ovz-leeg-sub">Probeer een andere zoekterm.</div></div>';
+  }
+
+  document.getElementById('ovz-content').innerHTML = html;
+  lucide.createIcons();
+}
+
+function ovzKlusKaart(key, isZaak) {
+  const loc    = ovzLocatieMap[key];
+  if (!loc) return '';
+  const items  = ovzActiefFilter === 'alles'
+    ? Object.entries(loc.items)
+    : Object.entries(loc.items).filter(([id]) => (OVZ_FILTER_MAP[ovzActiefFilter] || []).includes(id));
+  const totaal = items.reduce((s,[,v]) => s + v.aantal, 0);
+  const badge  = !isZaak && loc.werknr ? `<span class="ovz-klus-nr">${loc.werknr}</span>` : '';
+  const leeg   = items.length === 0;
+  return `<div class="ovz-klus-card ${isZaak ? 'ovz-zaak-card' : ''}" onclick="naarOvzLocatie('${key}')">
+    <div class="ovz-klus-header">
+      <div class="ovz-klus-info">
+        <div class="ovz-klus-naam">${loc.naam}</div>
+        <div class="ovz-klus-teller">${leeg ? 'Geen materieel geregistreerd' : items.length + ' soort' + (items.length!==1?'en':'') + ' · ' + totaal + ' stuks'}</div>
+      </div>
+      ${badge}
+      <span class="ovz-klus-chevron">›</span>
+    </div>
+  </div>`;
+}
+
+let ovzHuidigeLocatieKey = null;
+
+function naarOvzLocatie(locKey) {
+  ovzHuidigeLocatieKey = locKey;
+  const loc = ovzLocatieMap[locKey];
+  if (!loc) return;
+  const isZaak  = locKey === 'zaak';
+  const rauwe   = ovzRawMateriaal.filter(m => (m.locatie || 'zaak') === locKey);
+  const totaal  = rauwe.reduce((s, m) => s + (m.aantal != null ? m.aantal : 1), 0);
+
+  // Groepeer individuele items per sectie
+  const perSectie = {};
+  for (const m of rauwe) {
+    const sectie = m.sectie || 'Overig';
+    if (!perSectie[sectie]) perSectie[sectie] = [];
+    perSectie[sectie].push(m);
+  }
+
+  // Sorteer items binnen sectie: op naam dan op nummer (numeriek)
+  for (const lijst of Object.values(perSectie)) {
+    lijst.sort((a, b) => {
+      if (a.naam !== b.naam) return a.naam.localeCompare(b.naam);
+      return (Number(a.nummer) || 0) - (Number(b.nummer) || 0);
+    });
+  }
+
+  let itemsHtml = '';
+  if (!rauwe.length) {
+    itemsHtml = '<div class="ovz-leeg" style="padding:40px 0;"><div class="ovz-leeg-icon"><i data-lucide="package" style="width:40px;height:40px"></i></div><div class="ovz-leeg-titel">Niets hier</div><div class="ovz-leeg-sub">Geen geregistreerd materieel op deze locatie.</div></div>';
+  } else {
+    const secties = Object.keys(perSectie).sort((a, b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b));
+    for (const sectie of secties) {
+      const sItems = perSectie[sectie];
+
+      // Groepeer per naam (type) binnen de sectie
+      const perType = {};
+      for (const m of sItems) {
+        if (!perType[m.naam]) perType[m.naam] = [];
+        perType[m.naam].push(m);
+      }
+
+      const secKey = sectie.toLowerCase().replace(/[^a-z0-9]/g,'_');
+      const secOpen = expandedSecties.has(secKey);
+      itemsHtml += `<div class="mat-kies-sectie-titel" style="margin:16px 16px 6px;" onclick="toggleSectie('${secKey}')">
+        <span>${sectie}</span>
+        <span class="sec-chev" id="sec-chev-${secKey}" style="transform:${secOpen ? '' : 'rotate(-90deg)'}">▼</span>
+      </div>
+      <div id="sec-panel-${secKey}" style="${secOpen ? '' : 'display:none'}">
+      <div class="card" style="margin:0 16px 10px;">`;
+
+      for (const [naam, typeItems] of Object.entries(perType).sort(([a],[b]) => a.localeCompare(b,'nl'))) {
+        const naamEsc   = naam.replace(/'/g, "\\'");
+        const typeKey   = naam.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+        const isOpen    = expandedOvzTypes.has(typeKey);
+        const isBulk    = typeItems[0].aantal != null;
+
+        if (isBulk) {
+          const totaalBulk = typeItems.reduce((s,m) => s + (m.aantal||0), 0);
+          itemsHtml += `<div class="ovz-item-regel ovz-item-klikbaar" onclick="toonItemGeschiedenis('${naamEsc}', null)">
+            <div class="ovz-item-naam">${naam}</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="ovz-item-badge">${totaalBulk} stuks</div>
+              <span style="color:var(--zacht);font-size:16px;">›</span>
+            </div>
+          </div>`;
+        } else {
+          const gesorteerd = typeItems.slice().sort((a,b) => (Number(a.nummer)||0) - (Number(b.nummer)||0));
+          itemsHtml += `<div class="mat-kies-row" onclick="toggleOvzType('${typeKey}')">
+            <div style="flex:1">
+              <div class="mat-kies-naam">${naam}</div>
+              <div class="mat-kies-nr">${typeItems.length} item${typeItems.length !== 1 ? 's' : ''}</div>
+            </div>
+            <div class="mat-kies-chevron" id="ovz-chev-${typeKey}">${isOpen ? '▲' : '▼'}</div>
+          </div>
+          <div class="mat-kies-sub" id="ovz-exp-${typeKey}" style="${isOpen ? '' : 'display:none'}">
+            ${gesorteerd.map(m => {
+              const numEsc = (m.nummer || '').replace(/'/g, "\\'");
+              return `<div class="ovz-item-regel ovz-item-klikbaar" onclick="event.stopPropagation();toonItemGeschiedenis('${naamEsc}','${numEsc}')">
+                <div class="ovz-item-naam">Nr. ${m.nummer || '—'}</div>
+                <span style="color:var(--zacht);font-size:16px;">›</span>
+              </div>`;
+            }).join('')}
+          </div>`;
+        }
+      }
+      itemsHtml += '</div></div>'; // sluit card + sec-panel
+    }
+  }
+
+  document.getElementById('ovz-locatie-inhoud').innerHTML = `
+    <div style="padding:20px 16px 0;">
+      <div class="detail-header">
+        <div class="detail-titel">${loc.naam}</div>
+        ${!isZaak && loc.werknr ? `<div style="margin-top:6px;"><span class="ovz-klus-nr" style="font-size:13px;">${loc.werknr}</span></div>` : ''}
+        <div style="font-size:12px;color:var(--zacht);margin-top:6px;">${rauwe.length} item${rauwe.length!==1?'s':''} · ${totaal} stuks</div>
+      </div>
+    </div>
+    ${itemsHtml}`;
+  lucide.createIcons();
+
+  alleViewsUit();
+  document.getElementById('view-ovz-locatie').classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function naarOvzLocatieTerugVanHistory() {
+  if (ovzHuidigeLocatieKey) naarOvzLocatie(ovzHuidigeLocatieKey);
+  else naarOverzicht();
+}
+
+async function toonItemGeschiedenis(naam, nummer, backView = 'ovz-locatie') {
+  itemHistoryBackView = backView;
+  const el = document.getElementById('item-history-inhoud');
+  const titel = nummer ? `${naam} Nr. ${nummer}` : naam;
+  el.innerHTML = `<div style="padding:20px 16px 0;"><div class="detail-header"><div class="detail-titel">${titel}</div><div style="font-size:12px;color:var(--zacht);margin-top:4px;">Verplaatsingshistorie</div></div></div><div class="home-spinner" style="margin:40px auto;"></div>`;
+  alleViewsUit();
+  document.getElementById('view-item-history').classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+
+  // Haal alle verplaatsingen op als nog niet gecached
+  if (!alleVerplaatsingen.length) {
+    await laadAlleVerplaatsingen();
+    if (!alleVerplaatsingen.length) {
+      el.innerHTML = '<div style="padding:20px 16px;color:var(--zacht);">Kon verplaatsingen niet laden.</div>';
+      return;
+    }
+  }
+
+  // Filter inzendingen die dit item bevatten
+  const gevonden = [];
+  for (const inz of alleVerplaatsingen) {
+    const details = inz.properties?.['Details']?.rich_text?.[0]?.plain_text || '';
+    const items = parseDetails(details);
+    const match = items.find(it => it.naam === naam);
+    if (!match) continue;
+    if (nummer && !match.nummers.includes(String(nummer))) continue;
+    const datum   = inz.properties?.['Datum']?.date?.start || '';
+    const medewerker = inz.properties?.['Naam']?.title?.[0]?.plain_text || '—';
+    const vanNr   = inz.properties?.['Werknr. Van']?.rich_text?.[0]?.plain_text || '—';
+    const naarNr  = inz.properties?.['Werknr. Naar']?.rich_text?.[0]?.plain_text || '—';
+    const naarNaam = inz.properties?.['Bouwplaats']?.rich_text?.[0]?.plain_text || naarNr;
+    const vanLabel  = vanNr  === 'zaak' ? 'De Zaak' : (klusNaamVoor(vanNr, vanNr));
+    const naarLabel = naarNr === 'zaak' ? 'De Zaak' : (klusNaamVoor(naarNr, naarNaam));
+    gevonden.push({ datum, medewerker, vanLabel, naarLabel });
+  }
+
+  // Sorteer aflopend op datum
+  gevonden.sort((a, b) => b.datum.localeCompare(a.datum));
+
+  let html = `<div style="padding:20px 16px 0;"><div class="detail-header"><div class="detail-titel">${titel}</div><div style="font-size:12px;color:var(--zacht);margin-top:4px;">${gevonden.length} verplaatsing${gevonden.length !== 1 ? 'en' : ''}</div></div></div>`;
+
+  if (!gevonden.length) {
+    html += '<div class="ovz-leeg" style="padding:40px 0;"><div class="ovz-leeg-icon"><i data-lucide="clipboard-list" style="width:40px;height:40px"></i></div><div class="ovz-leeg-titel">Geen historie</div><div class="ovz-leeg-sub">Geen geregistreerde verplaatsingen gevonden.</div></div>';
+  } else {
+    html += '<div class="card" style="margin:16px 16px 10px;">';
+    for (const g of gevonden) {
+      const datumStr = fmtDatum(g.datum, true);
+      html += `<div class="gesch-rij">
+        <div class="gesch-datum">${datumStr}</div>
+        <div class="gesch-route">${g.vanLabel} → ${g.naarLabel}</div>
+        <div class="gesch-medewerker">${g.medewerker}</div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+  el.innerHTML = html;
+  lucide.createIcons();
+}
+
+function naarOverzicht() {
+  alleViewsUit();
+  document.getElementById('view-overzicht').classList.add('active');
+  document.getElementById('bn-overzicht').classList.add('active');
+  if (!ovzGeladen) ovzLaadData();
+}
+
+function ovzHerlaad() {
+  ovzGeladen = false;
+  ovzLaadData();
+}
+
+function ovzSetFilter(filter, btn) {
+  ovzActiefFilter = filter;
+  document.querySelectorAll('.ovz-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ovzRender();
+}
+
+function ovzFilter() { ovzRender(); }
+
+/* ── WACHTWOORD WIJZIGEN ─────────────────────────── */
+function openWachtwoord() {
+  document.getElementById('ww-huidig').value   = '';
+  document.getElementById('ww-nieuw').value    = '';
+  document.getElementById('ww-bevestig').value = '';
+  document.getElementById('ww-fout').textContent = '';
+  document.getElementById('ww-overlay').classList.add('open');
+  document.getElementById('header-dropdown').classList.remove('open');
+  document.getElementById('menu-btn').classList.remove('open');
+  setTimeout(() => document.getElementById('ww-huidig').focus(), 350);
+}
+
+function sluitWachtwoord() {
+  document.getElementById('ww-overlay').classList.remove('open');
+}
+
+async function slaWachtwoordOp() {
+  const huidig   = document.getElementById('ww-huidig').value;
+  const nieuw    = document.getElementById('ww-nieuw').value;
+  const bevestig = document.getElementById('ww-bevestig').value;
+  const fout     = document.getElementById('ww-fout');
+  const btn      = document.getElementById('ww-btn');
+
+  if (!huidig)              { fout.textContent = 'Vul je huidige wachtwoord in.'; return; }
+  if (nieuw.length < 6)     { fout.textContent = 'Nieuw wachtwoord minimaal 6 tekens.'; return; }
+  if (nieuw !== bevestig)   { fout.textContent = 'Wachtwoorden komen niet overeen.'; return; }
+
+  btn.textContent = 'Bezig...'; btn.disabled = true; fout.textContent = '';
+  try {
+    // Eerst inloggen om huidig wachtwoord te verifiëren
+    const loginRes  = await fetch(WORKER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login', gebruikersnaam: getTokenPayload()?.sub, wachtwoord: huidig }),
+    });
+    const loginData = await loginRes.json();
+    if (!loginData.ok) { fout.textContent = 'Huidig wachtwoord is onjuist.'; return; }
+
+    const res  = await fetch(WORKER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ action: 'wachtwoord_wijzigen', wachtwoord_nieuw: nieuw }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      sluitWachtwoord();
+      showToast('Wachtwoord gewijzigd', 'ok');
+    } else {
+      fout.textContent = data.error || 'Wijzigen mislukt.';
+    }
+  } catch {
+    fout.textContent = 'Verbindingsfout. Probeer opnieuw.';
+  } finally {
+    btn.textContent = 'Wachtwoord opslaan →'; btn.disabled = false;
+  }
+}
+
+/* ── START ───────────────────────────────────────── */
+(function checkAuth() {
+  const payload = getTokenPayload();
+  if (payload) {
+    document.getElementById('login-overlay').classList.add('verborgen');
+    startApp(payload.naam, payload.role);
+  }
+  // Als geen token: login overlay blijft zichtbaar
+})();
+</script>
+</body>
+</html>
