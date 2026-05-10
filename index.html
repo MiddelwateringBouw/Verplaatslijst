@@ -195,8 +195,9 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
 .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:var(--dim);transition:color .2s;padding:8px 0;background:none;border:none;font-family:inherit;cursor:pointer;-webkit-appearance:none;position:relative;}
 .bn-item+.bn-item::before{content:'';position:absolute;left:0;top:16%;height:68%;width:1px;background:var(--border-2);}
 .bn-item.active{color:var(--accent);}
-.bn-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
-.bn-icon i[data-lucide]{width:22px;height:22px;stroke-width:2;}
+.bn-icon{width:38px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:999px;transition:background .2s;}
+.bn-item.active .bn-icon{background:rgba(255,107,0,.12);}
+.bn-icon i[data-lucide]{width:20px;height:20px;stroke-width:2;}
 .bn-label{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;}
 
 /* SAMENVATTING */
@@ -374,27 +375,50 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
 .view{display:none;}
 .view.active{display:block;}
 .home-wrap{padding:16px 16px 120px;max-width:680px;margin:0 auto;}
-.home-welkom-card{background:linear-gradient(135deg,rgba(255,107,0,.13) 0%,rgba(255,107,0,.04) 100%);border:1px solid rgba(255,107,0,.25);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;}
-.home-welkom-avatar{width:52px;height:52px;background:rgba(255,107,0,.18);border:2px solid rgba(255,107,0,.35);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
-.home-welkom-groet{font-size:10px;color:var(--zacht);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px;}
-.home-welkom-naam{font-size:20px;font-weight:900;line-height:1.2;}
-.home-welkom-datum{font-size:12px;color:var(--zacht);margin-top:4px;}
-.home-cta{width:100%;padding:18px 20px;background:var(--accent);border:none;border-radius:var(--radius-lg);font-family:inherit;font-size:15px;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:space-between;text-transform:uppercase;letter-spacing:.6px;margin-bottom:24px;-webkit-appearance:none;transition:box-shadow .2s,transform .2s;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-md);}
+.home-greeting-row{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;}
+.home-greeting{font-size:11px;color:var(--zacht);margin:0 0 2px;}
+.home-name{font-size:22px;font-weight:800;color:var(--tekst);letter-spacing:-.4px;margin:0;}
+.home-date{font-size:11px;color:var(--zacht);margin:0;}
+.home-cta{width:100%;padding:18px 20px;background:var(--accent);border:none;border-radius:var(--radius-lg);font-family:inherit;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;-webkit-appearance:none;transition:box-shadow .2s,transform .2s;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-md);text-align:left;}
 .home-cta:active{transform:translateY(1px);box-shadow:var(--shadow-contact);}
-.home-cta-arrow{font-size:22px;font-weight:400;}
-.home-sectie-titel{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--zacht);margin-bottom:12px;}
-.home-inz-card{background:var(--surface);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius-lg);margin-bottom:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-sm);transition:box-shadow .25s,transform .25s;}
-.home-inz-icon{font-size:22px;flex-shrink:0;}
-.home-inz-info{flex:1;min-width:0;}
-.home-inz-naam{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.home-inz-meta{font-size:11px;color:var(--zacht);margin-top:2px;}
-.home-inz-status{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:3px 9px;border-radius:var(--radius-sm);flex-shrink:0;}
+.home-cta-label{font-size:9px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px;margin:0 0 4px;}
+.home-cta-titel{font-size:15px;font-weight:800;margin:0;line-height:1.2;}
+.home-cta-sub{font-size:11px;color:rgba(255,255,255,.7);margin:6px 0 0;}
+.home-cta-arrow{width:36px;height:36px;background:rgba(0,0,0,.18);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.1);}
+.home-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+.home-stat{background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:var(--radius-lg);padding:13px 14px;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-sm);}
+.home-stat-label{font-size:10px;color:var(--zacht);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
+.home-stat-value{font-size:24px;font-weight:800;letter-spacing:-.5px;line-height:1;}
+.home-stat-delta{font-size:10px;color:var(--groen);margin-top:3px;}
+.home-sectie-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.home-sectie-titel{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--zacht);margin:0;}
+.home-sectie-link{font-size:11px;color:var(--accent);font-weight:700;cursor:pointer;}
+.home-inz-card{background:var(--surface);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius-lg);margin-bottom:7px;padding:12px 14px;display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-sm);transition:box-shadow .2s,transform .2s;cursor:pointer;}
+.home-inz-card:active{transform:translateY(1px);box-shadow:var(--shadow-contact);opacity:.85;}
+.home-inz-icon-wrap{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
+.home-inz-icon-wrap.nieuw{background:rgba(255,107,0,.15);color:var(--accent);}
+.home-inz-icon-wrap.verwerkt{background:rgba(34,197,94,.15);color:var(--groen);}
+.home-inz-info{min-width:0;}
+.home-inz-naam{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.home-inz-meta{font-size:11px;color:var(--zacht);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.home-inz-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.home-inz-tijd{font-size:10px;color:var(--zacht);}
+.home-inz-status{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:3px 8px;border-radius:999px;flex-shrink:0;}
 .home-inz-status-nieuw{background:rgba(255,107,0,.15);color:var(--accent);}
 .home-inz-status-verwerkt{background:rgba(34,197,94,.15);color:var(--groen);}
 .home-leeg{text-align:center;padding:30px 20px;color:var(--zacht);font-size:13px;}
 .home-spinner{width:20px;height:20px;border:2px solid var(--border-2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:30px auto;}
-.home-inz-card{cursor:pointer;}
-.home-inz-card:active{opacity:.85;transform:translateY(1px);box-shadow:var(--shadow-contact);}
+
+/* MAT SECTIE GRID */
+.mat-sectie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.mat-sectie-tile{background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:var(--radius-lg);padding:13px 12px 11px;cursor:pointer;transition:box-shadow .2s,transform .2s;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-sm);position:relative;overflow:hidden;}
+.mat-sectie-tile:active{transform:translateY(1px);}
+.mat-sectie-tile.geselecteerd{background:rgba(255,107,0,.10);border-color:rgba(255,107,0,.35);box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-md),0 0 0 1px rgba(255,107,0,.15);}
+.mst-naam{font-size:12px;font-weight:700;color:var(--tekst);margin:0;}
+.mst-meta{font-size:10px;color:var(--zacht);margin:2px 0 0;}
+.mst-stuks{font-size:11px;font-weight:700;color:var(--tekst);margin:10px 0 0;padding-top:8px;border-top:1px solid rgba(255,255,255,.05);}
+.mst-check{position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border-2);display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent;}
+.mat-sectie-tile.geselecteerd .mst-check{background:var(--accent);border-color:var(--accent);color:#fff;font-size:10px;}
 
 /* DETAIL VIEW */
 .detail-wrap{padding:20px 20px 100px;}
@@ -601,19 +625,37 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
 <!-- HOME VIEW -->
 <div class="view active" id="view-home">
   <div class="home-wrap">
-    <div class="home-welkom-card">
-      <div class="home-welkom-avatar"><i data-lucide="hard-hat" style="width:28px;height:28px;color:var(--accent);"></i></div>
+    <div class="home-greeting-row">
       <div>
-        <div class="home-welkom-groet" id="home-groet">Welkom</div>
-        <div class="home-welkom-naam" id="home-naam">—</div>
-        <div class="home-welkom-datum" id="home-datum-str"></div>
+        <p class="home-greeting" id="home-groet">Welkom</p>
+        <p class="home-name" id="home-naam">—</p>
       </div>
+      <p class="home-date" id="home-datum-str"></p>
     </div>
     <button class="home-cta" onclick="naarWizard()">
-      <span>Nieuwe verplaatsing</span>
-      <span class="home-cta-arrow">→</span>
+      <div>
+        <p class="home-cta-label">Hoofdactie</p>
+        <p class="home-cta-titel">Nieuwe verplaatsing registreren</p>
+        <p class="home-cta-sub">Locatie · Materieel · Bestemming · Verstuur</p>
+      </div>
+      <span class="home-cta-arrow"><i data-lucide="arrow-right" style="width:18px;height:18px;"></i></span>
     </button>
-    <div class="home-sectie-titel">Mijn recente inzendingen</div>
+    <div class="home-stats">
+      <div class="home-stat">
+        <div class="home-stat-label">Vandaag</div>
+        <div class="home-stat-value" id="stat-vandaag">—</div>
+        <div class="home-stat-delta" id="stat-vandaag-delta" style="display:none;"></div>
+      </div>
+      <div class="home-stat">
+        <div class="home-stat-label">Deze week</div>
+        <div class="home-stat-value" id="stat-week">—</div>
+        <div class="home-stat-delta" id="stat-week-delta" style="display:none;"></div>
+      </div>
+    </div>
+    <div class="home-sectie-row">
+      <div class="home-sectie-titel">Mijn recente inzendingen</div>
+      <span class="home-sectie-link" onclick="naarVerplaatsingen()">Alles bekijken</span>
+    </div>
     <div id="home-inzendingen"><div class="home-spinner"></div></div>
   </div>
 </div>
@@ -870,6 +912,18 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
 
 <script>
 const WORKER = 'https://mwb-verplaatslijst.je-mudde.workers.dev';
+
+function tijdGeleden(d) {
+  if (!d) return '';
+  const nu = new Date();
+  const dan = new Date(d + 'T12:00:00');
+  const diff = Math.floor((nu - dan) / 86400000);
+  if (diff === 0) return 'vandaag';
+  if (diff === 1) return 'gisteren';
+  if (diff === 2) return 'eergisteren';
+  if (diff < 7)  return diff + 'd geleden';
+  return fmtDatum(d);
+}
 
 function fmtDatum(d, lang = false) {
   if (!d) return '—';
@@ -1358,9 +1412,31 @@ async function renderStap2() {
   }
 
   const allGeselecteerd = hierItems.filter(m => geselecteerdeItems.has(m.id)).length + Object.keys(geselecteerdeAantallen).filter(k => geselecteerdeAantallen[k] > 0).length;
-  let html = `<div id="stap2-teller" style="font-size:12px;color:var(--zacht);font-weight:700;margin-bottom:10px;text-align:right;">${allGeselecteerd} geselecteerd</div>`;
 
+  // Sectiegrid
   const secties = Object.keys(perSectie).sort((a, b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b));
+  const gridHtml = `<div class="mat-sectie-grid">${secties.map(sectie => {
+    const items = perSectie[sectie];
+    const perType = {};
+    for (const item of items) {
+      if (!perType[item.type_id]) perType[item.type_id] = { naam: item.naam, items: [] };
+      perType[item.type_id].items.push(item);
+    }
+    const totaalStuks = items.reduce((s, m) => s + (m.aantal != null ? m.aantal : 1), 0);
+    const aantalTypes = Object.keys(perType).length;
+    const geselInSectie = items.filter(m => geselecteerdeItems.has(m.id)).length + Object.values(perType).filter(g => g.items[0]?.aantal != null && geselecteerdeAantallen[g.items[0].id] > 0).length;
+    const secKey2 = sectie.toLowerCase().replace(/[^a-z0-9]/g,'_');
+    const isGesel = geselInSectie > 0;
+    return `<div class="mat-sectie-tile${isGesel ? ' geselecteerd' : ''}" onclick="scrollNaarSectie('${secKey2}')">
+      <span class="mst-check">${isGesel ? '✓' : ''}</span>
+      <p class="mst-naam">${sectie}</p>
+      <p class="mst-meta">${aantalTypes} type${aantalTypes !== 1 ? 's' : ''}</p>
+      <p class="mst-stuks">${totaalStuks} stuks</p>
+    </div>`;
+  }).join('')}</div>`;
+
+  let html = gridHtml + `<div id="stap2-teller" style="font-size:12px;color:var(--zacht);font-weight:700;margin-bottom:10px;text-align:right;">${allGeselecteerd} geselecteerd</div>`;
+
   html += `<div class="card mat-kies-card">`;
 
   for (let si = 0; si < secties.length; si++) {
@@ -1451,6 +1527,20 @@ function toggleSectie(secKey) {
   const chev  = document.getElementById('sec-chev-' + secKey);
   if (panel) panel.style.display = open ? '' : 'none';
   if (chev)  chev.style.transform = open ? '' : 'rotate(-90deg)';
+}
+
+function scrollNaarSectie(secKey) {
+  if (!expandedSecties.has(secKey)) {
+    expandedSecties.add(secKey);
+    const panel = document.getElementById('sec-panel-' + secKey);
+    const chev  = document.getElementById('sec-chev-' + secKey);
+    if (panel) panel.style.display = '';
+    if (chev)  chev.style.transform = '';
+  }
+  setTimeout(() => {
+    const el = document.getElementById('sec-panel-' + secKey);
+    el?.previousElementSibling?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
 }
 
 function toggleAlleItems(typeId) {
@@ -2092,23 +2182,41 @@ async function laadMijnInzendingen() {
       return;
     }
     mijnInzendingen = results;
-    el.innerHTML = mijnInzendingen.map((inz, i) => {
+
+    // Stats
+    const nu = new Date();
+    const vandaag = nu.toISOString().slice(0,10);
+    const weekStart = (() => { const d = new Date(nu); d.setDate(nu.getDate() - ((nu.getDay()+6)%7)); return d.toISOString().slice(0,10); })();
+    const aantalVandaag = results.filter(r => (r.properties?.['Datum']?.date?.start||'') === vandaag).length;
+    const aantalWeek    = results.filter(r => (r.properties?.['Datum']?.date?.start||'') >= weekStart).length;
+    const sv = document.getElementById('stat-vandaag');
+    const sw = document.getElementById('stat-week');
+    if (sv) sv.textContent = aantalVandaag;
+    if (sw) sw.textContent = aantalWeek;
+
+    el.innerHTML = mijnInzendingen.slice(0,8).map((inz, i) => {
       const naam   = inz.properties?.['Naam']?.title?.[0]?.plain_text || '—';
       const bp     = inz.properties?.['Bouwplaats']?.rich_text?.[0]?.plain_text || '';
       const vanNr  = inz.properties?.['Werknr. Van']?.rich_text?.[0]?.plain_text || '';
       const datum  = inz.properties?.['Datum']?.date?.start || '';
       const status = inz.properties?.['Status']?.select?.name || 'Nieuw';
       const type   = inz.properties?.['Opslag / Zaak']?.rich_text?.[0]?.plain_text || '';
-      const icon   = type.includes('Zaak') ? ic('building-2',13) : ic('arrow-left-right',13);
       const route  = bp || inz.properties?.['Werknr. Naar']?.rich_text?.[0]?.plain_text || '';
-      const sc     = status === 'Verwerkt' ? 'home-inz-status-verwerkt' : 'home-inz-status-nieuw';
+      const sc     = status === 'Verwerkt' ? 'verwerkt' : 'nieuw';
+      const iconNaam = type.includes('Zaak') ? 'building-2' : 'arrow-left-right';
+      const titel  = vanNr ? vanNr + ' → ' + (route || '?') : naam;
+      const sub    = route && vanNr ? route : fmtDatum(datum);
+      const tijd   = tijdGeleden(datum);
       return `<div class="home-inz-card" onclick="openDetail(${i})">
-        <span class="home-inz-icon">${icon}</span>
+        <span class="home-inz-icon-wrap ${sc}"><i data-lucide="${iconNaam}" style="width:16px;height:16px;"></i></span>
         <div class="home-inz-info">
-          <div class="home-inz-naam">${vanNr ? vanNr + ' → ' + (route || '?') : naam}</div>
-          <div class="home-inz-meta">${fmtDatum(datum)}${route && vanNr ? ' · ' + route : ''}</div>
+          <div class="home-inz-naam">${titel}</div>
+          <div class="home-inz-meta">${sub}</div>
         </div>
-        <span class="home-inz-status ${sc}">${status}</span>
+        <div class="home-inz-right">
+          <span class="home-inz-tijd">${tijd}</span>
+          <span class="home-inz-status home-inz-status-${sc}">${status}</span>
+        </div>
       </div>`;
     }).join('');
     lucide.createIcons({nodes:[el]});
