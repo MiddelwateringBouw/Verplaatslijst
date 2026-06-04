@@ -9,6 +9,7 @@
 // ══════════════════════════════════════════════════════
 
 const ALLOWED_ORIGINS = [
+  'https://middelwateringbouw.github.io',
   'https://jemudde-cpu.github.io',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
@@ -578,6 +579,36 @@ export default {
       return json({ ok: true });
     }
 
+    // ── EMAIL HELPER ─────────────────────────────────────
+    async function sendMailVerplaatsing(info) {
+      if (!env.RESEND_API_KEY || !env.EMAIL_TO) return;
+      const onderwerp = `Nieuwe verplaatsing: ${info.van} → ${info.naar}`;
+      const tekst = [
+        'Nieuwe verplaatsing geregistreerd in de MWB Verplaatslijst.',
+        '',
+        `Door:    ${info.naam}`,
+        `Datum:   ${info.datum || '—'}`,
+        `Van:     ${info.van}`,
+        `Naar:    ${info.naar}`,
+        '',
+        'Details:',
+        info.details.trim(),
+        info.opmerking ? `\nOpmerking: ${info.opmerking}` : '',
+      ].join('\n').trim();
+      try {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from:    env.EMAIL_FROM || 'MWB Verplaatslijst <noreply@resend.dev>',
+            to:      [env.EMAIL_TO],
+            subject: onderwerp,
+            text:    tekst,
+          }),
+        });
+      } catch (_) {}
+    }
+
     // ── VERPLAATSING UITVOEREN (ingelogd) ────────────────
     if (data.action === 'verplaatsing_uitvoeren') {
       const token   = getToken(request, data);
@@ -614,7 +645,17 @@ export default {
         }
       }
 
-      if (itemIds.size > 0 || bulkData.length > 0) await saveMaterialen(materialen);
+      // Defect/vernietigd items: alleen aftrekken van bron, NIET optellen op bestemming
+      const defectData = Array.isArray(data.defect_items) ? data.defect_items : [];
+      for (const d of defectData) {
+        const n   = Math.max(1, parseInt(d.aantal) || 0);
+        const src = materialen.find(m => m.id === String(d.id || '').slice(0, 50));
+        if (src && src.aantal != null) {
+          src.aantal = Math.max(0, src.aantal - n);
+        }
+      }
+
+      if (itemIds.size > 0 || bulkData.length > 0 || defectData.length > 0) await saveMaterialen(materialen);
 
       // Bouw Notion details
       const groepen = {};
@@ -628,11 +669,13 @@ export default {
         if (g.nummers.length) details += ` (nr. ${g.nummers.join(', ')})`;
         details += '\n';
       }
-      if (Array.isArray(data.bulk_items)) {
-        for (const b of data.bulk_items) {
-          const aantal = parseInt(b.aantal);
-          if (!isNaN(aantal) && aantal > 0) details += `${sanitize(b.naam || '', 100)}: ${aantal}\n`;
-        }
+      for (const b of bulkData) {
+        const aantal = parseInt(b.aantal);
+        if (!isNaN(aantal) && aantal > 0) details += `${sanitize(b.naam || '', 100)}: ${aantal}\n`;
+      }
+      for (const d of defectData) {
+        const aantal = parseInt(d.aantal);
+        if (!isNaN(aantal) && aantal > 0) details += `${sanitize(d.naam || '', 100)}: ${aantal} (vernietigd)\n`;
       }
       if (Array.isArray(data.foto_urls) && data.foto_urls.length > 0) {
         details += `\nFoto's (${data.foto_urls.length}):\n`
@@ -675,6 +718,7 @@ export default {
           body: JSON.stringify(notionBody),
         });
         if (!res.ok) { const err = await res.text(); return json({ ok: false, error: err }, 500); }
+        await sendMailVerplaatsing({ naam, datum, van: vanNaam || vanNr || 'De Zaak', naar: naarNaam || naarNr || 'De Zaak', details, opmerking: sanitize(data.opmerking || '', 1000) });
         return json({ ok: true });
       } catch (e) {
         return json({ ok: false, error: e.message }, 500);
@@ -754,6 +798,14 @@ export default {
           const err = await res.text();
           return json({ ok: false, error: err }, 500);
         }
+        await sendMailVerplaatsing({
+          naam,
+          datum,
+          van:      vanNaam  || vanNr  || 'De Zaak',
+          naar:     naarNaam || naarNr || 'De Zaak',
+          details,
+          opmerking: sanitize(data.algemeen_opmerking || '', 1000),
+        });
         return json({ ok: true });
       } catch (e) {
         return json({ ok: false, error: e.message }, 500);

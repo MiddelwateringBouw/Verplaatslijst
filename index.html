@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="assets/css/micro-interactions.css">
 <style>
 i[data-lucide]{display:inline-flex;align-items:center;justify-content:center;width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;}
 </style>
@@ -575,7 +576,7 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
       <small>Verplaatslijst</small>
     </div>
     <div class="header-menu-wrap">
-      <button class="header-menu-btn" id="menu-btn" onclick="toggleMenu()"><i data-lucide="more-vertical"></i></button>
+      <button class="header-menu-btn" id="menu-btn" onclick="toggleMenu()" data-tooltip="Opties"><i data-lucide="more-vertical"></i></button>
       <div class="header-dropdown" id="header-dropdown">
         <button class="dropdown-item" onclick="toggleTheme()">
           <span class="dropdown-item-icon" id="theme-icon"><i data-lucide="sun"></i></span>
@@ -689,7 +690,7 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
         <div class="ac-input-row">
           <span class="ac-search-icon"><i data-lucide="search"></i></span>
           <input class="ac-input" id="ac-input-van" type="text" placeholder="Typ naam of werknummer..." oninput="acFilter('van',this.value)" onfocus="acOpen('van')" autocomplete="off">
-          <button class="ac-clear" onclick="acClear('van')"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+          <button class="ac-clear" onclick="acClear('van')" data-tooltip="Wissen"><i data-lucide="x" style="width:14px;height:14px"></i></button>
         </div>
         <div class="ac-badge" id="ac-badge-van"></div>
         <div class="ac-dropdown" id="ac-dropdown-van"></div>
@@ -720,7 +721,7 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
         <div class="ac-input-row">
           <span class="ac-search-icon"><i data-lucide="search"></i></span>
           <input class="ac-input" id="ac-input-naar" type="text" placeholder="Typ naam of werknummer..." oninput="acFilter('naar',this.value)" onfocus="acOpen('naar')" autocomplete="off">
-          <button class="ac-clear" onclick="acClear('naar')"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+          <button class="ac-clear" onclick="acClear('naar')" data-tooltip="Wissen"><i data-lucide="x" style="width:14px;height:14px"></i></button>
         </div>
         <div class="ac-badge" id="ac-badge-naar"></div>
         <div class="ac-dropdown" id="ac-dropdown-naar"></div>
@@ -798,7 +799,7 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
     <div style="display:flex;gap:8px;margin-bottom:14px;">
       <div class="ovz-search-wrap" style="flex:1;margin-bottom:0;">
         <span class="ovz-search-icon"><i data-lucide="search"></i></span>
-        <input class="ovz-search-input" type="text" id="ovz-zoek" placeholder="Zoek op klus of werknummer..." oninput="ovzFilter()">
+        <input class="ovz-search-input" type="text" id="ovz-zoek" placeholder="Zoek op klus, werknummer of onderdeel..." oninput="ovzFilter()">
       </div>
       <button onclick="ovzHerlaad()" style="width:48px;height:48px;flex-shrink:0;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border-2);color:var(--tekst);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;" title="Verversen"><i data-lucide="refresh-cw"></i></button>
     </div>
@@ -809,6 +810,8 @@ header{position:sticky;top:0;z-index:60;background:#111111;border-bottom:2px sol
       <button class="ovz-filter-btn" onclick="ovzSetFilter('lichtmasten',this)">Lichtmasten</button>
       <button class="ovz-filter-btn" onclick="ovzSetFilter('hekken',this)">Bouwhekken</button>
       <button class="ovz-filter-btn" onclick="ovzSetFilter('aansluitingen',this)">Aansluitingen</button>
+      <button class="ovz-filter-btn" onclick="ovzSetFilter('mobiel',this)">Mobiel</button>
+      <button class="ovz-filter-btn" onclick="ovzSetFilter('bouwmaterieel',this)">Bouwmaterieel</button>
     </div>
     <div id="ovz-status-banner"></div>
     <div id="ovz-content"><div class="ovz-loading"><div class="spinner"></div><div style="font-size:13px;color:var(--zacht)">Materieel laden...</div></div></div>
@@ -1206,6 +1209,7 @@ const VAN  = { type: null, naam: '', werknr: '' };
 const NAAR = { type: null, naam: '', werknr: '' };
 let geselecteerdeItems     = new Set();
 let geselecteerdeAantallen = {};
+let geselecteerdeDefect    = {};
 let expandedTypes          = new Set();
 let expandedOvzTypes       = new Set();
 let expandedSecties        = new Set();
@@ -1218,6 +1222,7 @@ function initState() {
   NAAR.type = null; NAAR.naam = ''; NAAR.werknr = '';
   geselecteerdeItems     = new Set();
   geselecteerdeAantallen = {};
+  geselecteerdeDefect    = {};
   expandedTypes          = new Set();
   algemeneFotos          = [];
 }
@@ -1283,8 +1288,8 @@ function validateStep(n) {
     return true;
   }
   if (n === 2) {
-    if (geselecteerdeItems.size === 0 && Object.keys(geselecteerdeAantallen).length === 0) {
-      showToast('Selecteer minstens 1 item om te verplaatsen', 'warn'); return false;
+    if (geselecteerdeItems.size === 0 && Object.keys(geselecteerdeAantallen).length === 0 && Object.keys(geselecteerdeDefect).length === 0) {
+      showToast('Selecteer minstens 1 item om te verplaatsen of te vernietigen', 'warn'); return false;
     }
     return true;
   }
@@ -1464,17 +1469,28 @@ async function renderStap2() {
       const eersteItem = groep.items[0];
 
       if (eersteItem.aantal != null) {
-        const huidig = geselecteerdeAantallen[eersteItem.id] || 0;
-        html += `<div class="mat-kies-type-row" style="justify-content:space-between;">
-          <div class="mat-kies-type-info">
-            <div class="mat-kies-naam">${eersteItem.naam}</div>
-            <div class="mat-kies-nr">${eersteItem.aantal} stuks beschikbaar</div>
+        const huidig      = geselecteerdeAantallen[eersteItem.id] || 0;
+        const huidigKapot = geselecteerdeDefect[eersteItem.id] || 0;
+        html += `<div class="mat-kies-type-row" style="flex-direction:column;align-items:stretch;gap:10px;padding-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="mat-kies-type-info">
+              <div class="mat-kies-naam">${eersteItem.naam}</div>
+              <div class="mat-kies-nr">${eersteItem.aantal} stuks beschikbaar</div>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:11px;color:var(--zacht);">aantal:</span>
-            <input type="number" min="0" max="${eersteItem.aantal}" value="${huidig}"
-              style="width:52px;padding:5px 8px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:6px;color:var(--tekst);font-size:14px;text-align:center;font-family:inherit;box-shadow:var(--shadow-inset);"
-              oninput="setBulkAantal('${eersteItem.id}',this.value,${eersteItem.aantal})">
+          <div style="display:flex;gap:12px;">
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+              <span style="font-size:10px;color:var(--zacht);text-transform:uppercase;letter-spacing:.5px;">Verplaatst</span>
+              <input type="number" min="0" max="${eersteItem.aantal}" value="${huidig}"
+                style="width:100%;padding:8px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:6px;color:var(--tekst);font-size:15px;text-align:center;font-family:inherit;font-weight:700;box-shadow:var(--shadow-inset);"
+                oninput="setBulkAantal('${eersteItem.id}',this.value,${eersteItem.aantal})">
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+              <span style="font-size:10px;color:var(--rood);text-transform:uppercase;letter-spacing:.5px;">Kapot / vernietigd</span>
+              <input type="number" min="0" max="${eersteItem.aantal}" value="${huidigKapot}"
+                style="width:100%;padding:8px;background:rgba(239,68,68,.07);border:1.5px solid rgba(239,68,68,.25);border-radius:6px;color:var(--rood);font-size:15px;text-align:center;font-family:inherit;font-weight:700;"
+                oninput="setBulkDefect('${eersteItem.id}',this.value,${eersteItem.aantal})">
+            </div>
           </div>
         </div>`;
       } else {
@@ -1597,6 +1613,12 @@ function setBulkAantal(id, value, max) {
   const n = Math.max(0, Math.min(parseInt(max) || 0, parseInt(value) || 0));
   if (n > 0) geselecteerdeAantallen[id] = n;
   else delete geselecteerdeAantallen[id];
+  updateStap2Teller();
+}
+function setBulkDefect(id, value, max) {
+  const n = Math.max(0, Math.min(parseInt(max) || 0, parseInt(value) || 0));
+  if (n > 0) geselecteerdeDefect[id] = n;
+  else delete geselecteerdeDefect[id];
   updateStap2Teller();
 }
 
@@ -1830,6 +1852,11 @@ async function verstuurAlles() {
     return m ? { id, type_id: m.type_id, naam: m.naam, aantal } : null;
   }).filter(Boolean);
 
+  const defectItems = Object.entries(geselecteerdeDefect).map(([id, aantal]) => {
+    const m = alleMaterialen.find(x => x.id === id);
+    return m ? { id, type_id: m.type_id, naam: m.naam, aantal } : null;
+  }).filter(Boolean);
+
   const payload = {
     action:     'verplaatsing_uitvoeren',
     naam:       getTokenPayload()?.naam || '',
@@ -1837,9 +1864,10 @@ async function verstuurAlles() {
     van:        { naam: VAN.naam, werknr: VAN.werknr },
     naar:       { naam: NAAR.naam, werknr: NAAR.werknr },
     item_ids:   [...geselecteerdeItems],
-    bulk_items: bulkItems,
-    foto_urls:  fotoUrls,
-    opmerking:  document.getElementById('algemeen_opmerking').value.trim(),
+    bulk_items:   bulkItems,
+    defect_items: defectItems,
+    foto_urls:    fotoUrls,
+    opmerking:    document.getElementById('algemeen_opmerking').value.trim(),
   };
 
   try {
@@ -2035,14 +2063,23 @@ function uitloggen() {
 }
 
 async function apiFetch(url, opties = {}) {
-  const res = await fetch(url, opties);
-  if (res.status === 401) {
-    localStorage.removeItem('mwb_token');
-    alert('Je sessie is verlopen. Log opnieuw in.');
-    location.reload();
-    return null;
+  const ctrl  = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 30000);
+  try {
+    const res = await fetch(url, { ...opties, signal: ctrl.signal });
+    clearTimeout(timer);
+    if (res.status === 401) {
+      localStorage.removeItem('mwb_token');
+      alert('Je sessie is verlopen. Log opnieuw in.');
+      location.reload();
+      return null;
+    }
+    return res;
+  } catch (e) {
+    clearTimeout(timer);
+    if (e.name === 'AbortError') throw new Error('Verzoek duurde te lang. Controleer je verbinding en probeer opnieuw.');
+    throw e;
   }
-  return res;
 }
 
 /* ── HOME ────────────────────────────────────────── */
@@ -2464,11 +2501,13 @@ function init() {
 
 /* ── OVERZICHT ───────────────────────────────────── */
 const OVZ_FILTER_MAP = {
-  keten:        ['schaftkeet','uitvoerderskeet','pipokeet','keettrap'],
-  containers:   ['container'],
-  lichtmasten:  ['lichtmast'],
-  hekken:       ['bouwhekken','bouwhek_voeten','hekklemmen','hekwielen','hek_schoren','kunststof_rijplaten'],
-  aansluitingen:['bouwmeterkast','bouwmeterkast_35a','bouwmeterkast_63a','bouwmeterkast_125a','waterput','waterkraan'],
+  keten:        ['schaftkeet_klein','schaftkeet_groot','schaftkeet','uitvoerderskeet','pipokeet','keettrap'],
+  containers:   ['magazijncontainer','container'],
+  lichtmasten:  ['lichtmast_12m','lichtmast_6m','lichtmast'],
+  hekken:       ['bouwhek_1200','bouwhek_2000','bouwhek_bok','bouwhek_voet','bouwhekvoet_bok','hekklemmen','hekwielen','hek_schoren','schuifpoort','materieelbak_open','materieelbak_klep','kunststof_rijplaten','bouwhekken','bouwhek_voeten'],
+  aansluitingen:['meterkast_35a','meterkast_63a','meterkast_80a','meterkast_125a','bouwpaddestoel_32a','bouwpaddestoel_63a','bouwmeterkast','waterput','waterkraan'],
+  mobiel:       ['aggregaat','watervat'],
+  bouwmaterieel:['bouwdroger','bouwventilator','bouwzaag_220v','bouwzaag_380v','afzuigsysteem','heater_400v','heater_230v','pompwagen','platte_kar','platenkar','betonmolen','bouwstofzuiger','bouwlamp','schroefstempel','randbeveiligingsklemmen','pannenlift','kanalenlift','metselprofielen','kim_profiel','hmb_gevelklem','stualone_315','stualone_350'],
 };
 function klusNaamVoor(werknr, fallback) {
   const k = KLUSSEN.find(k => k.werknr === werknr);
@@ -2637,7 +2676,11 @@ function ovzRender() {
   const zaakKeys = alle.filter(k => k === 'zaak');
   const klusKeys = alle.filter(k => k !== 'zaak').filter(k => {
     const loc = ovzLocatieMap[k];
-    if (zoek && !loc.naam.toLowerCase().includes(zoek) && !loc.werknr.toLowerCase().includes(zoek)) return false;
+    if (zoek) {
+      const locMatch  = loc.naam.toLowerCase().includes(zoek) || loc.werknr.toLowerCase().includes(zoek);
+      const itemMatch = Object.values(loc.items).some(it => it.naam.toLowerCase().includes(zoek));
+      if (!locMatch && !itemMatch) return false;
+    }
     if (ovzActiefFilter !== 'alles') {
       const ids = OVZ_FILTER_MAP[ovzActiefFilter] || [];
       if (!Object.keys(loc.items).some(id => ids.includes(id))) return false;
@@ -2939,5 +2982,6 @@ async function slaWachtwoordOp() {
   // Als geen token: login overlay blijft zichtbaar
 })();
 </script>
+<script src="assets/js/micro-interactions.js"></script>
 </body>
 </html>
