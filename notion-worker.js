@@ -5,7 +5,9 @@
 //    - MWB_FOTOS    (R2 bucket)
 //    - NOTION_TOKEN (secret)
 //    - NOTION_DB_ID (env var)
-//    - JWT_SECRET   (secret)  ← nieuw, stel in via Cloudflare dashboard
+//    - JWT_SECRET   (secret)
+//    - RESEND_API_KEY (secret) ← aanmaken op resend.com
+//    - RESEND_FROM  (env var)  ← bv. "MWB <noreply@jouwdomein.nl>" (domein moet geverifieerd zijn in Resend)
 // ══════════════════════════════════════════════════════
 
 const ALLOWED_ORIGINS = [
@@ -106,6 +108,35 @@ export default {
     }
     async function saveMaterialen(items) {
       await env.MWB_KLUSSEN.put('mwb_materieel', JSON.stringify(items));
+    }
+
+    // ── EMAIL (Resend) ────────────────────────────────
+    async function sendOtpEmail(email, naam, code) {
+      const apiKey = env.RESEND_API_KEY;
+      const from   = env.RESEND_FROM || 'MWB <noreply@resend.dev>';
+      if (!apiKey) throw new Error('RESEND_API_KEY is niet ingesteld in de Worker');
+      const res = await fetch('https://api.resend.com/emails', {
+        method:  'POST',
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from,
+          to:      [email],
+          subject: `${code} – inlogcode Middelwatering Bouw`,
+          html: `<div style="font-family:sans-serif;max-width:420px;margin:0 auto;padding:32px 24px;background:#f5f5f4;border-radius:12px;">
+            <h2 style="margin:0 0 16px;font-size:20px;color:#1c1c19;">Middelwatering Bouw</h2>
+            <p style="margin:0 0 20px;color:#5f5e5a;font-size:15px;">Hoi${naam ? ' ' + naam : ''},</p>
+            <div style="background:#fff;border-radius:10px;padding:24px;text-align:center;margin-bottom:20px;border:1px solid #e5e4e0;">
+              <p style="margin:0 0 10px;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.8px;font-weight:700;">Jouw inlogcode</p>
+              <div style="font-size:44px;font-weight:900;letter-spacing:14px;color:#ff6b00;padding:4px 0;">${code}</div>
+            </div>
+            <p style="margin:0;font-size:13px;color:#888;line-height:1.6;">Deze code is <strong>10 minuten</strong> geldig.<br>Niet jij? Dan kun je deze e-mail negeren.</p>
+          </div>`,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`E-mail versturen mislukt (${res.status}): ${err}`);
+      }
     }
 
     // ── REQUEST HELPERS ──────────────────────────────
@@ -307,6 +338,56 @@ export default {
       data = await request.json();
     } catch {
       return json({ ok: false, error: 'Ongeldige JSON' }, 400);
+    }
+
+    // ── OTP AANVRAGEN ─────────────────────────────────
+    if (data.action === 'otp_aanvragen') {
+      const email = (data.email || '').toString().toLowerCase().trim().slice(0, 200);
+      const naam  = sanitize(data.naam || '', 100);
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return json({ ok: false, error: 'Vul een geldig e-mailadres in' }, 400);
+      }
+      const code    = String(Math.floor(1000 + Math.random() * 9000));
+      const expires = Math.floor(Date.now() / 1000) + 600;
+      await env.MWB_KLUSSEN.put(`mwb_otp_${email}`, JSON.stringify({ code, naam, expires }), { expirationTtl: 600 });
+      try {
+        await sendOtpEmail(email, naam, code);
+      } catch (e) {
+        return json({ ok: false, error: e.message }, 500);
+      }
+      return json({ ok: true });
+    }
+
+    // ── OTP VERIFIËREN ────────────────────────────────
+    if (data.action === 'otp_verifiëren') {
+      const email = (data.email || '').toString().toLowerCase().trim().slice(0, 200);
+      const code  = sanitize(data.code || '', 10);
+      if (!email || !code) return json({ ok: false, error: 'Vul e-mail en code in' }, 400);
+      const raw = await env.MWB_KLUSSEN.get(`mwb_otp_${email}`);
+      if (!raw) return json({ ok: false, error: 'Code ongeldig of verlopen. Vraag een nieuwe code aan.' }, 401);
+      const otp = JSON.parse(raw);
+      if (otp.code !== code || otp.expires < Math.floor(Date.now() / 1000)) {
+        return json({ ok: false, error: 'Onjuiste code. Probeer opnieuw.' }, 401);
+      }
+      await env.MWB_KLUSSEN.delete(`mwb_otp_${email}`);
+      const users   = await getUsers();
+      let user      = users.find(u => u.email === email || u.gebruikersnaam === email);
+      const isNieuw = !user;
+      const isEerste = users.filter(u => !u.email && !u.gebruikersnaam?.includes('@')).length === 0 && users.length === 0;
+      if (isNieuw) {
+        user = { email, gebruikersnaam: email, naam: otp.naam || email, role: isEerste ? 'admin' : 'user' };
+        users.push(user);
+      } else if (otp.naam) {
+        user.naam = otp.naam;
+      }
+      await saveUsers(users);
+      const token = await signJWT({
+        sub:  email,
+        naam: user.naam,
+        role: user.role || 'user',
+        exp:  Math.floor(Date.now() / 1000) + 30 * 24 * 3600,
+      });
+      return json({ ok: true, token, naam: user.naam, role: user.role || 'user' });
     }
 
     // ── LOGIN ─────────────────────────────────────────

@@ -1,8 +1,10 @@
-const CACHE = 'mwb-verplaatslijst-v22';
+const CACHE = 'mwb-verplaatslijst-v23';
 
 const BESTANDEN = [
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './assets/css/micro-interactions.css',
+  './assets/js/micro-interactions.js'
 ];
 
 self.addEventListener('install', e => {

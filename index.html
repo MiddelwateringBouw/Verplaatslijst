@@ -38,6 +38,10 @@ i[data-lucide]{display:inline-flex;align-items:center;justify-content:center;wid
   --shadow-md:      0 8px 18px -6px rgba(0,0,0,0.62);
   --shadow-lg:      0 18px 32px -8px rgba(0,0,0,0.78);
   --shadow-inset:   inset 0 2px 4px rgba(0,0,0,0.65), inset 0 -1px 0 rgba(255,255,255,0.05);
+
+  --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{overflow:hidden;height:100%;}
@@ -65,9 +69,9 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 
 /* WIZARD */
 .wizard{position:relative;}
-.step{display:none;padding:20px 16px 160px;max-width:680px;margin:0 auto;animation:fadeIn .2s ease;}
+.step{display:none;padding:20px 16px 160px;max-width:680px;margin:0 auto;animation:fadeIn .25s var(--ease-out);}
 .step.active{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* CARD */
 .card{background:var(--surface);border-radius:var(--radius-lg);margin-bottom:12px;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-md);}
@@ -120,8 +124,8 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 .ac-input.selected ~ .ac-clear{display:flex;}
 .ac-badge{margin-top:5px;display:none;font-size:10px;font-weight:800;color:var(--accent);padding:3px 10px;background:rgba(255,107,0,.12);border-radius:4px;width:fit-content;text-transform:uppercase;letter-spacing:.4px;}
 .ac-badge.show{display:block;}
-.ac-dropdown{position:absolute;z-index:9999;background:#222220;border:none;border-radius:var(--radius);max-height:260px;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.70);display:none;width:100%;}
-.ac-dropdown.open{display:block;}
+.ac-dropdown{position:absolute;z-index:9999;background:#222220;border:none;border-radius:var(--radius);max-height:260px;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.70);width:100%;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-4px) scale(0.97);transform-origin:top center;transition:opacity .15s var(--ease-out),transform .15s var(--ease-out),visibility .15s;}
+.ac-dropdown.open{opacity:1;visibility:visible;pointer-events:all;transform:translateY(0) scale(1);}
 .ac-item{padding:16px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);transition:background .15s;}
 .ac-item:last-child{border-bottom:none;}
 .ac-item:hover,.ac-item:active{background:rgba(255,107,0,.10);}
@@ -265,10 +269,11 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 
 /* HEADER MENU */
 .header-menu-wrap{position:relative;flex-shrink:0;}
-.header-menu-btn{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--surface);border:1.5px solid var(--border-2);color:var(--tekst);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;transition:border-color .2s;}
+.header-menu-btn{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--surface);border:1.5px solid var(--border-2);color:var(--tekst);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;transition:border-color .2s var(--ease-out),color .15s var(--ease-out),transform .1s var(--ease-out);}
+.header-menu-btn:active{transform:scale(0.93);}
 .header-menu-btn.open,.header-menu-btn:active{border-color:var(--accent);color:var(--accent);}
-.header-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:200px;background:#2a2a26;border:none;border-radius:var(--radius-lg);box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-lg);overflow:hidden;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;z-index:200;}
-.header-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0);}
+.header-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:200px;background:#2a2a26;border:none;border-radius:var(--radius-lg);box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-lg);overflow:hidden;opacity:0;pointer-events:none;transform:scale(0.95) translateY(-6px);transform-origin:top right;transition:opacity .2s var(--ease-out),transform .2s var(--ease-out);z-index:200;}
+.header-dropdown.open{opacity:1;pointer-events:all;transform:scale(1) translateY(0);}
 .dropdown-item{display:flex;align-items:center;gap:12px;width:100%;padding:13px 16px;border:none;background:transparent;color:var(--tekst);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;text-align:left;-webkit-appearance:none;transition:background .12s;}
 .dropdown-item:hover{background:rgba(255,255,255,.05);}
 .dropdown-item:active{background:rgba(255,255,255,.09);}
@@ -276,19 +281,6 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 .dropdown-divider{height:1px;background:var(--border);margin:4px 0;}
 .dropdown-item-rood{color:var(--rood);}
 .dropdown-item-rood:hover{background:rgba(239,68,68,.07);}
-
-/* WACHTWOORD MODAL */
-.ww-modal-overlay{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;padding:0;}
-.ww-modal-overlay.open{opacity:1;pointer-events:all;}
-.ww-modal-box{width:100%;max-width:480px;background:#2a2a26;border-radius:16px 16px 0 0;border:none;padding:20px 20px 40px;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.32,1);box-shadow:0 -8px 40px rgba(0,0,0,0.8),var(--shadow-glow);}
-.ww-modal-overlay.open .ww-modal-box{transform:translateY(0);}
-.ww-handle{width:40px;height:3px;background:var(--border-2);border-radius:2px;margin:0 auto 20px;}
-.ww-titel{font-size:17px;font-weight:800;margin-bottom:4px;}
-.ww-sub{font-size:13px;color:var(--zacht);margin-bottom:20px;}
-.ww-input{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:16px;font-weight:600;color:var(--tekst);background:var(--surface-2);margin-bottom:10px;-webkit-appearance:none;box-shadow:var(--shadow-inset);}
-.ww-input:focus{outline:none;border-color:var(--accent);box-shadow:var(--shadow-inset),0 0 0 3px rgba(255,107,0,.15);}
-.ww-btn{width:100%;padding:15px;background:var(--accent);border:none;border-radius:var(--radius);font-family:inherit;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#fff;cursor:pointer;margin-top:4px;-webkit-appearance:none;}
-.ww-fout{font-size:13px;color:var(--rood);min-height:18px;margin-top:6px;font-weight:600;}
 
 /* LIGHT THEME */
 [data-theme="light"]{
@@ -310,7 +302,6 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 [data-theme="light"] .loading-overlay{background:rgba(217,216,209,.97);}
 [data-theme="light"] .toast{background:#efeeea;box-shadow:0 8px 32px rgba(60,55,40,0.18);}
 [data-theme="light"] .foto-sheet,[data-theme="light"] .bottom-sheet{background:#efeeea;border:none;box-shadow:0 -8px 40px rgba(60,55,40,0.18),var(--shadow-glow);}
-[data-theme="light"] .ww-modal-box{background:#efeeea;border:none;box-shadow:0 -8px 40px rgba(60,55,40,0.18),var(--shadow-glow);}
 [data-theme="light"] .ac-dropdown{background:#efeeea;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-lg);}
 [data-theme="light"] .header-dropdown{background:#efeeea;border:none;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-lg);}
 [data-theme="light"] .field input[type="date"]{color-scheme:light;}
@@ -327,9 +318,9 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 .ovz-search-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,0,.13);}
 .ovz-filter-wrap{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
 .ovz-filter-wrap::-webkit-scrollbar{display:none;}
-.ovz-filter-btn{flex-shrink:0;padding:11px 16px;border-radius:var(--radius-sm);font-family:inherit;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:var(--surface);border:none;color:var(--zacht);cursor:pointer;transition:box-shadow .2s,transform .2s,color .2s;-webkit-appearance:none;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-sm);}
+.ovz-filter-btn{flex-shrink:0;padding:11px 16px;border-radius:var(--radius-sm);font-family:inherit;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:var(--surface);border:none;color:var(--zacht);cursor:pointer;transition:box-shadow .2s var(--ease-out),transform .12s var(--ease-out),color .15s var(--ease-out),background .15s var(--ease-out);-webkit-appearance:none;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-sm);}
 .ovz-filter-btn:hover{color:var(--tekst);box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-md);transform:translateY(-1px);}
-.ovz-filter-btn:active{transform:translateY(1px);box-shadow:var(--shadow-contact);}
+.ovz-filter-btn:active{transform:scale(0.97);box-shadow:var(--shadow-contact);}
 .ovz-filter-btn.active{background:var(--accent);color:#fff;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-sm);}
 .ovz-sectie-header{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--zacht);padding:6px 12px 10px;border-left:2px solid var(--accent);margin-bottom:10px;}
 .ovz-klus-card{background:var(--surface);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-sm);transition:box-shadow .25s,transform .25s;}
@@ -351,6 +342,12 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 .gesch-rij:last-child{border-bottom:none;}
 .success-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:24px 24px 110px;text-align:center;}
 .success-icon{width:76px;height:76px;border-radius:50%;background:rgba(34,197,94,.14);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;color:#22c55e;box-shadow:inset 0 1px 0 rgba(34,197,94,.30),0 6px 18px -4px rgba(34,197,94,.22),0 0 0 1px rgba(34,197,94,.12);}
+@keyframes successPop{0%{opacity:0;transform:scale(0.4)}60%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+#view-success.active .success-icon{animation:successPop .5s var(--ease-out) both;animation-delay:.08s;}
+#view-success.active .success-titel{animation:fadeIn .3s var(--ease-out) both;animation-delay:.18s;}
+#view-success.active .success-sub{animation:fadeIn .3s var(--ease-out) both;animation-delay:.24s;}
+#view-success.active .success-card{animation:fadeIn .3s var(--ease-out) both;animation-delay:.3s;}
+#view-success.active .success-btns{animation:fadeIn .3s var(--ease-out) both;animation-delay:.36s;}
 .success-titel{font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
 .success-sub{font-size:14px;color:var(--zacht);margin-bottom:28px;line-height:1.5;}
 .success-card{width:100%;background:var(--surface);border-radius:var(--radius-lg);margin-bottom:24px;text-align:left;overflow:hidden;box-shadow:var(--shadow-glow),var(--shadow-contact),var(--shadow-md);}
@@ -383,7 +380,8 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 
 /* HOME VIEW */
 .view{display:none;}
-.view.active{display:block;}
+.view.active{display:block;animation:viewIn .22s var(--ease-out) both;}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .home-wrap{padding:16px 16px 120px;max-width:680px;margin:0 auto;}
 .home-greeting-row{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;}
 .home-greeting{font-size:11px;color:var(--zacht);margin:0 0 2px;}
@@ -530,7 +528,8 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 /* FILTER BAR (geschiedenis) */
 .gesch-filter-wrap{display:flex;gap:8px;padding:0 0 14px;overflow-x:auto;scrollbar-width:none;}
 .gesch-filter-wrap::-webkit-scrollbar{display:none;}
-.gesch-filter-btn{flex-shrink:0;padding:11px 16px;border-radius:var(--radius-sm);font-family:inherit;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:transparent;border:1px solid var(--border-2);color:var(--zacht);cursor:pointer;transition:all .2s;-webkit-appearance:none;}
+.gesch-filter-btn{flex-shrink:0;padding:11px 16px;border-radius:var(--radius-sm);font-family:inherit;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:transparent;border:1px solid var(--border-2);color:var(--zacht);cursor:pointer;transition:background .15s var(--ease-out),border-color .15s var(--ease-out),color .15s var(--ease-out),transform .12s var(--ease-out);-webkit-appearance:none;}
+.gesch-filter-btn:active{transform:scale(0.97);}
 .gesch-filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 
 /* RETRY KNOP */
@@ -541,42 +540,39 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
 </head>
 <body>
 
-<!-- LOGIN OVERLAY -->
+<!-- LOGIN OVERLAY: naam + email -->
 <div class="login-overlay" id="login-overlay">
   <div class="login-box">
     <div class="login-logo"><i data-lucide="hard-hat" style="width:28px;height:28px;color:#fff;"></i></div>
     <div class="login-titel">Middelwatering Bouw</div>
-    <div class="login-sub">Log in om verplaatsingen te registreren.</div>
-    <input class="login-input" type="text" id="login-gebruiker" placeholder="Gebruikersnaam"
-      autocomplete="username" autocapitalize="none" spellcheck="false"
-      onkeydown="if(event.key==='Enter')document.getElementById('login-ww').focus()">
-    <input class="login-input" type="password" id="login-ww" placeholder="Wachtwoord"
-      autocomplete="current-password"
-      onkeydown="if(event.key==='Enter')loginUser()">
-    <button class="login-btn" onclick="loginUser()">Inloggen →</button>
+    <div class="login-sub">Vul je naam en e-mailadres in. Je ontvangt een inlogcode per e-mail.</div>
+    <input class="login-input" type="text" id="login-naam" placeholder="Jouw naam"
+      autocomplete="name" spellcheck="false"
+      onkeydown="if(event.key==='Enter')document.getElementById('login-email').focus()">
+    <input class="login-input" type="email" id="login-email" placeholder="E-mailadres"
+      autocomplete="email" autocapitalize="none" spellcheck="false"
+      onkeydown="if(event.key==='Enter')vraagOtpAan()">
+    <button class="login-btn" id="login-btn" onclick="vraagOtpAan()">Verstuur code →</button>
     <div class="login-fout" id="login-fout"></div>
-    <div style="margin-top:16px;font-size:13px;color:var(--zacht);">Nog geen account? <a href="#" onclick="toonRegistreren(event)" style="color:var(--accent);text-decoration:none;font-weight:600;">Aanmelden</a></div>
   </div>
 </div>
 
-<!-- REGISTREREN OVERLAY -->
-<div class="login-overlay verborgen" id="registreer-overlay">
+<!-- OTP OVERLAY: code invoeren -->
+<div class="login-overlay verborgen" id="otp-overlay">
   <div class="login-box">
-    <div class="login-logo"><i data-lucide="pen-line" style="width:28px;height:28px;color:#fff;"></i></div>
-    <div class="login-titel">Account aanmaken</div>
-    <div class="login-sub">Vul je gegevens in om je aan te melden.</div>
-    <input class="login-input" type="text" id="reg-naam" placeholder="Volledige naam"
-      autocomplete="name" spellcheck="false"
-      onkeydown="if(event.key==='Enter')document.getElementById('reg-gebruiker').focus()">
-    <input class="login-input" type="text" id="reg-gebruiker" placeholder="Gebruikersnaam"
-      autocomplete="username" autocapitalize="none" spellcheck="false"
-      onkeydown="if(event.key==='Enter')document.getElementById('reg-ww').focus()">
-    <input class="login-input" type="password" id="reg-ww" placeholder="Wachtwoord (min. 6 tekens)"
-      autocomplete="new-password"
-      onkeydown="if(event.key==='Enter')registreerUser()">
-    <button class="login-btn" onclick="registreerUser()">Account aanmaken →</button>
-    <div class="login-fout" id="reg-fout"></div>
-    <div style="margin-top:16px;font-size:13px;color:var(--zacht);">Al een account? <a href="#" onclick="toonInloggen(event)" style="color:var(--accent);text-decoration:none;font-weight:600;">Inloggen</a></div>
+    <div class="login-logo"><i data-lucide="mail" style="width:28px;height:28px;color:#fff;"></i></div>
+    <div class="login-titel">Inlogcode</div>
+    <div class="login-sub" id="otp-sub">Vul de 4-cijferige code in die we hebben verstuurd.</div>
+    <input class="login-input" type="text" id="otp-code" placeholder="0000"
+      inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code"
+      style="font-size:32px;font-weight:900;letter-spacing:12px;text-align:center;padding:18px 8px;"
+      onkeydown="if(event.key==='Enter')verifieerOtp()">
+    <button class="login-btn" id="otp-btn" onclick="verifieerOtp()">Inloggen →</button>
+    <div class="login-fout" id="otp-fout"></div>
+    <div style="margin-top:16px;font-size:13px;color:var(--zacht);display:flex;justify-content:space-between;">
+      <a href="#" onclick="toonLoginScherm(event)" style="color:var(--zacht);text-decoration:none;">← Terug</a>
+      <a href="#" onclick="nieuweCode(event)" style="color:var(--accent);text-decoration:none;font-weight:600;">Nieuwe code sturen</a>
+    </div>
   </div>
 </div>
 
@@ -593,11 +589,6 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
         <button class="dropdown-item" onclick="toggleTheme()">
           <span class="dropdown-item-icon" id="theme-icon"><i data-lucide="sun"></i></span>
           <span id="theme-label">Licht thema</span>
-        </button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item" onclick="openWachtwoord()">
-          <span class="dropdown-item-icon"><i data-lucide="key"></i></span>
-          Wachtwoord wijzigen
         </button>
         <div class="dropdown-divider"></div>
         <a class="dropdown-item" href="beheer.html" id="header-beheer-link" style="display:none">
@@ -827,20 +818,6 @@ header{position:sticky;top:0;z-index:60;background:#0f0f0e;border-bottom:2px sol
     </div>
     <div id="ovz-status-banner"></div>
     <div id="ovz-content"><div class="ovz-loading"><div class="spinner"></div><div style="font-size:13px;color:var(--zacht)">Materieel laden...</div></div></div>
-  </div>
-</div>
-
-<!-- WACHTWOORD MODAL -->
-<div class="ww-modal-overlay" id="ww-overlay" onclick="if(event.target===this)sluitWachtwoord()">
-  <div class="ww-modal-box">
-    <div class="ww-handle"></div>
-    <div class="ww-titel">Wachtwoord wijzigen</div>
-    <div class="ww-sub">Kies een nieuw wachtwoord van minimaal 6 tekens.</div>
-    <input class="ww-input" type="password" id="ww-huidig" placeholder="Huidig wachtwoord" autocomplete="current-password">
-    <input class="ww-input" type="password" id="ww-nieuw" placeholder="Nieuw wachtwoord">
-    <input class="ww-input" type="password" id="ww-bevestig" placeholder="Bevestig nieuw wachtwoord" onkeydown="if(event.key==='Enter')slaWachtwoordOp()">
-    <div class="ww-fout" id="ww-fout"></div>
-    <button class="ww-btn" id="ww-btn" onclick="slaWachtwoordOp()">Wachtwoord opslaan →</button>
   </div>
 </div>
 
@@ -1430,29 +1407,9 @@ async function renderStap2() {
 
   const allGeselecteerd = hierItems.filter(m => geselecteerdeItems.has(m.id)).length + Object.keys(geselecteerdeAantallen).filter(k => geselecteerdeAantallen[k] > 0).length;
 
-  // Sectiegrid
   const secties = Object.keys(perSectie).sort((a, b) => a === 'Overig' ? 1 : b === 'Overig' ? -1 : a.localeCompare(b));
-  const gridHtml = `<div class="mat-sectie-grid">${secties.map(sectie => {
-    const items = perSectie[sectie];
-    const perType = {};
-    for (const item of items) {
-      if (!perType[item.type_id]) perType[item.type_id] = { naam: item.naam, items: [] };
-      perType[item.type_id].items.push(item);
-    }
-    const totaalStuks = items.reduce((s, m) => s + (m.aantal != null ? m.aantal : 1), 0);
-    const aantalTypes = Object.keys(perType).length;
-    const geselInSectie = items.filter(m => geselecteerdeItems.has(m.id)).length + Object.values(perType).filter(g => g.items[0]?.aantal != null && geselecteerdeAantallen[g.items[0].id] > 0).length;
-    const secKey2 = sectie.toLowerCase().replace(/[^a-z0-9]/g,'_');
-    const isGesel = geselInSectie > 0;
-    return `<div class="mat-sectie-tile${isGesel ? ' geselecteerd' : ''}" onclick="scrollNaarSectie('${secKey2}')">
-      <span class="mst-check">${isGesel ? '✓' : ''}</span>
-      <p class="mst-naam">${sectie}</p>
-      <p class="mst-meta">${aantalTypes} type${aantalTypes !== 1 ? 's' : ''}</p>
-      <p class="mst-stuks">${totaalStuks} stuks</p>
-    </div>`;
-  }).join('')}</div>`;
 
-  let html = gridHtml + `<div id="stap2-teller" style="font-size:12px;color:var(--zacht);font-weight:700;margin-bottom:10px;text-align:right;">${allGeselecteerd} geselecteerd</div>`;
+  let html = `<div id="stap2-teller" style="font-size:12px;color:var(--zacht);font-weight:700;margin-bottom:10px;text-align:right;">${allGeselecteerd} geselecteerd</div>`;
 
   html += `<div class="card mat-kies-card">`;
 
@@ -1490,17 +1447,17 @@ async function renderStap2() {
               <div class="mat-kies-nr">${eersteItem.aantal} stuks beschikbaar</div>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;align-items:end;">
             <div style="display:flex;flex-direction:column;gap:5px;">
               <span style="font-size:10px;color:var(--zacht);text-transform:uppercase;letter-spacing:.6px;font-weight:700;">Verplaatst</span>
               <input type="number" min="0" max="${eersteItem.aantal}" value="${huidig}"
                 style="width:100%;padding:10px 8px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:6px;color:var(--tekst);font-size:16px;text-align:center;font-family:inherit;font-weight:800;box-shadow:var(--shadow-inset);"
                 oninput="setBulkAantal('${eersteItem.id}',this.value,${eersteItem.aantal})">
             </div>
-            <div style="display:flex;flex-direction:column;gap:5px;">
-              <span style="font-size:10px;color:var(--rood);text-transform:uppercase;letter-spacing:.6px;font-weight:700;">Kapot</span>
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <span style="font-size:9px;color:var(--rood);text-transform:uppercase;letter-spacing:.5px;font-weight:700;">Kapot</span>
               <input type="number" min="0" max="${eersteItem.aantal}" value="${huidigKapot}"
-                style="width:100%;padding:10px 8px;background:rgba(239,68,68,.06);border:1.5px solid rgba(239,68,68,.22);border-radius:6px;color:var(--rood);font-size:16px;text-align:center;font-family:inherit;font-weight:800;box-shadow:inset 0 2px 4px rgba(239,68,68,.10),inset 0 -1px 0 rgba(255,255,255,.04);"
+                style="width:100%;padding:7px 6px;background:rgba(239,68,68,.06);border:1.5px solid rgba(239,68,68,.22);border-radius:6px;color:var(--rood);font-size:13px;text-align:center;font-family:inherit;font-weight:800;box-shadow:inset 0 2px 4px rgba(239,68,68,.10),inset 0 -1px 0 rgba(255,255,255,.04);"
                 oninput="setBulkDefect('${eersteItem.id}',this.value,${eersteItem.aantal})">
             </div>
           </div>
@@ -1990,16 +1947,53 @@ function getTokenPayload() {
   } catch { return null; }
 }
 
-async function loginUser() {
-  const gebruiker = document.getElementById('login-gebruiker').value.trim();
-  const wachtwoord = document.getElementById('login-ww').value;
-  const fout = document.getElementById('login-fout');
-  const btn  = document.querySelector('.login-btn');
+let _otpEmail = '';
 
-  if (!gebruiker || !wachtwoord) {
-    fout.textContent = 'Vul gebruikersnaam en wachtwoord in.';
-    return;
+async function vraagOtpAan() {
+  const naam  = document.getElementById('login-naam').value.trim();
+  const email = document.getElementById('login-email').value.trim();
+  const fout  = document.getElementById('login-fout');
+  const btn   = document.getElementById('login-btn');
+
+  if (!naam) { fout.textContent = 'Vul je naam in.'; document.getElementById('login-naam').classList.add('fout'); setTimeout(() => document.getElementById('login-naam').classList.remove('fout'), 600); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { fout.textContent = 'Vul een geldig e-mailadres in.'; document.getElementById('login-email').classList.add('fout'); setTimeout(() => document.getElementById('login-email').classList.remove('fout'), 600); return; }
+
+  btn.textContent = 'Versturen...';
+  btn.disabled    = true;
+  fout.textContent = '';
+
+  try {
+    const res  = await fetch(WORKER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'otp_aanvragen', naam, email }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      _otpEmail = email;
+      document.getElementById('otp-sub').textContent = `We hebben een code verstuurd naar ${email}`;
+      document.getElementById('otp-code').value = '';
+      document.getElementById('otp-fout').textContent = '';
+      document.getElementById('login-overlay').classList.add('verborgen');
+      document.getElementById('otp-overlay').classList.remove('verborgen');
+      setTimeout(() => document.getElementById('otp-code').focus(), 100);
+    } else {
+      fout.textContent = data.error || 'Versturen mislukt.';
+    }
+  } catch (e) {
+    fout.textContent = 'Verbindingsfout. Controleer internet.';
+  } finally {
+    btn.textContent = 'Verstuur code →';
+    btn.disabled    = false;
   }
+}
+
+async function verifieerOtp() {
+  const code = document.getElementById('otp-code').value.trim();
+  const fout = document.getElementById('otp-fout');
+  const btn  = document.getElementById('otp-btn');
+
+  if (!code || code.length !== 4) { fout.textContent = 'Vul de 4-cijferige code in.'; return; }
 
   btn.textContent = 'Bezig...';
   btn.disabled    = true;
@@ -2009,18 +2003,17 @@ async function loginUser() {
     const res  = await fetch(WORKER, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'login', gebruikersnaam: gebruiker, wachtwoord }),
+      body: JSON.stringify({ action: 'otp_verifiëren', email: _otpEmail, code }),
     });
     const data = await res.json();
     if (data.ok) {
       localStorage.setItem('mwb_token', data.token);
-      document.getElementById('login-overlay').classList.add('verborgen');
-      document.getElementById('login-ww').value = '';
+      document.getElementById('otp-overlay').classList.add('verborgen');
       startApp(data.naam, data.role);
     } else {
       fout.textContent = data.error || 'Inloggen mislukt.';
-      document.getElementById('login-ww').classList.add('fout');
-      setTimeout(() => document.getElementById('login-ww').classList.remove('fout'), 600);
+      document.getElementById('otp-code').classList.add('fout');
+      setTimeout(() => document.getElementById('otp-code').classList.remove('fout'), 600);
     }
   } catch (e) {
     fout.textContent = 'Verbindingsfout. Controleer internet.';
@@ -2030,58 +2023,28 @@ async function loginUser() {
   }
 }
 
-function toonRegistreren(e) {
+function toonLoginScherm(e) {
   e.preventDefault();
-  document.getElementById('login-overlay').classList.add('verborgen');
-  document.getElementById('registreer-overlay').classList.remove('verborgen');
-  document.getElementById('reg-fout').textContent = '';
-}
-
-function toonInloggen(e) {
-  e.preventDefault();
-  document.getElementById('registreer-overlay').classList.add('verborgen');
+  document.getElementById('otp-overlay').classList.add('verborgen');
   document.getElementById('login-overlay').classList.remove('verborgen');
   document.getElementById('login-fout').textContent = '';
 }
 
-async function registreerUser() {
-  const naam       = document.getElementById('reg-naam').value.trim();
-  const gebruiker  = document.getElementById('reg-gebruiker').value.trim();
-  const wachtwoord = document.getElementById('reg-ww').value;
-  const fout       = document.getElementById('reg-fout');
-  const btn        = document.querySelector('#registreer-overlay .login-btn');
-
-  if (!naam || !gebruiker || wachtwoord.length < 6) {
-    fout.textContent = 'Vul alle velden in (wachtwoord min. 6 tekens).';
-    return;
-  }
-
-  btn.textContent = 'Bezig...';
-  btn.disabled    = true;
-  fout.textContent = '';
-
+async function nieuweCode(e) {
+  e.preventDefault();
+  const naam  = document.getElementById('login-naam').value.trim();
+  const fout  = document.getElementById('otp-fout');
+  fout.textContent = 'Nieuwe code versturen...';
   try {
     const res  = await fetch(WORKER, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'registreren', naam, gebruikersnaam: gebruiker, wachtwoord }),
+      body: JSON.stringify({ action: 'otp_aanvragen', naam, email: _otpEmail }),
     });
     const data = await res.json();
-    if (data.ok) {
-      localStorage.setItem('mwb_token', data.token);
-      document.getElementById('registreer-overlay').classList.add('verborgen');
-      document.getElementById('reg-ww').value = '';
-      startApp(data.naam, data.role);
-    } else {
-      fout.textContent = data.error || 'Aanmelden mislukt.';
-      document.getElementById('reg-gebruiker').classList.add('fout');
-      setTimeout(() => document.getElementById('reg-gebruiker').classList.remove('fout'), 600);
-    }
+    fout.textContent = data.ok ? `Nieuwe code verstuurd naar ${_otpEmail}` : (data.error || 'Versturen mislukt.');
   } catch (e) {
-    fout.textContent = 'Verbindingsfout. Controleer internet.';
-  } finally {
-    btn.textContent = 'Account aanmaken →';
-    btn.disabled    = false;
+    fout.textContent = 'Verbindingsfout.';
   }
 }
 
@@ -2943,62 +2906,6 @@ function ovzSetFilter(filter, btn) {
 
 function ovzFilter() { ovzRender(); }
 
-/* ── WACHTWOORD WIJZIGEN ─────────────────────────── */
-function openWachtwoord() {
-  document.getElementById('ww-huidig').value   = '';
-  document.getElementById('ww-nieuw').value    = '';
-  document.getElementById('ww-bevestig').value = '';
-  document.getElementById('ww-fout').textContent = '';
-  document.getElementById('ww-overlay').classList.add('open');
-  document.getElementById('header-dropdown').classList.remove('open');
-  document.getElementById('menu-btn').classList.remove('open');
-  setTimeout(() => document.getElementById('ww-huidig').focus(), 350);
-}
-
-function sluitWachtwoord() {
-  document.getElementById('ww-overlay').classList.remove('open');
-}
-
-async function slaWachtwoordOp() {
-  const huidig   = document.getElementById('ww-huidig').value;
-  const nieuw    = document.getElementById('ww-nieuw').value;
-  const bevestig = document.getElementById('ww-bevestig').value;
-  const fout     = document.getElementById('ww-fout');
-  const btn      = document.getElementById('ww-btn');
-
-  if (!huidig)              { fout.textContent = 'Vul je huidige wachtwoord in.'; return; }
-  if (nieuw.length < 6)     { fout.textContent = 'Nieuw wachtwoord minimaal 6 tekens.'; return; }
-  if (nieuw !== bevestig)   { fout.textContent = 'Wachtwoorden komen niet overeen.'; return; }
-
-  btn.textContent = 'Bezig...'; btn.disabled = true; fout.textContent = '';
-  try {
-    // Eerst inloggen om huidig wachtwoord te verifiëren
-    const loginRes  = await fetch(WORKER, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'login', gebruikersnaam: getTokenPayload()?.sub, wachtwoord: huidig }),
-    });
-    const loginData = await loginRes.json();
-    if (!loginData.ok) { fout.textContent = 'Huidig wachtwoord is onjuist.'; return; }
-
-    const res  = await fetch(WORKER, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
-      body: JSON.stringify({ action: 'wachtwoord_wijzigen', wachtwoord_nieuw: nieuw }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      sluitWachtwoord();
-      showToast('Wachtwoord gewijzigd', 'ok');
-    } else {
-      fout.textContent = data.error || 'Wijzigen mislukt.';
-    }
-  } catch {
-    fout.textContent = 'Verbindingsfout. Probeer opnieuw.';
-  } finally {
-    btn.textContent = 'Wachtwoord opslaan →'; btn.disabled = false;
-  }
-}
 
 /* ── START ───────────────────────────────────────── */
 (function checkAuth() {

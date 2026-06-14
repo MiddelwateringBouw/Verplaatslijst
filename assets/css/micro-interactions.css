@@ -1,0 +1,478 @@
+/* ═══════════════════════════════════════════════════════════════
+   MWB MICRO-INTERACTIONS — assets/css/micro-interactions.css
+   Loaded after main inline styles in index.html.
+   All non-essential animations are wrapped in
+   @media (prefers-reduced-motion: no-preference).
+   Only transform/opacity are animated — no width/height/margin.
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ── 1. BUTTON :ACTIVE SCALE-DOWN ───────────────────────────────
+   Primary buttons scale to 0.97 on tap/click.
+   Desktop hover lifts the main CTA with a larger shadow.
+   Existing translateY(:active) rules are overridden here.
+   ─────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .btn-next,
+  .btn-verstuur,
+  .btn-back,
+  .login-btn,
+  .sheet-save,
+  .ww-btn,
+  .success-btn-primary,
+  .success-btn-secondary {
+    transition:
+      box-shadow  .2s  cubic-bezier(0.23, 1, 0.32, 1),
+      transform   .12s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .btn-next:active,
+  .btn-verstuur:active,
+  .login-btn:active,
+  .sheet-save:active,
+  .ww-btn:active,
+  .success-btn-primary:active {
+    transform: scale(0.97) !important;
+    box-shadow: var(--shadow-contact) !important;
+  }
+
+  .btn-back:active,
+  .success-btn-secondary:active {
+    transform: scale(0.97) !important;
+  }
+
+  .home-cta {
+    transition:
+      box-shadow  .25s cubic-bezier(.4, 0, .2, 1),
+      transform   .18s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .home-cta:active {
+    transform: scale(0.98) !important;
+    box-shadow: var(--shadow-contact) !important;
+  }
+
+  .loc-zaak-btn {
+    transition: all .2s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .loc-zaak-btn:active {
+    transform: scale(0.98) !important;
+  }
+
+  /* Desktop-only: larger shadow + 1px lift on hover */
+  @media (hover: hover) {
+    .btn-next:hover,
+    .btn-verstuur:hover {
+      box-shadow: var(--shadow-glow), var(--shadow-contact), var(--shadow-md) !important;
+      transform: translateY(-1px);
+    }
+
+    .home-cta:hover {
+      box-shadow: var(--shadow-glow), var(--shadow-contact), var(--shadow-lg) !important;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+
+/* ── 3. TOAST SYSTEM (stacking, typed, slide-up) ────────────────
+   Replaces the bare #toast div. JS creates #toast-container and
+   individual .toast-item elements dynamically.
+   ─────────────────────────────────────────────────────────────── */
+#toast-container {
+  position: fixed;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 400;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+}
+
+.toast-item {
+  background: #222222;
+  border: 1.5px solid var(--border-2);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  padding: 11px 16px 11px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--tekst);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .60);
+  white-space: nowrap;
+  pointer-events: all;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  opacity: 0;
+  transform: translateY(16px) scale(0.97);
+  transition:
+    opacity    .25s cubic-bezier(0.23, 1, 0.32, 1),
+    transform  .3s  cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform, opacity;
+}
+
+.toast-item.toast-show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.toast-item.toast-hide {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.97);
+  transition:
+    opacity    .18s cubic-bezier(0.23, 1, 0.32, 1),
+    transform  .18s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.toast-item.toast-ok   { border-left-color: var(--groen); }
+.toast-item.toast-err  { border-left-color: var(--rood); }
+.toast-item.toast-warn { border-left-color: #f59e0b; }
+.toast-item.toast-info { border-left-color: var(--zacht); }
+
+[data-theme="light"] .toast-item {
+  background: #f0efeb;
+  border-color: rgba(0, 0, 0, .10);
+}
+[data-theme="light"] .toast-item.toast-ok   { border-left-color: var(--groen); }
+[data-theme="light"] .toast-item.toast-err  { border-left-color: var(--rood); }
+[data-theme="light"] .toast-item.toast-warn { border-left-color: #d97706; }
+
+
+/* ── 5. HOME CTA SHIMMER (one-shot on first load) ───────────────
+   A single light sweep across the orange CTA button.
+   Class added by JS, removed after animationend.
+   ─────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes cta-shimmer {
+    0%   { transform: translateX(-120%) skewX(-20deg); }
+    100% { transform: translateX(300%)  skewX(-20deg); }
+  }
+
+  .home-cta {
+    overflow: hidden; /* already set, but ensures pseudo-element clips */
+  }
+
+  .home-cta.shimmer-once::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 35%;
+    background: linear-gradient(
+      90deg,
+      transparent            0%,
+      rgba(255,255,255,.22) 50%,
+      transparent          100%
+    );
+    pointer-events: none;
+    animation: cta-shimmer .85s ease-out forwards;
+    animation-delay: .45s;
+  }
+}
+
+
+/* ── 6. TOOLTIPS (1s hover delay, CSS-driven) ───────────────────
+   Data attribute: data-tooltip="label text"
+   Long-press on touch is handled by JS (.tooltip-visible class).
+   ─────────────────────────────────────────────────────────────── */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e1e1e;
+  color: var(--tekst);
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s ease-out;
+  transition-delay: 0s;
+  z-index: 1000;
+  letter-spacing: .3px;
+  text-transform: none;
+}
+
+/* Desktop: 1 second hover delay before showing */
+@media (hover: hover) {
+  [data-tooltip]:hover::after {
+    opacity: 1;
+    transition-delay: 1s;
+  }
+}
+
+/* JS triggers this class for touch long-press */
+[data-tooltip].tooltip-visible::after {
+  opacity: 1 !important;
+  transition-delay: 0s !important;
+}
+
+[data-theme="light"] [data-tooltip]::after {
+  background: #f0efeb;
+  box-shadow: 0 4px 12px rgba(60, 55, 40, .2);
+}
+
+
+/* ── 8. PROGRESS BAR ANIMATED STROKE ───────────────────────────
+   Lines animate left-to-right when .done is added.
+   Active dot gets a soft expanding-ring pulse.
+   Override the original background transition — ::after handles it.
+   ─────────────────────────────────────────────────────────────── */
+.progress-line {
+  position: relative;
+  overflow: hidden;
+  transition: none; /* ::after handles the color transition */
+}
+
+/* Keep gray base; ::after sweeps green over it */
+.progress-line.done {
+  background: var(--border);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .progress-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(34, 197, 94, .40);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .4s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .progress-line.done::after {
+    transform: scaleX(1);
+  }
+
+  /* Dot pulse — ring expands and fades out */
+  @keyframes dot-pulse {
+    0%, 100% {
+      box-shadow:
+        var(--shadow-glow), var(--shadow-contact), var(--shadow-sm),
+        0 0 0 0 rgba(255, 107, 0, .35);
+    }
+    55% {
+      box-shadow:
+        var(--shadow-glow), var(--shadow-contact), var(--shadow-sm),
+        0 0 0 8px rgba(255, 107, 0, 0);
+    }
+  }
+
+  .progress-step.active .progress-dot {
+    animation: dot-pulse 2.2s ease-out infinite;
+  }
+}
+
+
+/* ── TAP FEEDBACK — tappable rows and cards ─────────────────────
+   Brief scale-down on :active for list rows that don't have it.
+   ─────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .ac-item {
+    transition: background .12s, transform .12s;
+  }
+  .ac-item:active {
+    transform: scale(0.99);
+  }
+
+  .mat-kies-type-row {
+    transition: background .12s, transform .12s;
+  }
+  .mat-kies-type-row:active {
+    transform: scale(0.99);
+  }
+
+  .mat-kies-item-row {
+    transition: background .15s ease-out, transform .12s;
+  }
+  .mat-kies-item-row:active {
+    transform: scale(0.99);
+  }
+
+  .ovz-item-klikbaar {
+    transition: background .12s, transform .12s;
+  }
+  .ovz-item-klikbaar:active {
+    transform: scale(0.99);
+  }
+
+  /* Ensure home cards and movement cards transition smoothly */
+  .home-inz-card {
+    transition: box-shadow .2s, transform .15s, opacity .15s;
+  }
+
+  .beweging-card {
+    transition:
+      box-shadow   .2s  cubic-bezier(.4, 0, .2, 1),
+      transform    .15s cubic-bezier(.4, 0, .2, 1),
+      border-color .15s ease-out,
+      background   .15s ease-out;
+  }
+
+  .mat-sectie-tile {
+    transition:
+      box-shadow   .2s  cubic-bezier(.4, 0, .2, 1),
+      transform    .15s cubic-bezier(.4, 0, .2, 1),
+      border-color .15s ease-out,
+      background   .15s ease-out;
+  }
+}
+
+
+/* ── SELECTION FEEDBACK ─────────────────────────────────────────
+   Orange border + check fade in over 150ms instead of instant.
+   ─────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* Checkbox fill transition */
+  .mat-kies-check {
+    transition: background .15s ease-out, border-color .15s ease-out;
+  }
+
+  /* Check/partial pseudo-content scale-in */
+  @keyframes check-pop {
+    from { transform: scale(0.3); }
+    to   { transform: scale(1); }
+  }
+
+  .mat-kies-check.checked::after,
+  .mat-kies-check.partial::after {
+    display: inline-block;
+    animation: check-pop .12s ease-out forwards;
+  }
+
+  /* beweging-card check badge: scale+fade in when card becomes selected */
+  @keyframes badge-in {
+    from { transform: scale(0.4); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .beweging-card.selected .bc-check {
+    animation: badge-in .15s ease-out forwards;
+  }
+
+  /* sectie tile check circle */
+  @keyframes mst-check-in {
+    from { transform: scale(0.3); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .mat-sectie-tile.geselecteerd .mst-check {
+    animation: mst-check-in .15s ease-out forwards;
+  }
+}
+
+
+/* ── STAGGER FADE-IN — home inzendingen list ────────────────────
+   Items get .stagger-in added by JS with incrementing delays.
+   ─────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes item-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .home-inz-card.stagger-in {
+    animation: item-in .3s cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+}
+
+
+/* ── PULL-TO-REFRESH INDICATOR ──────────────────────────────────
+   Circular indicator that appears at top of home view on pull.
+   Position and rotation managed by JS.
+   ─────────────────────────────────────────────────────────────── */
+#ptr-indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-56px);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  box-shadow: var(--shadow-glow), var(--shadow-contact), var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  will-change: transform, opacity;
+}
+
+#ptr-indicator.ptr-pulling {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes ptr-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  #ptr-indicator.ptr-loading svg {
+    animation: ptr-spin .8s linear infinite;
+  }
+}
+
+
+/* ── REDUCED MOTION OVERRIDES ───────────────────────────────────
+   For users who prefer reduced motion, we disable all
+   non-essential animations. Transitions that convey state
+   (e.g. toast visibility) are kept but instant.
+   ─────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  /* Disable keyframe animations */
+  .progress-step.active .progress-dot,
+  .home-inz-card.stagger-in,
+  .beweging-card.selected .bc-check,
+  .mat-sectie-tile.geselecteerd .mst-check,
+  .mat-kies-check.checked::after,
+  .mat-kies-check.partial::after,
+  #ptr-indicator.ptr-loading svg {
+    animation: none !important;
+  }
+
+  /* Disable the progress-line sweep */
+  .progress-line::after {
+    transition: none !important;
+  }
+
+  /* Keep toast visible but skip slide animation */
+  .toast-item {
+    transition: opacity .15s ease-out !important;
+    transform: none !important;
+  }
+
+  .toast-item.toast-hide {
+    transition: opacity .15s ease-in !important;
+    transform: none !important;
+  }
+
+  /* Disable CTA shimmer */
+  .home-cta.shimmer-once::after {
+    animation: none !important;
+    display: none !important;
+  }
+}
