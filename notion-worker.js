@@ -347,9 +347,11 @@ export default {
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return json({ ok: false, error: 'Vul een geldig e-mailadres in' }, 400);
       }
-      const code    = String(Math.floor(1000 + Math.random() * 9000));
+      const buf  = new Uint32Array(1);
+      crypto.getRandomValues(buf);
+      const code    = String(100000 + (buf[0] % 900000));
       const expires = Math.floor(Date.now() / 1000) + 600;
-      await env.MWB_KLUSSEN.put(`mwb_otp_${email}`, JSON.stringify({ code, naam, expires }), { expirationTtl: 600 });
+      await env.MWB_KLUSSEN.put(`mwb_otp_${email}`, JSON.stringify({ code, naam, expires, attempts: 0 }), { expirationTtl: 600 });
       try {
         await sendOtpEmail(email, naam, code);
       } catch (e) {
@@ -366,8 +368,21 @@ export default {
       const raw = await env.MWB_KLUSSEN.get(`mwb_otp_${email}`);
       if (!raw) return json({ ok: false, error: 'Code ongeldig of verlopen. Vraag een nieuwe code aan.' }, 401);
       const otp = JSON.parse(raw);
-      if (otp.code !== code || otp.expires < Math.floor(Date.now() / 1000)) {
-        return json({ ok: false, error: 'Onjuiste code. Probeer opnieuw.' }, 401);
+      const now = Math.floor(Date.now() / 1000);
+      if (otp.expires < now) {
+        await env.MWB_KLUSSEN.delete(`mwb_otp_${email}`);
+        return json({ ok: false, error: 'Code verlopen. Vraag een nieuwe code aan.' }, 401);
+      }
+      if (otp.code !== code) {
+        const attempts = (otp.attempts || 0) + 1;
+        if (attempts >= 5) {
+          await env.MWB_KLUSSEN.delete(`mwb_otp_${email}`);
+          return json({ ok: false, error: 'Te veel onjuiste pogingen. Vraag een nieuwe code aan.' }, 401);
+        }
+        const ttlLeft = Math.max(1, otp.expires - now);
+        await env.MWB_KLUSSEN.put(`mwb_otp_${email}`, JSON.stringify({ ...otp, attempts }), { expirationTtl: ttlLeft });
+        const remaining = 5 - attempts;
+        return json({ ok: false, error: `Onjuiste code. Nog ${remaining} poging${remaining === 1 ? '' : 'en'}.` }, 401);
       }
       await env.MWB_KLUSSEN.delete(`mwb_otp_${email}`);
       const users   = await getUsers();
@@ -377,9 +392,8 @@ export default {
       if (isNieuw) {
         user = { email, gebruikersnaam: email, naam: otp.naam || email, role: isEerste ? 'admin' : 'user' };
         users.push(user);
-      } else if (otp.naam) {
-        user.naam = otp.naam;
       }
+      // Naam van bestaande gebruikers wordt NIET aangepast via een unauthenticated OTP-aanvraag.
       await saveUsers(users);
       const token = await signJWT({
         sub:  email,
